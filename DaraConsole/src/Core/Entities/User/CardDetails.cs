@@ -2,9 +2,9 @@ namespace DaraBot.Core.Entities.User
 {
     public struct CardDetails
     {
-        public string CardNumber { get; }
-        public string ExpiryMonth { get; }
-        public string ExpiryYear { get; }
-        public string CardVerification { get; }
+        public string CardNumber { get; internal set; }
+        public string ExpiryMonth { get; internal set; }
+        public string ExpiryYear { get; internal set; }
+        public string CardVerification { get; internal set; }
     }
 }
