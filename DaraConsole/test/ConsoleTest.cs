@@ -9,7 +9,7 @@ namespace test
         [Fact]
         public void Test1()
         {
-                        
+
         }
     }
 }
