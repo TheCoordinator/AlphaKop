@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using DaraBot.Supreme.Repositories;
 
-#nullable enable
-
 namespace DaraBot
 {
     class Program
@@ -11,6 +9,7 @@ namespace DaraBot
         static async Task Main(string[] args)
         {
             ISupremeRepository supreme = new SupremeRepository();
+            
             try
             {
                 var result = await supreme.FetchStock();
