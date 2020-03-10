@@ -4,9 +4,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using DaraBot.Supreme.Entities;
 
-namespace DaraBot.Supreme.Services
+namespace DaraBot.Supreme.Repositories
 {
-    sealed class DefaultSupreme : ISupreme
+    sealed class SupremeRepository : ISupremeRepository
     {
         private const string BASE_URL = "https://www.supremenewyork.com";
 

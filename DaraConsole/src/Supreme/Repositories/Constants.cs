@@ -1,4 +1,4 @@
-namespace DaraBot.Supreme.Services
+namespace DaraBot.Supreme.Repositories
 {
     static class Constants
     {

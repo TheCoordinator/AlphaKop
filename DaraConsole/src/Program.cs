@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DaraBot.Supreme.Services;
+using DaraBot.Supreme.Repositories;
 
 #nullable enable
 
@@ -10,7 +10,7 @@ namespace DaraBot
     {
         static async Task Main(string[] args)
         {
-            ISupreme supreme = new DefaultSupreme();
+            ISupremeRepository supreme = new SupremeRepository();
             try
             {
                 var result = await supreme.FetchStock();
