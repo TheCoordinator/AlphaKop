@@ -2,7 +2,7 @@ using DaraBot.Core.Entities.User;
 
 namespace DaraBot.Supreme.Entities
 {
-    public struct Task
+    public struct SupremeTask
     {
         public UserProfile Profile { get; internal set; }
         public string? CategoryName { get; internal set; }

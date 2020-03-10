@@ -1,8 +1,5 @@
 using System.Collections.Generic;
-
-using System.Globalization;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace DaraBot.Supreme.Entities
 {
@@ -49,18 +46,6 @@ namespace DaraBot.Supreme.Entities
 
     public partial struct Stock
     {
-        public static Stock FromJson(string json) => JsonConvert.DeserializeObject<Stock>(json, Converter.Settings);
-    }
-
-    internal static class Converter
-    {
-        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
-        {
-            MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
-            DateParseHandling = DateParseHandling.None,
-            Converters = {
-                new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
-            },
-        };
+        public static Stock FromJson(string json) => JsonConvert.DeserializeObject<Stock>(json);
     }
 }
