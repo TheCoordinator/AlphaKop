@@ -7,22 +7,25 @@ using DaraBot.Supreme.Entities;
 
 namespace DaraBot.Supreme.Repositories
 {
-    sealed class SupremeRepository : ISupremeRepository
+    sealed class PookyRepository : IPookyRepository
     {
         private readonly string baseUrl;
-        private readonly SupremeRequestsFactory requestsFactory;
+        private readonly PookyRegion region;
+        private readonly PookyRequestsFactory requestsFactory;
         private readonly HttpClient client;
 
-        public SupremeRepository(string baseUrl = "https://www.supremenewyork.com")
+        public PookyRepository(string baseUrl = "https://pooky.speseo.com",
+                               PookyRegion region = PookyRegion.EU)
         {
             this.baseUrl = baseUrl;
-            this.requestsFactory = new SupremeRequestsFactory(baseUrl: baseUrl);
-            this.client = CreateHttpClient(baseUrl: baseUrl, requestsFactory: requestsFactory);
+            this.region = region;
+            this.requestsFactory = new PookyRequestsFactory(baseUrl: baseUrl, region: region);
+            this.client = CreateHttpClient(baseUrl: baseUrl);
         }
 
-        public async Task<Stock> FetchStock()
+        public async Task<Pooky> FetchPooky()
         {
-            return await SendJsonRequest<Stock>(request: requestsFactory.MobileStock);
+            return await SendJsonRequest<Pooky>(request: requestsFactory.Pooky);
         }
 
         private async Task<T> SendJsonRequest<T>(HttpRequestMessage request)
@@ -36,7 +39,7 @@ namespace DaraBot.Supreme.Repositories
 
         #region Factory
 
-        private static HttpClient CreateHttpClient(string baseUrl, SupremeRequestsFactory requestsFactory)
+        private static HttpClient CreateHttpClient(string baseUrl)
         {
             var client = new HttpClient() { BaseAddress = new Uri(uriString: baseUrl) };
 

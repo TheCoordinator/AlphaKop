@@ -8,12 +8,16 @@ namespace DaraBot
     {
         static async Task Main(string[] args)
         {
-            ISupremeRepository supreme = new SupremeRepository();
+            ISupremeRepository supremeRepo = new SupremeRepository();
+            IPookyRepository pookyRepo = new PookyRepository();
             
             try
             {
-                var result = await supreme.FetchStock();
-                Console.WriteLine($"Fetched Items {result.Items.Count}");
+                var pooky = await pookyRepo.FetchPooky();
+                Console.WriteLine($"Fetched Pooky Data {pooky.PageData.Mappings.Length}");
+
+                var stock = await supremeRepo.FetchStock();
+                Console.WriteLine($"Fetched Stock Items {stock.Items.Count}");
             }
             catch (Exception ex)
             {
