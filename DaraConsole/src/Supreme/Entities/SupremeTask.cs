@@ -6,9 +6,9 @@ namespace DaraBot.Supreme.Entities
     {
         public UserProfile Profile { get; internal set; }
         public string? CategoryName { get; internal set; }
-        public string? keywords { get; internal set; }
-        public string? style { get; internal set; }
-        public string? size { get; internal set; }
+        public string? Keywords { get; internal set; }
+        public string? Style { get; internal set; }
+        public string? Size { get; internal set; }
         public int CheckoutDelay { get; internal set; }
         public int RetryDelay { get; internal set; }
 
@@ -22,9 +22,9 @@ namespace DaraBot.Supreme.Entities
         {
             Profile = profile;
             CategoryName = categoryName;
-            this.keywords = keywords;
-            this.style = style;
-            this.size = size;
+            Keywords = keywords;
+            Style = style;
+            Size = size;
             CheckoutDelay = checkoutDelay;
             RetryDelay = retryDelay;
         }
