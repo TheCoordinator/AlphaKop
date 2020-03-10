@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DaraBot.Supreme.Services;
-
-#nullable enable
+using DaraBot.Supreme.Repositories;
 
 namespace DaraBot
 {
@@ -10,11 +8,16 @@ namespace DaraBot
     {
         static async Task Main(string[] args)
         {
-            ISupreme supreme = new DefaultSupreme();
+            ISupremeRepository supremeRepo = new SupremeRepository();
+            IPookyRepository pookyRepo = new PookyRepository();
+            
             try
             {
-                var result = await supreme.FetchStock();
-                Console.WriteLine($"Fetched Items {result.Items.Count}");
+                var pooky = await pookyRepo.FetchPooky();
+                Console.WriteLine($"Fetched Pooky Data {pooky.PageData.Mappings.Length}");
+
+                var stock = await supremeRepo.FetchStock();
+                Console.WriteLine($"Fetched Stock Items {stock.Items.Count}");
             }
             catch (Exception ex)
             {

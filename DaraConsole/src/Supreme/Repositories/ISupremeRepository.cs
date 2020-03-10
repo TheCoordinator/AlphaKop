@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using DaraBot.Supreme.Entities;
 
-namespace DaraBot.Supreme.Services
+namespace DaraBot.Supreme.Repositories
 {
-    interface ISupreme
+    public interface ISupremeRepository
     {
         Task<Stock> FetchStock();
     }
