@@ -168,8 +168,7 @@ namespace DaraBot.Supreme.Entities
         }
     }
 
-    public partial struct Property
-    {
+    public partial struct Property {
         [JsonProperty("key")]
         public string Key { get; internal set; }
 
