@@ -18,5 +18,11 @@ namespace DaraBot.Supreme.Repositories
             RequestUri = new Uri(baseUrl + "/mobile_stock.json"),
             Method = HttpMethod.Get
         };
+
+        public HttpRequestMessage GetItemDetails(long itemId) => new HttpRequestMessage()
+        {
+            RequestUri = new Uri(baseUrl + $"/shop/{itemId}.json"),
+            Method = HttpMethod.Get
+        };
     }
 }

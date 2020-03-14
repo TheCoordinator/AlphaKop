@@ -22,7 +22,16 @@ namespace DaraBot.Supreme.Repositories
 
         public async Task<Stock> FetchStock()
         {
-            return await SendJsonRequest<Stock>(request: requestsFactory.MobileStock);
+            return await SendJsonRequest<Stock>(
+                request: requestsFactory.MobileStock
+            );
+        }
+
+        public async Task<ItemDetails> FetchItemDetails(long itemId)
+        {
+            return await SendJsonRequest<ItemDetails>(
+                request: requestsFactory.GetItemDetails(itemId: itemId)
+            );
         }
 
         private async Task<T> SendJsonRequest<T>(HttpRequestMessage request)
