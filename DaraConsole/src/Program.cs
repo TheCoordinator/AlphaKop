@@ -19,7 +19,7 @@ namespace DaraBot
                 var stock = await supremeRepo.FetchStock();
                 Console.WriteLine($"Fetched Stock Items {stock.Items.Count}");
 
-                var itemDetails = await supremeRepo.FetchItemDetails(itemId: 304938);
+                var itemDetails = await supremeRepo.FetchItemDetails(itemId: "304938");
                 Console.WriteLine($"Fetched Stock Items {itemDetails.Styles.Length}");
             }
             catch (Exception ex)

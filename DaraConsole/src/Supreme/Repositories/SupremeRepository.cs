@@ -28,7 +28,7 @@ namespace DaraBot.Supreme.Repositories
             );
         }
 
-        public async Task<ItemDetails> FetchItemDetails(long itemId)
+        public async Task<ItemDetails> FetchItemDetails(string itemId)
         {
             return await SendJsonRequest<ItemDetails>(
                 request: requestsFactory.GetItemDetails(itemId: itemId)

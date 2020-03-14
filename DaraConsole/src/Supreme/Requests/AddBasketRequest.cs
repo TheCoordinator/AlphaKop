@@ -2,13 +2,13 @@ namespace DaraBot.Supreme.Requests
 {
     public struct AddBasketRequest
     {
-        public long itemId { get; internal set; }
-        public long sizeId { get; internal set; }
+        public string itemId { get; internal set; }
+        public string sizeId { get; internal set; }
         public int styleId { get; internal set; }
         public int quantity { get; internal set; }
 
-        public AddBasketRequest(long itemId,
-                                long sizeId,
+        public AddBasketRequest(string itemId,
+                                string sizeId,
                                 int styleId,
                                 int quantity)
         {

@@ -20,7 +20,7 @@ namespace DaraBot.Supreme.Models
         public bool? CanadaBlocked { get; set; }
 
         [JsonProperty("purchasable_qty")]
-        public long? PurchasableQuantity { get; set; }
+        public int? PurchasableQuantity { get; set; }
 
         [JsonProperty("new_item")]
         public bool? NewItem { get; set; }
@@ -34,7 +34,7 @@ namespace DaraBot.Supreme.Models
                            bool? canBuyMultiple,
                            bool? codBlocked,
                            bool? canadaBlocked,
-                           long? purchasableQuantity,
+                           int? purchasableQuantity,
                            bool? newItem,
                            bool? nonEuBlocked)
         {
@@ -52,7 +52,7 @@ namespace DaraBot.Supreme.Models
     public partial struct Style
     {
         [JsonProperty("id")]
-        public long Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -70,7 +70,7 @@ namespace DaraBot.Supreme.Models
         public Size[] Sizes { get; set; }
 
         [JsonConstructor]
-        public Style(long id,
+        public Style(string id,
                      string name,
                      string? currency,
                      string? imageUrl,
@@ -92,17 +92,17 @@ namespace DaraBot.Supreme.Models
         public string Name { get; set; }
 
         [JsonProperty("id")]
-        public long Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("stock_level")]
-        public long StockLevel { get; set; }
+        public int StockLevel { get; set; }
 
         public bool isStockAvailable { 
             get { return StockLevel > 0; } 
         }
 
         [JsonConstructor]
-        public Size(string name, long id, long stockLevel)
+        public Size(string name, string id, int stockLevel)
         {
             Name = name;
             Id = id;

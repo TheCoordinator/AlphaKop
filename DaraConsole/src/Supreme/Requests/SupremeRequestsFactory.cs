@@ -18,7 +18,7 @@ namespace DaraBot.Supreme.Requests
             Method = HttpMethod.Get
         };
 
-        public HttpRequestMessage GetItemDetails(long itemId) => new HttpRequestMessage()
+        public HttpRequestMessage GetItemDetails(string itemId) => new HttpRequestMessage()
         {
             RequestUri = new Uri(baseUrl + $"/shop/{itemId}.json"),
             Method = HttpMethod.Get

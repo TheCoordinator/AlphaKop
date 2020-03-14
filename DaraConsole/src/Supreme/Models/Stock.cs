@@ -23,7 +23,7 @@ namespace DaraBot.Supreme.Models
     public partial struct Item
     {
         [JsonProperty("id")]
-        public long Id { get; }
+        public string Id { get; }
 
         [JsonProperty("name")]
         public string Name { get; internal set; }
@@ -35,7 +35,7 @@ namespace DaraBot.Supreme.Models
         public string? CategoryName { get; internal set; }
 
         [JsonConstructor]
-        public Item(long id, string name, bool? newItem, string? categoryName)
+        public Item(string id, string name, bool? newItem, string? categoryName)
         {
             Id = id;
             Name = name;
