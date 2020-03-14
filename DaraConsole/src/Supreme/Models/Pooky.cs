@@ -30,24 +30,24 @@ namespace DaraBot.Supreme.Models
     public partial struct Cookies
     {
         [JsonProperty("static")]
-        public Static Static { get; internal set; }
+        public StaticData StaticData { get; internal set; }
 
         [JsonProperty("atc")]
-        public Atc Atc { get; internal set; }
+        public PookyAddToCart AddToCart { get; internal set; }
 
         [JsonProperty("checkout")]
-        public Atc Checkout { get; internal set; }
+        public PookyAddToCart Checkout { get; internal set; }
 
         [JsonConstructor]
-        public Cookies(Static @static, Atc atc, Atc checkout)
+        public Cookies(StaticData staticData, PookyAddToCart addToCart, PookyAddToCart checkout)
         {
-            Static = @static;
-            Atc = atc;
+            StaticData = staticData;
+            AddToCart = addToCart;
             Checkout = checkout;
         }
     }
 
-    public partial struct Atc
+    public partial struct PookyAddToCart
     {
         [JsonProperty("updated_pooky_coherence")]
         public string UpdatedPookyCoherence { get; internal set; }
@@ -77,7 +77,7 @@ namespace DaraBot.Supreme.Models
         public string PookyTelemetry { get; internal set; }
 
         [JsonConstructor]
-        public Atc(string updatedPookyCoherence,
+        public PookyAddToCart(string updatedPookyCoherence,
                    string pookyMouse,
                    string pookyElectric,
                    string pookyPerformance,
@@ -99,7 +99,7 @@ namespace DaraBot.Supreme.Models
         }
     }
 
-    public partial struct Static
+    public partial struct StaticData
     {
         [JsonProperty("pooky")]
         public Guid Pooky { get; internal set; }
@@ -112,15 +112,18 @@ namespace DaraBot.Supreme.Models
         public bool PookyUseCookie { get; internal set; }
 
         [JsonProperty("_supreme_sess")]
-        public string SupremeSess { get; internal set; }
+        public string SupremeSession { get; internal set; }
 
         [JsonConstructor]
-        public Static(Guid pooky, string pookyOrderAllow, bool pookyUseCookie, string supremeSess)
+        public StaticData(Guid pooky,
+                          string pookyOrderAllow,
+                          bool pookyUseCookie,
+                          string supremeSession)
         {
             Pooky = pooky;
             PookyOrderAllow = pookyOrderAllow;
             PookyUseCookie = pookyUseCookie;
-            SupremeSess = supremeSess;
+            SupremeSession = supremeSession;
         }
     }
 

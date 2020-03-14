@@ -1,6 +1,5 @@
 using System;
 using System.Net.Http;
-using System.Web;
 using DaraBot.Supreme.Requests.Extensions;
 
 namespace DaraBot.Supreme.Requests

@@ -5,28 +5,28 @@ namespace DaraBot.Supreme.Models
     public partial struct ItemDetails
     {
         [JsonProperty("styles")]
-        public Style[] Styles { get; set; }
+        public Style[] Styles { get; internal set; }
 
         [JsonProperty("can_add_styles")]
-        public bool? CanAddStyles { get; set; }
+        public bool? CanAddStyles { get; internal set; }
 
         [JsonProperty("can_buy_multiple")]
-        public bool? CanBuyMultiple { get; set; }
+        public bool? CanBuyMultiple { get; internal set; }
 
         [JsonProperty("cod_blocked")]
-        public bool? CodBlocked { get; set; }
+        public bool? CodBlocked { get; internal set; }
 
         [JsonProperty("canada_blocked")]
-        public bool? CanadaBlocked { get; set; }
+        public bool? CanadaBlocked { get; internal set; }
 
         [JsonProperty("purchasable_qty")]
-        public int? PurchasableQuantity { get; set; }
+        public int? PurchasableQuantity { get; internal set; }
 
         [JsonProperty("new_item")]
-        public bool? NewItem { get; set; }
+        public bool? NewItem { get; internal set; }
 
         [JsonProperty("non_eu_blocked")]
-        public bool? NonEuBlocked { get; set; }
+        public bool? NonEuBlocked { get; internal set; }
 
         [JsonConstructor]
         public ItemDetails(Style[] styles,
@@ -52,22 +52,22 @@ namespace DaraBot.Supreme.Models
     public partial struct Style
     {
         [JsonProperty("id")]
-        public string Id { get; set; }
+        public string Id { get; internal set; }
 
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; internal set; }
 
         [JsonProperty("currency")]
-        public string? Currency { get; set; }
+        public string? Currency { get; internal set; }
 
         [JsonProperty("image_url")]
-        public string? ImageUrl { get; set; }
+        public string? ImageUrl { get; internal set; }
 
         [JsonProperty("image_url_hi")]
-        public string? ImageUrlHigh { get; set; }
+        public string? ImageUrlHigh { get; internal set; }
 
         [JsonProperty("sizes")]
-        public Size[] Sizes { get; set; }
+        public Size[] Sizes { get; internal set; }
 
         [JsonConstructor]
         public Style(string id,
@@ -89,13 +89,13 @@ namespace DaraBot.Supreme.Models
     public partial struct Size
     {
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; internal set; }
 
         [JsonProperty("id")]
-        public string Id { get; set; }
+        public string Id { get; internal set; }
 
         [JsonProperty("stock_level")]
-        public int StockLevel { get; set; }
+        public int StockLevel { get; internal set; }
 
         public bool isStockAvailable
         {

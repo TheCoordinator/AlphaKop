@@ -28,7 +28,8 @@ namespace DaraBot
                     new AddBasketRequest(itemId: "304938",
                                          sizeId: "63334",
                                          styleId: "28700",
-                                         quantity: 1)
+                                         quantity: 1,
+                                         addToCart: pooky.Cookies.AddToCart)
                 );
                 Console.WriteLine($"Fetched Stock Items {addBasketResponses.Count()}");
             }
