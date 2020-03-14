@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using DaraBot.Supreme.Models;
 using DaraBot.Supreme.Requests;
+using System.Collections.Generic;
+using DaraBot.Supreme.Responses;
 
 namespace DaraBot.Supreme.Repositories
 {
@@ -32,6 +34,13 @@ namespace DaraBot.Supreme.Repositories
         {
             return await SendJsonRequest<ItemDetails>(
                 request: requestsFactory.GetItemDetails(itemId: itemId)
+            );
+        }
+
+        public async Task<IEnumerable<AddBasketResponse>> AddToBasket(AddBasketRequest basketRequest)
+        {
+            return await SendJsonRequest<List<AddBasketResponse>>(
+                request: requestsFactory.AddToBasket(basketRequest: basketRequest)
             );
         }
 

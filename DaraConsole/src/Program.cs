@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using DaraBot.Supreme.Repositories;
+using DaraBot.Supreme.Requests;
 
 namespace DaraBot
 {
@@ -21,6 +23,14 @@ namespace DaraBot
 
                 var itemDetails = await supremeRepo.FetchItemDetails(itemId: "304938");
                 Console.WriteLine($"Fetched Stock Items {itemDetails.Styles.Length}");
+
+                var addBasketResponses = await supremeRepo.AddToBasket(
+                    new AddBasketRequest(itemId: "304938",
+                                         sizeId: "63334",
+                                         styleId: "28700",
+                                         quantity: 1)
+                );
+                Console.WriteLine($"Fetched Stock Items {addBasketResponses.Count()}");
             }
             catch (Exception ex)
             {

@@ -1,5 +1,7 @@
 using System;
 using System.Net.Http;
+using System.Web;
+using DaraBot.Supreme.Requests.Extensions;
 
 namespace DaraBot.Supreme.Requests
 {
@@ -23,5 +25,17 @@ namespace DaraBot.Supreme.Requests
             RequestUri = new Uri(baseUrl + $"/shop/{itemId}.json"),
             Method = HttpMethod.Get
         };
+
+        public HttpRequestMessage AddToBasket(AddBasketRequest basketRequest)
+        {
+            var uriBuilder = new UriBuilder(baseUrl + $"/shop/{basketRequest.ItemId}/add.json");
+            uriBuilder.Query = basketRequest.ToQuery();
+            
+            return new HttpRequestMessage() 
+            {
+                RequestUri = uriBuilder.Uri,
+                Method = HttpMethod.Get
+            };
+        }
     }
 }
