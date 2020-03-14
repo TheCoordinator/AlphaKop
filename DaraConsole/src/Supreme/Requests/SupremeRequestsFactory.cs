@@ -30,8 +30,8 @@ namespace DaraBot.Supreme.Requests
         {
             var uriBuilder = new UriBuilder(baseUrl + $"/shop/{basketRequest.ItemId}/add.json");
             uriBuilder.Query = basketRequest.ToQuery();
-            
-            return new HttpRequestMessage() 
+
+            return new HttpRequestMessage()
             {
                 RequestUri = uriBuilder.Uri,
                 Method = HttpMethod.Get

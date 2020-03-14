@@ -11,7 +11,7 @@ namespace DaraBot.Supreme.Requests.Extensions
             query["size"] = request.SizeId;
             query["style"] = request.StyleId;
             query["qty"] = request.Quantity.ToString();
-            
+
             return query?.ToString() ?? "";
         }
     }
