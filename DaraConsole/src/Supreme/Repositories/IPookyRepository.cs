@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using DaraBot.Supreme.Entities;
+using DaraBot.Supreme.Models;
 
 namespace DaraBot.Supreme.Repositories
 {

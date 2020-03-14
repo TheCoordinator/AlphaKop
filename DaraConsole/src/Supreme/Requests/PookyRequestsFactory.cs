@@ -1,9 +1,9 @@
 using System;
 using System.Net;
 using System.Net.Http;
-using DaraBot.Supreme.Entities;
+using DaraBot.Supreme.Models;
 
-namespace DaraBot.Supreme.Repositories
+namespace DaraBot.Supreme.Requests
 {
     sealed class PookyRequestsFactory
     {

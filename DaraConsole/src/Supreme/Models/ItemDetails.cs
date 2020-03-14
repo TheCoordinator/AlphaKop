@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace DaraBot.Supreme.Entities
+namespace DaraBot.Supreme.Models
 {
     public partial struct ItemDetails
     {
@@ -49,7 +49,7 @@ namespace DaraBot.Supreme.Entities
         }
     }
 
-    public partial class Style
+    public partial struct Style
     {
         [JsonProperty("id")]
         public long Id { get; set; }
@@ -86,7 +86,7 @@ namespace DaraBot.Supreme.Entities
         }
     }
 
-    public partial class Size
+    public partial struct Size
     {
         [JsonProperty("name")]
         public string Name { get; set; }

@@ -1,6 +1,6 @@
-using DaraBot.Core.Entities.User;
+using DaraBot.Core.Models.User;
 
-namespace DaraBot.Supreme.Entities
+namespace DaraBot.Supreme.Models
 {
     public struct SupremeTask
     {

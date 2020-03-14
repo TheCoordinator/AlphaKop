@@ -1,4 +1,4 @@
-namespace DaraBot.Supreme.Entities
+namespace DaraBot.Supreme.Models
 {
     public enum PookyRegion
     {

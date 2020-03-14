@@ -1,4 +1,4 @@
-namespace DaraBot.Core.Entities.User
+namespace DaraBot.Core.Models.User
 {
     public struct CardDetails
     {

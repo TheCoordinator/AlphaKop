@@ -1,8 +1,7 @@
 using System;
-using System.Net;
 using System.Net.Http;
 
-namespace DaraBot.Supreme.Repositories
+namespace DaraBot.Supreme.Requests
 {
     sealed class SupremeRequestsFactory
     {

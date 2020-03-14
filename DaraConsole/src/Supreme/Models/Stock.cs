@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace DaraBot.Supreme.Entities
+namespace DaraBot.Supreme.Models
 {
     public partial struct Stock
     {
