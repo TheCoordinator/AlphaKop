@@ -10,7 +10,7 @@ namespace DaraBot
         {
             ISupremeRepository supremeRepo = new SupremeRepository();
             IPookyRepository pookyRepo = new PookyRepository();
-            
+
             try
             {
                 var pooky = await pookyRepo.FetchPooky();

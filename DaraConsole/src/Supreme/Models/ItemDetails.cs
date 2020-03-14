@@ -97,8 +97,9 @@ namespace DaraBot.Supreme.Models
         [JsonProperty("stock_level")]
         public int StockLevel { get; set; }
 
-        public bool isStockAvailable { 
-            get { return StockLevel > 0; } 
+        public bool isStockAvailable
+        {
+            get { return StockLevel > 0; }
         }
 
         [JsonConstructor]

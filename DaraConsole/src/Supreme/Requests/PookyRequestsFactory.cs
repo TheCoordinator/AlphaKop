@@ -17,9 +17,12 @@ namespace DaraBot.Supreme.Requests
             this.region = region;
         }
 
-        public string regionName {
-            get {
-                switch(region) {
+        public string regionName
+        {
+            get
+            {
+                switch (region)
+                {
                     case PookyRegion.EU: return "EU";
                     case PookyRegion.US: return "US";
                     default: return "EU";
