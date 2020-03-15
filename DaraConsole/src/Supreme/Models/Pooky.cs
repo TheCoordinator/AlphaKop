@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-
 using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace DaraBot.Supreme.Entities
-{
-    public partial struct Pooky
-    {
+namespace DaraBot.Supreme.Models {
+    public partial struct Pooky {
         [JsonProperty("cookies")]
         public Cookies Cookies { get; internal set; }
 
@@ -19,36 +16,36 @@ namespace DaraBot.Supreme.Entities
         public string Hostname { get; internal set; }
 
         [JsonConstructor]
-        public Pooky(Cookies cookies, PageData pageData, string hostname)
-        {
+        public Pooky(Cookies cookies, PageData pageData, string hostname) {
             Cookies = cookies;
             PageData = pageData;
             Hostname = hostname;
         }
     }
 
-    public partial struct Cookies
-    {
+    public partial struct Cookies {
         [JsonProperty("static")]
-        public Static Static { get; internal set; }
+        public PookyStatic StaticData { get; internal set; }
 
         [JsonProperty("atc")]
-        public Atc Atc { get; internal set; }
+        public PookyAddToCart AddToCart { get; internal set; }
 
         [JsonProperty("checkout")]
-        public Atc Checkout { get; internal set; }
+        public PookyAddToCart Checkout { get; internal set; }
 
         [JsonConstructor]
-        public Cookies(Static @static, Atc atc, Atc checkout)
-        {
-            Static = @static;
-            Atc = atc;
+        public Cookies(
+            PookyStatic staticData,
+            PookyAddToCart addToCart,
+            PookyAddToCart checkout
+        ) {
+            StaticData = staticData;
+            AddToCart = addToCart;
             Checkout = checkout;
         }
     }
 
-    public partial struct Atc
-    {
+    public partial struct PookyAddToCart {
         [JsonProperty("updated_pooky_coherence")]
         public string UpdatedPookyCoherence { get; internal set; }
 
@@ -77,16 +74,17 @@ namespace DaraBot.Supreme.Entities
         public string PookyTelemetry { get; internal set; }
 
         [JsonConstructor]
-        public Atc(string updatedPookyCoherence,
-                   string pookyMouse,
-                   string pookyElectric,
-                   string pookyPerformance,
-                   string pookySettings,
-                   string pookyData,
-                   string pookyRecaptchaCoherence,
-                   string pookyRecaptcha,
-                   string pookyTelemetry)
-        {
+        public PookyAddToCart(
+            string updatedPookyCoherence,
+            string pookyMouse,
+            string pookyElectric,
+            string pookyPerformance,
+            string pookySettings,
+            string pookyData,
+            string pookyRecaptchaCoherence,
+            string pookyRecaptcha,
+            string pookyTelemetry
+        ) {
             UpdatedPookyCoherence = updatedPookyCoherence;
             PookyMouse = pookyMouse;
             PookyElectric = pookyElectric;
@@ -99,10 +97,9 @@ namespace DaraBot.Supreme.Entities
         }
     }
 
-    public partial struct Static
-    {
+    public partial struct PookyStatic {
         [JsonProperty("pooky")]
-        public Guid Pooky { get; internal set; }
+        public string Pooky { get; internal set; }
 
         [JsonProperty("pooky_order_allow")]
         public string PookyOrderAllow { get; internal set; }
@@ -112,20 +109,23 @@ namespace DaraBot.Supreme.Entities
         public bool PookyUseCookie { get; internal set; }
 
         [JsonProperty("_supreme_sess")]
-        public string SupremeSess { get; internal set; }
+        public string SupremeSession { get; internal set; }
 
         [JsonConstructor]
-        public Static(Guid pooky, string pookyOrderAllow, bool pookyUseCookie, string supremeSess)
-        {
+        public PookyStatic(
+            string pooky,
+            string pookyOrderAllow,
+            bool pookyUseCookie,
+            string supremeSession
+        ) {
             Pooky = pooky;
             PookyOrderAllow = pookyOrderAllow;
             PookyUseCookie = pookyUseCookie;
-            SupremeSess = supremeSess;
+            SupremeSession = supremeSession;
         }
     }
 
-    public partial struct PageData
-    {
+    public partial struct PageData {
         [JsonProperty("mappings")]
         public Mapping[] Mappings { get; internal set; }
 
@@ -142,8 +142,13 @@ namespace DaraBot.Supreme.Entities
         public DateTimeOffset Date { get; internal set; }
 
         [JsonConstructor]
-        public PageData(Mapping[] mappings, string siteKey, string region, Cart cart, DateTimeOffset date)
-        {
+        public PageData(
+            Mapping[] mappings,
+            string siteKey,
+            string region,
+            Cart cart,
+            DateTimeOffset date
+        ) {
             Mappings = mappings;
             SiteKey = siteKey;
             Region = region;
@@ -152,8 +157,7 @@ namespace DaraBot.Supreme.Entities
         }
     }
 
-    public partial struct Cart
-    {
+    public partial struct Cart {
         [JsonProperty("url")]
         public string Url { get; internal set; }
 
@@ -161,8 +165,7 @@ namespace DaraBot.Supreme.Entities
         public Property[] Properties { get; internal set; }
 
         [JsonConstructor]
-        public Cart(string url, Property[] properties)
-        {
+        public Cart(string url, Property[] properties) {
             Url = url;
             Properties = properties;
         }
@@ -179,16 +182,14 @@ namespace DaraBot.Supreme.Entities
         public bool Literal { get; internal set; }
 
         [JsonConstructor]
-        public Property(string key, string value, bool literal)
-        {
+        public Property(string key, string value, bool literal) {
             Key = key;
             Value = value;
             Literal = literal;
         }
     }
 
-    public partial struct Mapping
-    {
+    public partial struct Mapping {
         [JsonProperty("name")]
         public string Name { get; internal set; }
 
@@ -199,51 +200,42 @@ namespace DaraBot.Supreme.Entities
         public string? Value { get; internal set; }
 
         [JsonConstructor]
-        public Mapping(string name, string mappingMapping, string? value)
-        {
+        public Mapping(string name, string mappingMapping, string? value) {
             Name = name;
             MappingMapping = mappingMapping;
             Value = value;
         }
     }
 
-    public partial struct Pooky
-    {
+    public partial struct Pooky {
         public static Pooky FromJson(string json) => JsonConvert.DeserializeObject<Pooky>(json, Converter.Settings);
     }
 
-    internal static class Converter
-    {
-        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
-        {
+    internal static class Converter {
+        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings {
             MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
             DateParseHandling = DateParseHandling.None,
             Converters = {
-                new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
+            new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
             },
         };
     }
 
-    internal class ParseStringConverter : JsonConverter
-    {
+    internal class ParseStringConverter : JsonConverter {
         public override bool CanConvert(Type t) => t == typeof(bool) || t == typeof(bool?);
 
-        public override object? ReadJson(JsonReader reader, Type t, object? existingValue, JsonSerializer serializer)
-        {
+        public override object? ReadJson(JsonReader reader, Type t, object? existingValue, JsonSerializer serializer) {
             if (reader.TokenType == JsonToken.Null) return null;
             var value = serializer.Deserialize<string>(reader);
             bool b;
-            if (Boolean.TryParse(value, out b))
-            {
+            if (Boolean.TryParse(value, out b)) {
                 return b;
             }
             throw new Exception("Cannot unmarshal type bool");
         }
 
-        public override void WriteJson(JsonWriter writer, object? untypedValue, JsonSerializer serializer)
-        {
-            if (untypedValue == null)
-            {
+        public override void WriteJson(JsonWriter writer, object? untypedValue, JsonSerializer serializer) {
+            if (untypedValue == null) {
                 serializer.Serialize(writer, null);
                 return;
             }

@@ -1,7 +1,5 @@
-namespace DaraBot.Core.Entities.User
-{
-    public struct Address
-    {
+namespace DaraBot.Core.Models.User {
+    public struct Address {
         public string FirstName { get; internal set; }
         public string LastName { get; internal set; }
         public string LineOne { get; internal set; }
@@ -12,16 +10,17 @@ namespace DaraBot.Core.Entities.User
         public string CountryCode { get; internal set; }
         public string PostCode { get; internal set; }
 
-        public Address(string firstName,
-                       string lastName,
-                       string lineOne,
-                       string lineTwo,
-                       string lineThree,
-                       string city,
-                       string state,
-                       string countryCode,
-                       string postCode)
-        {
+        public Address(
+            string firstName,
+            string lastName,
+            string lineOne,
+            string lineTwo,
+            string lineThree,
+            string city,
+            string state,
+            string countryCode,
+            string postCode
+        ) {
             FirstName = firstName;
             LastName = lastName;
             LineOne = lineOne;
