@@ -25,7 +25,7 @@ namespace DaraBot {
                         sizeId: "63334",
                         styleId: "28700",
                         quantity : 1,
-                        addToCart : pooky.Cookies.AddToCart)
+                        pooky : pooky)
                 );
                 Console.WriteLine ($"Fetched Stock Items {addBasketResponses.Count()}");
             }

@@ -24,10 +24,16 @@ namespace DaraBot.Supreme.Requests {
             var uriBuilder = new UriBuilder(baseUrl + $"/shop/{basketRequest.ItemId}/add.json");
             uriBuilder.Query = basketRequest.ToQuery();
 
-            return new HttpRequestMessage() {
+            var cookies = basketRequest.Pooky.ToAddToCartCookiesString();
+
+            var message = new HttpRequestMessage() {
                 RequestUri = uriBuilder.Uri,
-                Method = HttpMethod.Get
+                Method = HttpMethod.Post
             };
+
+            message.Headers.Add(name: "Cookie", value: cookies);
+
+            return message;
         }
     }
 }
