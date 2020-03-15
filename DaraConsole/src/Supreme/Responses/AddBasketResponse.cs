@@ -1,9 +1,7 @@
 using Newtonsoft.Json;
 
-namespace DaraBot.Supreme.Responses
-{
-    public struct AddBasketResponse
-    {
+namespace DaraBot.Supreme.Responses {
+    public struct AddBasketResponse {
         [JsonProperty("size_id")]
         public string SizeId { get; internal set; }
 
@@ -11,8 +9,7 @@ namespace DaraBot.Supreme.Responses
         public bool InStock { get; internal set; }
 
         [JsonConstructor]
-        public AddBasketResponse(string sizeId, bool inStock)
-        {
+        public AddBasketResponse(string sizeId, bool inStock) {
             SizeId = sizeId;
             InStock = inStock;
         }

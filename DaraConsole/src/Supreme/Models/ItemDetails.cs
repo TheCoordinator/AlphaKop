@@ -1,9 +1,7 @@
 using Newtonsoft.Json;
 
-namespace DaraBot.Supreme.Models
-{
-    public partial struct ItemDetails
-    {
+namespace DaraBot.Supreme.Models {
+    public partial struct ItemDetails {
         [JsonProperty("styles")]
         public Style[] Styles { get; internal set; }
 
@@ -29,15 +27,16 @@ namespace DaraBot.Supreme.Models
         public bool? NonEuBlocked { get; internal set; }
 
         [JsonConstructor]
-        public ItemDetails(Style[] styles,
-                           bool? canAddStyles,
-                           bool? canBuyMultiple,
-                           bool? codBlocked,
-                           bool? canadaBlocked,
-                           int? purchasableQuantity,
-                           bool? newItem,
-                           bool? nonEuBlocked)
-        {
+        public ItemDetails(
+            Style[] styles,
+            bool? canAddStyles,
+            bool? canBuyMultiple,
+            bool? codBlocked,
+            bool? canadaBlocked,
+            int? purchasableQuantity,
+            bool? newItem,
+            bool? nonEuBlocked
+        ) {
             Styles = styles;
             CanAddStyles = canAddStyles;
             CanBuyMultiple = canBuyMultiple;
@@ -49,8 +48,7 @@ namespace DaraBot.Supreme.Models
         }
     }
 
-    public partial struct Style
-    {
+    public partial struct Style {
         [JsonProperty("id")]
         public string Id { get; internal set; }
 
@@ -70,13 +68,14 @@ namespace DaraBot.Supreme.Models
         public Size[] Sizes { get; internal set; }
 
         [JsonConstructor]
-        public Style(string id,
-                     string name,
-                     string? currency,
-                     string? imageUrl,
-                     string? imageUrlHigh,
-                     Size[] sizes)
-        {
+        public Style(
+            string id,
+            string name,
+            string? currency,
+            string? imageUrl,
+            string? imageUrlHigh,
+            Size[] sizes
+        ) {
             Id = id;
             Name = name;
             Currency = currency;
@@ -86,8 +85,7 @@ namespace DaraBot.Supreme.Models
         }
     }
 
-    public partial struct Size
-    {
+    public partial struct Size {
         [JsonProperty("name")]
         public string Name { get; internal set; }
 
@@ -97,14 +95,12 @@ namespace DaraBot.Supreme.Models
         [JsonProperty("stock_level")]
         public int StockLevel { get; internal set; }
 
-        public bool isStockAvailable
-        {
+        public bool isStockAvailable {
             get { return StockLevel > 0; }
         }
 
         [JsonConstructor]
-        public Size(string name, string id, int stockLevel)
-        {
+        public Size(string name, string id, int stockLevel) {
             Name = name;
             Id = id;
             StockLevel = stockLevel;

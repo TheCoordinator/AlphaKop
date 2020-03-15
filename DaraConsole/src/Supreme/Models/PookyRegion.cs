@@ -1,7 +1,6 @@
-namespace DaraBot.Supreme.Models
-{
-    public enum PookyRegion
-    {
-        EU, US
+namespace DaraBot.Supreme.Models {
+    public enum PookyRegion {
+        EU,
+        US
     }
 }

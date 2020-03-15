@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace DaraBot.Supreme.Models
-{
-    public partial struct Stock
-    {
+namespace DaraBot.Supreme.Models {
+    public partial struct Stock {
         [JsonProperty("products_and_categories")]
         public Dictionary<string, Item[]> Items { get; internal set; }
 
@@ -13,15 +11,13 @@ namespace DaraBot.Supreme.Models
 
         [JsonConstructor]
         public Stock(Dictionary<string, Item[]> items,
-                     string? releaseWeek)
-        {
+            string? releaseWeek) {
             Items = items;
             ReleaseWeek = releaseWeek;
         }
     }
 
-    public partial struct Item
-    {
+    public partial struct Item {
         [JsonProperty("id")]
         public string Id { get; }
 
@@ -35,17 +31,11 @@ namespace DaraBot.Supreme.Models
         public string? CategoryName { get; internal set; }
 
         [JsonConstructor]
-        public Item(string id, string name, bool? newItem, string? categoryName)
-        {
+        public Item(string id, string name, bool? newItem, string? categoryName) {
             Id = id;
             Name = name;
             NewItem = newItem;
             CategoryName = categoryName;
         }
-    }
-
-    public partial struct Stock
-    {
-        public static Stock FromJson(string json) => JsonConvert.DeserializeObject<Stock>(json);
     }
 }
