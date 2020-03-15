@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlphaKop", "AlphaKopConsole
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "AlphaKopConsole\test\AlphaKopConsoleTests.csproj", "{9B7F0CA0-7E12-4848-9EF0-4E340673CBCA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaptchaResolverApp", "CaptchaResolverApp\src\CaptchaResolverApp.csproj", "{11A31B67-C304-4581-A654-066167128D7D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,18 @@ Global
 		{9B7F0CA0-7E12-4848-9EF0-4E340673CBCA}.Release|x64.Build.0 = Release|Any CPU
 		{9B7F0CA0-7E12-4848-9EF0-4E340673CBCA}.Release|x86.ActiveCfg = Release|Any CPU
 		{9B7F0CA0-7E12-4848-9EF0-4E340673CBCA}.Release|x86.Build.0 = Release|Any CPU
+		{11A31B67-C304-4581-A654-066167128D7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11A31B67-C304-4581-A654-066167128D7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11A31B67-C304-4581-A654-066167128D7D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{11A31B67-C304-4581-A654-066167128D7D}.Debug|x64.Build.0 = Debug|Any CPU
+		{11A31B67-C304-4581-A654-066167128D7D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{11A31B67-C304-4581-A654-066167128D7D}.Debug|x86.Build.0 = Debug|Any CPU
+		{11A31B67-C304-4581-A654-066167128D7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11A31B67-C304-4581-A654-066167128D7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11A31B67-C304-4581-A654-066167128D7D}.Release|x64.ActiveCfg = Release|Any CPU
+		{11A31B67-C304-4581-A654-066167128D7D}.Release|x64.Build.0 = Release|Any CPU
+		{11A31B67-C304-4581-A654-066167128D7D}.Release|x86.ActiveCfg = Release|Any CPU
+		{11A31B67-C304-4581-A654-066167128D7D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{43007D17-0DA2-4E0A-BCDC-27A1A705C7FB} = {490262B6-C217-4953-AC29-0A16EB00F736}
