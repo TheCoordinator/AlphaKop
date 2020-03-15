@@ -18,6 +18,27 @@
             "stopAtEntry": false
         },
         {
+            "name": "CaptchaResolverElectronApp",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "runCaptchaResolverApp",
+            "cwd": "${workspaceFolder}/CaptchaResolverApp/src",
+            "stopAtEntry": true,
+            "program": "${workspaceFolder}/CaptchaResolverApp/src/bin/Debug/netcoreapp3.1/osx-x64/CaptchaResolverApp.dll",
+            "args": [],
+            // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/CaptchaResolverApp/src/Views"
+            }            
+        },            
+        {
             "name": "CaptchaResolverApp",
             "type": "coreclr",
             "request": "launch",

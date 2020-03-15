@@ -68,6 +68,18 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "runCaptchaResolverApp",
+            "type": "process",
+            "command": "electronize",
+            "args": [
+                "start",
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/CaptchaResolverApp/src"
+            },
+            "problemMatcher": "$msCompile",
+        },
+        {
             "label": "publish",
             "command": "dotnet",
             "type": "process",
