@@ -7,14 +7,11 @@
             "type": "process",
             "args": [
                 "build",
+                "${workspaceFolder}/AlphaKop.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
-            "problemMatcher": "$msCompile",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "problemMatcher": "$msCompile"
         },
         {
             "label": "publish",
@@ -22,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/AlphaKopConsole/src/AlphaKop.csproj",
+                "${workspaceFolder}/AlphaKop.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -35,7 +32,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/AlphaKopConsole/src/AlphaKop.csproj",
+                "${workspaceFolder}/AlphaKop.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
