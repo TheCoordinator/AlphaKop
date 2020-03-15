@@ -5,14 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "AlphaKopConsole",
+            "name": "Console",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "buildConsole",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/AlphaKopConsole/src/bin/Debug/netcoreapp3.1/AlphaKop.dll",
+            "program": "${workspaceFolder}/Console/src/bin/Debug/netcoreapp3.1/Console.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/AlphaKopConsole/src",
+            "cwd": "${workspaceFolder}/Console/src",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
             "stopAtEntry": false

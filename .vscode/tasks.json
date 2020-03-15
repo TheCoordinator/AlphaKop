@@ -11,10 +11,6 @@
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
         },
         {
             "label": "buildAll",
@@ -37,7 +33,7 @@
             "type": "process",
             "args": [
                 "clean",
-                "${workspaceFolder}/AlphaKopConsole/src/AlphaKop.csproj"
+                "${workspaceFolder}/Console/src/Console.csproj"
             ],
             "problemMatcher": "$msCompile"
         },
@@ -47,12 +43,9 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/AlphaKopConsole/src/AlphaKop.csproj"
+                "${workspaceFolder}/Console/src/Console.csproj"
             ],
-            "problemMatcher": "$msCompile",
-            "dependsOn": [
-                "cleanweb"
-            ]
+            "problemMatcher": "$msCompile"
         },
         {
             "label": "cleanCaptchaResolverApp",
@@ -72,10 +65,7 @@
                 "build",
                 "${workspaceFolder}/CaptchaResolverApp/src/CaptchaResolverApp.csproj"
             ],
-            "problemMatcher": "$msCompile",
-            "dependsOn": [
-                "cleanweb"
-            ]
+            "problemMatcher": "$msCompile"
         },
         {
             "label": "publish",
@@ -83,20 +73,35 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/AlphaKopConsole/src/AlphaKop.csproj",
+                "${workspaceFolder}/Console/src/Console.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "watch",
+            "label": "watchConsole",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "watch",
+                "--project",
+                "${workspaceFolder}/Console/src/Console.csproj",
                 "run",
-                "${workspaceFolder}/AlphaKopConsole/src/AlphaKop.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watchCaptchaResolverApp",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "--project",
+                "${workspaceFolder}/CaptchaResolverApp/src/CaptchaResolverApp.csproj",
+                "run",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
