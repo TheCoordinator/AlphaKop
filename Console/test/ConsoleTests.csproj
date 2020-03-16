@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\AlphaKop.csproj" />
+    <ProjectReference Include="..\src\Console.csproj" />
   </ItemGroup>
 
 </Project>

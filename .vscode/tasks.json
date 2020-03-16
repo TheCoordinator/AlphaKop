@@ -2,7 +2,18 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
+            "label": "cleanAll",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile",
+        },
+        {
+            "label": "buildAll",
             "command": "dotnet",
             "type": "process",
             "args": [
@@ -17,25 +28,92 @@
             }
         },
         {
+            "label": "cleanConsole",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "${workspaceFolder}/Console/src/Console.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "buildConsole",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Console/src/Console.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "cleanCaptchaResolverApp",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "${workspaceFolder}/CaptchaResolverApp/src/CaptchaResolverApp.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "buildCaptchaResolverApp",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/CaptchaResolverApp/src/CaptchaResolverApp.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "runCaptchaResolverApp",
+            "type": "process",
+            "command": "electronize",
+            "args": [
+                "start",
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/CaptchaResolverApp/src"
+            },
+            "problemMatcher": "$msCompile",
+        },
+        {
             "label": "publish",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/AlphaKopConsole/src/AlphaKop.csproj",
+                "${workspaceFolder}/Console/src/Console.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "watch",
+            "label": "watchConsole",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "watch",
+                "--project",
+                "${workspaceFolder}/Console/src/Console.csproj",
                 "run",
-                "${workspaceFolder}/AlphaKopConsole/src/AlphaKop.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watchCaptchaResolverApp",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "--project",
+                "${workspaceFolder}/CaptchaResolverApp/src/CaptchaResolverApp.csproj",
+                "run",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
