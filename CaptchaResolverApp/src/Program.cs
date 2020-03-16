@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using ElectronNET.API;
 
 namespace AlphaKop.CaptchaResolverApp {
     public class Program {
@@ -13,6 +14,7 @@ namespace AlphaKop.CaptchaResolverApp {
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseElectron(args);
                 });
     }
 }
