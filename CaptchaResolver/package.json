@@ -1,0 +1,16 @@
+{
+  "name": "captcha-resolver",
+  "version": "1.0.0",
+  "description": "Captcha Resolver",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Peyman Khanjan",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "electron": "^3.1.13",
+    "express": "^4.17.1",
+    "moment": "^2.24.0"
+  }
+}

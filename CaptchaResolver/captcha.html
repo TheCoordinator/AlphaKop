@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <title>Captcha Resolver</title>
+        <script
+            src="https://www.google.com/recaptcha/api.js"
+            async
+            defer
+        ></script>
+    </head>
+    <body>
+        <form action="/submit" method="POST">
+            <div
+                class="g-recaptcha"
+                id="captchaFrame"
+                data-sitekey="siteKey"
+                data-callback="successCallback"
+            ></div>
+        </form>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+        <script>
+            const fs = require('fs')
+            const remote = require('electron').remote
+            const app = remote.app
+			const ipcRenderer = require('electron').ipcRenderer
+            const config = JSON.parse(fs.readFileSync('config.json'))
+
+            let element = document.getElementsByClassName('g-recaptcha')[0]
+            element.setAttribute('data-sitekey', config.siteKey)
+
+            function successCallback() {
+                ipcRenderer.send('sendCaptcha', grecaptcha.getResponse())
+                grecaptcha.reset()
+            }
+        </script>
+    </body>
+</html>
