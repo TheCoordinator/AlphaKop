@@ -34,7 +34,7 @@ async function initCaptchaWindow() {
 
     await sleep(1000)
 
-    captchaWindow.on('close', function(e) {
+    captchaWindow.on('close', function(_e) {
         captchaWindow = null
     })
 }
@@ -43,7 +43,7 @@ function SetupIntercept() {
     protocol.interceptBufferProtocol('http', (req, callback) => {
         if (req.url == 'http://supremenewyork.com/') {
             fs.readFile(__dirname + '/captcha.html', 'utf8', function(
-                err,
+                _err,
                 html,
             ) {
                 callback({ mimeType: 'text/html', data: Buffer.from(html) })
@@ -78,11 +78,11 @@ function SetupIntercept() {
     })
 }
 
-electron.ipcMain.on('openCapWindow', function(event, args) {
+electron.ipcMain.on('openCapWindow', function(_event, _args) {
     initCaptchaWindow()
 })
 
-electron.ipcMain.on('sendCaptcha', function(event, token) {
+electron.ipcMain.on('sendCaptcha', function(_event, token) {
     captchaBank.push({
         token: token,
         timestamp: moment(),
@@ -110,11 +110,11 @@ function initBankServer() {
     bankExpressApp.use(bodyParser.json())
     bankExpressApp.use(bodyParser.urlencoded({ extended: true }))
 
-    bankExpressApp.get('/trigger', function(req, res) {
+    bankExpressApp.get('/trigger', function(_req, _res) {
         initCaptchaWindow()
     })
 
-    bankExpressApp.get('/fetch', function(req, res) {
+    bankExpressApp.get('/fetch', function(_req, res) {
         return res.json(captchaBank), captchaBank.splice(0, 1)
     })
 
