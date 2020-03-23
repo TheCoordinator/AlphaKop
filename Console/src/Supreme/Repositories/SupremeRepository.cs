@@ -4,9 +4,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Requests;
 using AlphaKop.Supreme.Responses;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -15,11 +18,16 @@ namespace AlphaKop.Supreme.Repositories {
         private readonly string baseUrl;
         private readonly SupremeRequestsFactory requestsFactory;
         private readonly HttpClient client;
+        private readonly ILogger<SupremeRepository> logger;
 
-        public SupremeRepository(string baseUrl = "https://www.supremenewyork.com") {
-            this.baseUrl = baseUrl;
+        public SupremeRepository(
+            IOptions<SupremeConfig> config,
+            ILogger<SupremeRepository> logger
+        ) {
+            this.baseUrl = config.Value.SupremeBaseUrl;
             this.requestsFactory = new SupremeRequestsFactory(baseUrl: baseUrl);
             this.client = CreateHttpClient(baseUrl: baseUrl, requestsFactory: requestsFactory);
+            this.logger = logger;
         }
 
         public async Task<Stock> FetchStock() {

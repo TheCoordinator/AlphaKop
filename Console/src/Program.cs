@@ -1,84 +1,93 @@
 using System;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AlphaKop.Core;
 using AlphaKop.Core.Models.User;
+using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Flows;
 using AlphaKop.Supreme.Repositories;
 using AlphaKop.Supreme.Requests;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace AlphaKop {
     class Program {
-        static ISupremeRepository supremeRepo = new SupremeRepository();
-        static IPookyRepository pookyRepo = new PookyRepository();
+        private static ManualResetEvent quitEvent = new ManualResetEvent(false);
+        private static IServiceCollection? services;
+        private static IConfigurationRoot? config;
+        private static ILogger<Program>? logger;
 
-        static async Task Main(string[] args) {
-            var profile = CreateUserProfile();
-            var job = CreateSupremeJob(profile: profile);
+        static void Main(string[] args) {
+            Console.CancelKeyPress += (sender, eArgs) => {
+                logger.LogDebug("Stopping the application");
+                quitEvent.Set();
+                eArgs.Cancel = true;
+            };
 
-            var step = new FetchItemStep(supremeRepo);
-            var flowArgument = new SupremeFlowArgument<Unit>(job: job, argument: Unit.Empty);
+            config = GetConfiguration();
+            services = ConfigureServices(config);
 
-            await step.Execute(flowArgument);
+            var serviceProvider = services.BuildServiceProvider();
+            logger = serviceProvider.GetService<ILogger<Program>>();
+
+            var application = serviceProvider.GetService<ConsoleApplication>();
+
+            application.Run();
+
+            quitEvent.WaitOne();
+
+            logger.LogDebug("Stopped the application");
         }
 
-        private static SupremeJob CreateSupremeJob(UserProfile profile) {
-            return new SupremeJob(
-                profile: profile,
-                categoryName: null,
-                keywords: "fleece",
-                style: "black",
-                size: "xl"
-            );
+        private static IServiceCollection ConfigureServices(IConfigurationRoot config) {
+            IServiceCollection services = new ServiceCollection();
+
+            ConfigureLogging(services, config);
+            ConfigureServicesConfig(services, config);
+
+            ConfigureRepositories(services);
+
+            ConfigureApplication(services);
+
+            return services;
         }
 
-        private static UserProfile CreateUserProfile() {
-            return new UserProfile(
-                name: "Name Lastname",
-                email: "email@gmail.com",
-                phoneNumber: "07777777777",
-                new Address(
-                    firstName: "Name",
-                    lastName: "Lastname",
-                    lineOne: "Line 1",
-                    lineTwo: null,
-                    lineThree: null,
-                    city: "London",
-                    state: null,
-                    countryCode: "GB",
-                    postCode: "SW1 2FX"
-                ),
-                cardDetails: new CardDetails(
-                    cardNumber: "4242424242424242",
-                    expiryMonth: "08",
-                    expiryYear: "25",
-                    cardVerification: "888"
-                )
-            );
+        private static void ConfigureRepositories(IServiceCollection services) {
+            services.AddSingleton<IPookyRepository, PookyRepository>();
+            services.AddSingleton<ISupremeRepository, SupremeRepository>();
         }
 
-        static async Task RunDefaults() {
-            try {
-                var pooky = await pookyRepo.FetchPooky();
-                Console.WriteLine($"Fetched Pooky Data {pooky.PageData.Mappings.Length}");
+        private static void ConfigureApplication(IServiceCollection services) {
+            services.AddSingleton<ConsoleApplication>();
+        }
 
-                var stock = await supremeRepo.FetchStock();
-                Console.WriteLine($"Fetched Stock Items {stock.Items.Count}");
+        private static void ConfigureLogging(
+            IServiceCollection services,
+            IConfigurationRoot config
+        ) {
+            services.AddLogging(logging => {
+                logging.AddConfiguration(config.GetSection("Logging"));
+                logging.AddConsole();
+                logging.AddFile("AlphaKop");
+            });
+        }
 
-                // var itemDetails = await supremeRepo.FetchItemDetails(itemId: "304938");
-                // Console.WriteLine($"Fetched Stock Items {itemDetails.Styles.Length}");
+        private static void ConfigureServicesConfig(
+            IServiceCollection services,
+            IConfigurationRoot config
+        ) {
+            services.Configure<SupremeConfig>(config.GetSection("Supreme"));
+        }
 
-                var addBasketResponses = await supremeRepo.AddToBasket(
-                    new AddBasketRequest(itemId: "304938",
-                        sizeId: "63334",
-                        styleId: "28700",
-                        quantity: 1,
-                        pooky: pooky)
-                );
-                Console.WriteLine($"Fetched Stock Items {addBasketResponses.Count()}");
-            } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
-            }
+        private static IConfigurationRoot GetConfiguration() {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+
+            return builder.Build();
         }
     }
 }
