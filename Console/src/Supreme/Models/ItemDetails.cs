@@ -1,54 +1,17 @@
 using Newtonsoft.Json;
 
 namespace AlphaKop.Supreme.Models {
-    public partial struct ItemDetails {
-        [JsonProperty("styles")]
+    public struct ItemDetails {
+        public Item Item { get; internal set; }
         public Style[] Styles { get; internal set; }
 
-        [JsonProperty("can_add_styles")]
-        public bool? CanAddStyles { get; internal set; }
-
-        [JsonProperty("can_buy_multiple")]
-        public bool? CanBuyMultiple { get; internal set; }
-
-        [JsonProperty("cod_blocked")]
-        public bool? CodBlocked { get; internal set; }
-
-        [JsonProperty("canada_blocked")]
-        public bool? CanadaBlocked { get; internal set; }
-
-        [JsonProperty("purchasable_qty")]
-        public int? PurchasableQuantity { get; internal set; }
-
-        [JsonProperty("new_item")]
-        public bool? NewItem { get; internal set; }
-
-        [JsonProperty("non_eu_blocked")]
-        public bool? NonEuBlocked { get; internal set; }
-
-        [JsonConstructor]
-        public ItemDetails(
-            Style[] styles,
-            bool? canAddStyles,
-            bool? canBuyMultiple,
-            bool? codBlocked,
-            bool? canadaBlocked,
-            int? purchasableQuantity,
-            bool? newItem,
-            bool? nonEuBlocked
-        ) {
+        public ItemDetails(Item item, Style[] styles) {
+            Item = item;
             Styles = styles;
-            CanAddStyles = canAddStyles;
-            CanBuyMultiple = canBuyMultiple;
-            CodBlocked = codBlocked;
-            CanadaBlocked = canadaBlocked;
-            PurchasableQuantity = purchasableQuantity;
-            NewItem = newItem;
-            NonEuBlocked = nonEuBlocked;
         }
     }
 
-    public partial struct Style {
+    public struct Style {
         [JsonProperty("id")]
         public string Id { get; internal set; }
 
@@ -85,7 +48,7 @@ namespace AlphaKop.Supreme.Models {
         }
     }
 
-    public partial struct Size {
+    public struct Size {
         [JsonProperty("name")]
         public string Name { get; internal set; }
 

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace AlphaKop.Supreme.Models {
-    public partial struct Stock {
+    public struct Stock {
         [JsonProperty("products_and_categories")]
         public Dictionary<string, Item[]> Items { get; internal set; }
 
@@ -17,7 +17,7 @@ namespace AlphaKop.Supreme.Models {
         }
     }
 
-    public partial struct Item {
+    public struct Item {
         [JsonProperty("id")]
         public string Id { get; }
 

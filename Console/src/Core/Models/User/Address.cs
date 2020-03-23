@@ -14,10 +14,10 @@ namespace AlphaKop.Core.Models.User {
             string firstName,
             string lastName,
             string lineOne,
-            string lineTwo,
-            string lineThree,
+            string? lineTwo,
+            string? lineThree,
             string city,
-            string state,
+            string? state,
             string countryCode,
             string postCode
         ) {
