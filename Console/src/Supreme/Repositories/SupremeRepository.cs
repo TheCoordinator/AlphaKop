@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Requests;
 using AlphaKop.Supreme.Responses;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AlphaKop.Supreme.Repositories {
     sealed class SupremeRepository : ISupremeRepository {
@@ -26,10 +28,17 @@ namespace AlphaKop.Supreme.Repositories {
             );
         }
 
-        public async Task<ItemDetails> FetchItemDetails(string itemId) {
-            return await SendJsonRequest<ItemDetails>(
-                request: requestsFactory.GetItemDetails(itemId: itemId)
+        public async Task<ItemDetails> FetchItemDetails(Item item) {
+            var result = await SendJsonRequest(
+                request: requestsFactory.GetItemDetails(itemId: item.Id)
             );
+
+            Style[] styles = result.SelectToken("styles")?
+                .Children()
+                .Select(e => e.ToObject<Style>())
+                .ToArray() ?? Array.Empty<Style>();
+
+            return new ItemDetails(item: item, styles: styles);
         }
 
         public async Task<IEnumerable<AddBasketResponse>> AddToBasket(AddBasketRequest basketRequest) {
@@ -44,6 +53,14 @@ namespace AlphaKop.Supreme.Repositories {
 
             var jsonString = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(jsonString);
+        }
+
+        private async Task<JObject> SendJsonRequest(HttpRequestMessage request) {
+            var response = await client.SendAsync(request: request);
+            response.EnsureSuccessStatusCode();
+
+            var jsonString = await response.Content.ReadAsStringAsync();
+            return JObject.Parse(jsonString);
         }
 
         #region Factory

@@ -7,7 +7,7 @@ using AlphaKop.Supreme.Responses;
 namespace AlphaKop.Supreme.Repositories {
     public interface ISupremeRepository {
         Task<Stock> FetchStock();
-        Task<ItemDetails> FetchItemDetails(string itemId);
+        Task<ItemDetails> FetchItemDetails(Item item);
         Task<IEnumerable<AddBasketResponse>> AddToBasket(AddBasketRequest basketRequest);
     }
 }
