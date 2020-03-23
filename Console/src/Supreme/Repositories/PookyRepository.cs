@@ -2,29 +2,32 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Requests;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace AlphaKop.Supreme.Repositories {
     sealed class PookyRepository : IPookyRepository {
         private readonly string baseUrl;
-        private readonly PookyRegion region;
         private readonly PookyRequestsFactory requestsFactory;
         private readonly HttpClient client;
+        private readonly ILogger<PookyRepository> logger;
 
-        public PookyRepository(
-            string baseUrl = "https://pooky.speseo.com",
-            PookyRegion region = PookyRegion.EU
-        ) {
-            this.baseUrl = baseUrl;
-            this.region = region;
-            this.requestsFactory = new PookyRequestsFactory(baseUrl: baseUrl, region: region);
+        public PookyRepository(IOptions<SupremeConfig> config, ILogger<PookyRepository> logger) {
+            this.baseUrl = config.Value.PookyBaseUrl;
+            this.requestsFactory = new PookyRequestsFactory(
+                baseUrl: baseUrl,
+                authentication: config.Value.PookyAuthentication
+            );
             this.client = CreateHttpClient(baseUrl: baseUrl);
+            this.logger = logger;
         }
 
-        public async Task<Pooky> FetchPooky() {
-            return await SendJsonRequest<Pooky>(request: requestsFactory.Pooky);
+        public async Task<Pooky> FetchPooky(PookyRegion region) {
+            return await SendJsonRequest<Pooky>(request: requestsFactory.Pooky(region));
         }
 
         private async Task<T> SendJsonRequest<T>(HttpRequestMessage request) {

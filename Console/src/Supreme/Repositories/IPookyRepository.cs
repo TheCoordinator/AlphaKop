@@ -3,6 +3,6 @@ using AlphaKop.Supreme.Models;
 
 namespace AlphaKop.Supreme.Repositories {
     public interface IPookyRepository {
-        Task<Pooky> FetchPooky();
+        Task<Pooky> FetchPooky(PookyRegion region);
     }
 }
