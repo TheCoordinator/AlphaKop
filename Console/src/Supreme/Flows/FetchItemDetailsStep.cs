@@ -3,35 +3,43 @@ using System.Threading.Tasks;
 using AlphaKop.Core.Flows;
 using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {
-    public interface IFetchItemDetailsStep : ITaskStep<SupremeFlowArgument<Item>> { }
+    public interface IFetchItemDetailsStep : ITaskStep<Item, SupremeJob> { }
 
-    sealed class FetchItemDetailsStep : IFetchItemDetailsStep {
-        private ISupremeRepository supremeRepository;
+    sealed class FetchItemDetailsStep : IFetchItemDetailsStep {        
+        private readonly ISupremeRepository supremeRepository;
+        private readonly ILogger<FetchItemDetailsStep> logger;
+        private readonly IServiceProvider provider;
 
-        public FetchItemDetailsStep(ISupremeRepository supremeRepository) {
+        public SupremeJob? Job { get; set; }
+
+        public FetchItemDetailsStep(
+            ISupremeRepository supremeRepository,
+            ILogger<FetchItemDetailsStep> logger,
+            IServiceProvider provider
+        ) {
             this.supremeRepository = supremeRepository;
+            this.logger = logger;
+            this.provider = provider;
         }
 
-        public async Task Execute(SupremeFlowArgument<Item> parameter) {
+        public async Task Execute(Item parameter) {
+            if (Job == null) {
+                throw new ArgumentNullException("Job");
+            }
+
             try {
-                var itemDetails = await supremeRepository.FetchItemDetails(item: parameter.Argument);
-                var result = new SupremeFlowArgument<ItemDetails>(
-                    job: parameter.Job,
-                    argument: itemDetails
-                );
+                var itemDetails = await supremeRepository.FetchItemDetails(item: parameter);
 
-                Console.WriteLine(result.Argument);
-
+                logger.LogDebug($"Fetched Item Details");
             } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
+                logger.LogError(ex, "Failed to retrieve ItemDetails");
 
-                await new FetchItemDetailsStep(supremeRepository)
+                await provider.CreateFetchItemDetailsStep(Job.Value)
                     .Execute(parameter);
             }
         }
-
-
     }
 }
