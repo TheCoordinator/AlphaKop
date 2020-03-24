@@ -1,30 +1,35 @@
-using System.Threading.Tasks;
+using System;
 using AlphaKop.Core.Models.User;
 using AlphaKop.Supreme.Flows;
 using AlphaKop.Supreme.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AlphaKop {
     public sealed class ConsoleApplication {
+        private readonly IServiceProvider provider;
         private readonly ILogger<ConsoleApplication> logger;
-        private readonly IPookyRepository pookyRepository;
-        private readonly ISupremeRepository supremeRepository;
-        
+
         public ConsoleApplication(
-            IPookyRepository pookyRepository,
-            ISupremeRepository supremeRepository,
+            IServiceProvider provider,
             ILogger<ConsoleApplication> logger
         ) {
-            this.pookyRepository = pookyRepository;
-            this.supremeRepository = supremeRepository;
+            this.provider = provider;
             this.logger = logger;
         }
 
-        // Application starting point
-        public void Run() {
+        public async void Run() {
+            var profile = CreateUserProfile();
+            var job = CreateSupremeJob(profile: profile);
+
+            var start = provider.GetRequiredService<ISupremeStartStep>();
+            start.Job = job;
+            
+            await start.Execute(job);
+
             logger.LogDebug("Starting Application");
         }
-        
+
         private static SupremeJob CreateSupremeJob(UserProfile profile) {
             return new SupremeJob(
                 profile: profile,

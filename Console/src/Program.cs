@@ -1,14 +1,9 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
-using AlphaKop.Core;
-using AlphaKop.Core.Models.User;
 using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Flows;
 using AlphaKop.Supreme.Repositories;
-using AlphaKop.Supreme.Requests;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -48,16 +43,27 @@ namespace AlphaKop {
             ConfigureLogging(services, config);
             ConfigureServicesConfig(services, config);
 
-            ConfigureRepositories(services);
+            ConfigureSupreme(services);
 
             ConfigureApplication(services);
 
             return services;
         }
 
-        private static void ConfigureRepositories(IServiceCollection services) {
+        private static void ConfigureSupreme(IServiceCollection services) {
+            ConfigureSupremeRepositories(services);
+            ConfigureSupremeFlows(services);
+        }
+
+        private static void ConfigureSupremeRepositories(IServiceCollection services) {
             services.AddSingleton<IPookyRepository, PookyRepository>();
             services.AddSingleton<ISupremeRepository, SupremeRepository>();
+        }
+
+        private static void ConfigureSupremeFlows(IServiceCollection services) {
+            services.AddTransient<ISupremeStartStep, SupremeStartStep>();
+            services.AddTransient<IFetchItemStep, FetchItemStep>();
+            services.AddTransient<IFetchItemDetailsStep, FetchItemDetailsStep>();
         }
 
         private static void ConfigureApplication(IServiceCollection services) {
