@@ -37,5 +37,22 @@ namespace AlphaKop.Supreme.Models {
             NewItem = newItem;
             CategoryName = categoryName;
         }
+
+        public override bool Equals(object? obj) {
+            if (obj == null) { return false; }
+            return ((Item)obj).Id == Id;
+        }
+
+        public override int GetHashCode() {
+            return Id.GetHashCode();
+        }
+
+        public override string ToString() {
+            return
+                $"(Id: {Id}\n" +
+                $"Name: {Name}\n" +
+                $"NewItem: {NewItem}\n" +
+                $"CategoryName: {CategoryName})";
+        }
     }
 }

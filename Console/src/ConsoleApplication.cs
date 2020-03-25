@@ -33,8 +33,10 @@ namespace AlphaKop {
         private static SupremeJob CreateSupremeJob(UserProfile profile) {
             return new SupremeJob(
                 profile: profile,
-                categoryName: null,
-                keywords: "fleece",
+                jobId: "1",
+                jobEventId: 1,
+                categoryName: "sweatshirts",
+                keywords: "rammellzee",
                 style: "black",
                 size: "xl"
             );
