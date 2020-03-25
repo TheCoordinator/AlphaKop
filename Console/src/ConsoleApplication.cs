@@ -35,10 +35,10 @@ namespace AlphaKop {
                 profile: profile,
                 jobId: "1",
                 jobEventId: 1,
-                categoryName: "sweatshirts",
-                keywords: "rammellzee",
-                style: "black",
-                size: "xl"
+                categoryName: "T-Shirts",
+                keywords: "Rammellzee Tee",
+                style: "white",
+                size: "m"
             );
         }
 

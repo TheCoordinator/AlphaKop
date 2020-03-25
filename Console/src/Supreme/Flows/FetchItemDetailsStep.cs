@@ -45,15 +45,26 @@ namespace AlphaKop.Supreme.Flows {
                     style.ToString()
                 );
 
-                // var size = FindSize(style: style, job: job);
+                var size = FindSize(item: parameter, style: style, job: job);
 
-                // logger.LogInformation(
-                //     JobEventId,
-                //     $"Fetched Size Item {parameter.Id}\n" +
-                //     size.ToString()
-                // );
+                logger.LogInformation(
+                    JobEventId,
+                    $"Fetched Size Item {parameter.Id}\n" +
+                    size.ToString()
+                );
 
+                if (size.isStockAvailable == true) {
+                    // TODO: Add to Basket Next Step
+                } else {
+                    logger.LogInformation(
+                        JobEventId,
+                        $"Stock Unavailable {parameter.Id} Retrying...\n" +
+                        size.ToString()
+                    );
 
+                    await provider.CreateFetchItemDetailsStep(job, Retries + 1)
+                        .Execute(parameter);
+                }
             } catch (Exception ex) {
                 logger.LogError(JobEventId, ex, "Failed to retrieve ItemDetails");
 
@@ -63,6 +74,7 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         #region Style
+
         private Style FindStyle(ItemDetails details, SupremeJob job) {
             var styles = details.Styles;
 
@@ -75,7 +87,7 @@ namespace AlphaKop.Supreme.Flows {
             if (job.Style != null) {
                 result = FindMatchingStyle(styles: styles, styleName: job.Style);
             } else {
-                result = FindAvailableStyle(styles: styles, job: job);
+                result = FindAvailableStyle(styles: styles);
             }
 
             if (result == null) {
@@ -85,7 +97,7 @@ namespace AlphaKop.Supreme.Flows {
             return result.Value;
         }
 
-        private Style? FindAvailableStyle(IEnumerable<Style> styles, SupremeJob job) {
+        private Style? FindAvailableStyle(IEnumerable<Style> styles) {
             if (styles.Count() == 1) {
                 return styles.First();
             }
@@ -111,9 +123,87 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         #endregion
-    
+
         #region Size
-            
+
+        private Size FindSize(Item item, Style style, SupremeJob job) {
+            var sizes = style.Sizes;
+
+            if (sizes.Count() == 0) {
+                throw new SizeNotFoundException(null, itemId: item.Id, sizeName: job.Size);
+            }
+
+            if (sizes.Count() == 1) {
+                return sizes.First();
+            }
+
+            Size? result;
+
+            if (job.Size != null) {
+                result = FindMatchingSize(item: item, sizes: sizes, sizeName: job.Size);
+            } else {
+                result = FindAvailableSize(item: item, sizes: sizes);
+            }
+
+            if (result == null) {
+                throw new SizeNotFoundException(null, itemId: item.Id, sizeName: job.Size);
+            }
+
+            return result.Value;
+        }
+
+        private Size? FindAvailableSize(Item item, IEnumerable<Size> sizes) {
+            if (sizes.Count() == 1) {
+                return sizes.First();
+            }
+
+            return sizes
+                .First(size => size.isStockAvailable == true);
+        }
+
+        private Size? FindMatchingSize(Item item, IEnumerable<Size> sizes, string sizeName) {
+            Size? result;
+
+            if (item.CategoryName?.ToLower() == "shoes") {
+                result = FindShoesSize(sizes: sizes, sizeName: sizeName);
+            } else {
+                result = FindClothingSize(sizes: sizes, sizeName: sizeName);
+            }
+
+            if (result != null) { return result; }
+
+            return FindSizeByText(sizes: sizes, sizeName: sizeName);
+        }
+
+        private Size? FindShoesSize(IEnumerable<Size> sizes, string sizeName) {
+            if (sizeName.Length == 1) {
+                // For some reason textMathing can't detect number characters
+                return sizes
+                    .First(size => size.Name.ToLower().Contains(sizeName.ToLower()));
+            }
+
+            return FindSizeByText(sizes: sizes, sizeName: sizeName);
+        }
+
+        private Size? FindClothingSize(IEnumerable<Size> sizes, string sizeName) {
+            var clothingSize = StyleSizeTypeUtil.From(sizeName);
+            if (clothingSize == null) {
+                return null;
+            }
+
+            return sizes
+                .First(size => StyleSizeTypeUtil.From(size.Name) == clothingSize);
+        }
+
+        private Size? FindSizeByText(IEnumerable<Size> sizes, string sizeName) {
+            var sizeNames = sizes
+                .Select(size => size.Name);
+
+            var result = textMatching.ExtractOne(sizeName, choices: sizeNames);
+
+            return sizes.First(size => size.Name == result?.Value);
+        }
+
         #endregion
     }
 }
