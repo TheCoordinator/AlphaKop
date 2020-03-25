@@ -56,7 +56,7 @@ namespace AlphaKop.Supreme.Flows {
             );
 
             if (results.Count() == 0) {
-                throw new NullReferenceException("Could not find item");
+                throw new ItemNotFoundException(null, keywords: job.Keywords);
             }
 
             logger.LogDebug(
@@ -106,7 +106,7 @@ namespace AlphaKop.Supreme.Flows {
             Item? item = items.First(item => item.CategoryName?.ToLower() == categoryName);
 
             if (item == null) {
-                throw new NullReferenceException("Could not find item");
+                throw new ItemNotFoundException(null, keywords: job.Keywords);
             }
 
             return item.Value;
