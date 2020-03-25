@@ -20,7 +20,7 @@ namespace AlphaKop.Supreme.Requests {
             Method = HttpMethod.Get
         };
 
-        public HttpRequestMessage AddToBasket(AddBasketRequest basketRequest) {
+        public HttpRequestMessage AddBasket(AddBasketRequest basketRequest) {
             var uriBuilder = new UriBuilder(baseUrl + $"/shop/{basketRequest.ItemId}/add.json");
             uriBuilder.Query = basketRequest.ToQuery();
 

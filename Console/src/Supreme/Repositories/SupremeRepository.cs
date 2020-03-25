@@ -49,9 +49,9 @@ namespace AlphaKop.Supreme.Repositories {
             return new ItemDetails(item: item, styles: styles);
         }
 
-        public async Task<IEnumerable<AddBasketResponse>> AddToBasket(AddBasketRequest basketRequest) {
+        public async Task<IEnumerable<AddBasketResponse>> AddBasket(AddBasketRequest basketRequest) {
             return await SendJsonRequest<List<AddBasketResponse>>(
-                request: requestsFactory.AddToBasket(basketRequest: basketRequest)
+                request: requestsFactory.AddBasket(basketRequest: basketRequest)
             );
         }
 
