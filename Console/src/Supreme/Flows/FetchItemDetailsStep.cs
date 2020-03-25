@@ -164,10 +164,14 @@ namespace AlphaKop.Supreme.Flows {
         private Size? FindMatchingSize(Item item, IEnumerable<Size> sizes, string sizeName) {
             Size? result;
 
-            if (item.CategoryName?.ToLower() == "shoes") {
-                result = FindShoesSize(sizes: sizes, sizeName: sizeName);
-            } else {
-                result = FindClothingSize(sizes: sizes, sizeName: sizeName);
+            try {
+                if (item.CategoryName?.ToLower() == "shoes") {
+                    result = FindShoesSize(sizes: sizes, sizeName: sizeName);
+                } else {
+                    result = FindClothingSize(sizes: sizes, sizeName: sizeName);
+                }
+            } catch (Exception) {
+                return FindSizeByText(sizes: sizes, sizeName: sizeName);
             }
 
             if (result != null) { return result; }
