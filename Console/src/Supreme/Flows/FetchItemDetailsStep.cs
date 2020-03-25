@@ -54,7 +54,14 @@ namespace AlphaKop.Supreme.Flows {
                 );
 
                 if (size.isStockAvailable == true) {
-                    // TODO: Add to Basket Next Step
+                    var pookyParam = new PookyStepParameter(
+                        item: parameter,
+                        style: style,
+                        size: size
+                    );
+
+                    await provider.CreateFetchPookyStep(job)
+                        .Execute(pookyParam);
                 } else {
                     logger.LogInformation(
                         JobEventId,
