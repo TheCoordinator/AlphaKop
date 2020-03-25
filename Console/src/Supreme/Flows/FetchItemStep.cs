@@ -33,6 +33,8 @@ namespace AlphaKop.Supreme.Flows {
                 var stock = await supremeRepository.FetchStock();
                 var item = FindItem(stock: stock, job: job);
 
+                logger.LogInformation(JobEventId, $"Fetched Item {item.Id}");
+
                 await provider.CreateFetchItemDetailsStep(job)
                     .Execute(item);
 
@@ -79,8 +81,6 @@ namespace AlphaKop.Supreme.Flows {
                 items: foundItems,
                 results: results
             );
-
-            logger.LogDebug(JobEventId, $"Selected Item {item.Id}");
 
             return item;
         }
