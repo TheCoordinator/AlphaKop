@@ -12,44 +12,34 @@ using Microsoft.Extensions.Logging;
 namespace AlphaKop.Supreme.Flows {
     public interface IFetchItemStep : ITaskStep<Unit, SupremeJob> { }
 
-    sealed class FetchItemStep : IFetchItemStep {
+    sealed class FetchItemStep : BaseStep<Unit>, IFetchItemStep {
         private readonly ISupremeRepository supremeRepository;
         private readonly ITextMatching textMatching;
-        private readonly IServiceProvider provider;
         private readonly ILogger<FetchItemStep> logger;
-
-        public SupremeJob? Job { get; set; }
 
         public FetchItemStep(
             ISupremeRepository supremeRepository,
             ITextMatching textMatching,
             IServiceProvider provider,
             ILogger<FetchItemStep> logger
-        ) {
+        ) : base(provider) {
             this.supremeRepository = supremeRepository;
             this.textMatching = textMatching;
-            this.provider = provider;
             this.logger = logger;
         }
 
-        public async Task Execute(Unit parameter) {
-            if (Job == null) {
-                throw new ArgumentNullException("Job");
-            }
-
-            await Task.Delay(Job.Value.StartDelay);
-
+        protected override async Task Execute(Unit parameter, SupremeJob job) {
             try {
                 var stock = await supremeRepository.FetchStock();
-                var item = FindItem(stock: stock, job: Job.Value);
+                var item = FindItem(stock: stock, job: job);
 
-                await provider.CreateFetchItemDetailsStep(Job.Value)
+                await provider.CreateFetchItemDetailsStep(job)
                     .Execute(item);
 
             } catch (Exception ex) {
-                logger.LogError(Job.Value.ToEventId(), ex, "Failed to retrieve Item");
+                logger.LogError(JobEventId, ex, "Failed to retrieve Item");
 
-                await provider.CreateFetchItemStep(Job.Value)
+                await provider.CreateFetchItemStep(job, retries: Retries + 1)
                     .Execute(parameter);
             }
         }
@@ -68,7 +58,7 @@ namespace AlphaKop.Supreme.Flows {
             }
 
             logger.LogDebug(
-                job.ToEventId(),
+                JobEventId,
                 $"Extracted {results.Count()} Items for keywords {job.Keywords}\n" +
                 string.Join("\n", results.Select(i => i.ToString()))
             );
@@ -79,7 +69,7 @@ namespace AlphaKop.Supreme.Flows {
             );
 
             logger.LogDebug(
-                job.ToEventId(),
+                JobEventId,
                 $"Extracted {foundItems.Count()} Items for keywords {job.Keywords}\n" +
                 string.Join("\n\n", foundItems.Select(i => i.ToString()))
             );
@@ -90,7 +80,7 @@ namespace AlphaKop.Supreme.Flows {
                 results: results
             );
 
-            logger.LogDebug(job.ToEventId(), $"Selected Item {item.Id}");
+            logger.LogDebug(JobEventId, $"Selected Item {item.Id}");
 
             return item;
         }

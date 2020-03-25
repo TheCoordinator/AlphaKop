@@ -8,36 +8,28 @@ using Microsoft.Extensions.Logging;
 namespace AlphaKop.Supreme.Flows {
     public interface IFetchItemDetailsStep : ITaskStep<Item, SupremeJob> { }
 
-    sealed class FetchItemDetailsStep : IFetchItemDetailsStep {        
+    sealed class FetchItemDetailsStep : BaseStep<Item>, IFetchItemDetailsStep {        
         private readonly ISupremeRepository supremeRepository;
         private readonly ILogger<FetchItemDetailsStep> logger;
-        private readonly IServiceProvider provider;
-
-        public SupremeJob? Job { get; set; }
 
         public FetchItemDetailsStep(
             ISupremeRepository supremeRepository,
-            ILogger<FetchItemDetailsStep> logger,
-            IServiceProvider provider
-        ) {
+            IServiceProvider provider,
+            ILogger<FetchItemDetailsStep> logger
+        ) : base(provider) {
             this.supremeRepository = supremeRepository;
             this.logger = logger;
-            this.provider = provider;
         }
 
-        public async Task Execute(Item parameter) {
-            if (Job == null) {
-                throw new ArgumentNullException("Job");
-            }
-
+        protected override async Task Execute(Item parameter, SupremeJob job) {            
             try {
                 var itemDetails = await supremeRepository.FetchItemDetails(item: parameter);
 
                 logger.LogDebug($"Fetched Item Details");
             } catch (Exception ex) {
-                logger.LogError(ex, "Failed to retrieve ItemDetails");
+                logger.LogError(JobEventId, ex, "Failed to retrieve ItemDetails");
 
-                await provider.CreateFetchItemDetailsStep(Job.Value)
+                await provider.CreateFetchItemDetailsStep(job, Retries + 1)
                     .Execute(parameter);
             }
         }
