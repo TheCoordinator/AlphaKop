@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading;
+using AlphaKop.Core.Services.TextMatching;
 using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Flows;
 using AlphaKop.Supreme.Repositories;
@@ -43,11 +44,15 @@ namespace AlphaKop {
             ConfigureLogging(services, config);
             ConfigureServicesConfig(services, config);
 
+            ConfigureCore(services);
             ConfigureSupreme(services);
-
             ConfigureApplication(services);
 
             return services;
+        }
+
+        private static void ConfigureCore(IServiceCollection services) {
+            services.AddTransient<ITextMatching, TextMatching>();
         }
 
         private static void ConfigureSupreme(IServiceCollection services) {
@@ -77,7 +82,7 @@ namespace AlphaKop {
             services.AddLogging(logging => {
                 logging.AddConfiguration(config.GetSection("Logging"));
                 logging.AddConsole();
-                logging.AddFile("AlphaKop");
+                logging.AddFile();
             });
         }
 
