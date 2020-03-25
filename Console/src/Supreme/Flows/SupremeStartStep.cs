@@ -8,26 +8,18 @@ using Microsoft.Extensions.Logging;
 namespace AlphaKop.Supreme.Flows {
     public interface ISupremeStartStep : ITaskStep<SupremeJob, SupremeJob> { }
 
-    sealed class SupremeStartStep : ISupremeStartStep {        
-        private readonly IServiceProvider provider;
+    sealed class SupremeStartStep : BaseStep<SupremeJob>, ISupremeStartStep {        
         private readonly ILogger<SupremeStartStep> logger;
-
-        public SupremeJob? Job { get; set; }
         
         public SupremeStartStep(
             IServiceProvider provider,
             ILogger<SupremeStartStep> logger
-        ) {
-            this.provider = provider;
+        ) : base(provider) {
             this.logger = logger;
         }
 
-        public async Task Execute(SupremeJob parameter) {
-            if (Job == null) {
-                throw new ArgumentNullException("Job");
-            }
-
-            await provider.CreateFetchItemStep(Job.Value)
+        protected override async Task Execute(SupremeJob parameter, SupremeJob job) {
+            await provider.CreateFetchItemStep(job)
                 .Execute(Unit.Empty);
         }
     }

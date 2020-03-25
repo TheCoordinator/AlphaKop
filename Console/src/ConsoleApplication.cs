@@ -19,6 +19,8 @@ namespace AlphaKop {
         }
 
         public async void Run() {
+            logger.LogDebug("Starting Application");
+            
             var profile = CreateUserProfile();
             var job = CreateSupremeJob(profile: profile);
 
@@ -26,8 +28,6 @@ namespace AlphaKop {
             start.Job = job;
             
             await start.Execute(job);
-
-            logger.LogDebug("Starting Application");
         }
 
         private static SupremeJob CreateSupremeJob(UserProfile profile) {
@@ -35,10 +35,10 @@ namespace AlphaKop {
                 profile: profile,
                 jobId: "1",
                 jobEventId: 1,
-                categoryName: "sweatshirts",
-                keywords: "rammellzee",
-                style: "black",
-                size: "xl"
+                categoryName: "T-Shirts",
+                keywords: "Rammellzee Tee",
+                style: "white",
+                size: "m"
             );
         }
 

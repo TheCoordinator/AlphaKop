@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Linq;
 
 namespace AlphaKop.Supreme.Models {
     public struct ItemDetails {
@@ -9,64 +9,23 @@ namespace AlphaKop.Supreme.Models {
             Item = item;
             Styles = styles;
         }
-    }
 
-    public struct Style {
-        [JsonProperty("id")]
-        public string Id { get; internal set; }
-
-        [JsonProperty("name")]
-        public string Name { get; internal set; }
-
-        [JsonProperty("currency")]
-        public string? Currency { get; internal set; }
-
-        [JsonProperty("image_url")]
-        public string? ImageUrl { get; internal set; }
-
-        [JsonProperty("image_url_hi")]
-        public string? ImageUrlHigh { get; internal set; }
-
-        [JsonProperty("sizes")]
-        public Size[] Sizes { get; internal set; }
-
-        [JsonConstructor]
-        public Style(
-            string id,
-            string name,
-            string? currency,
-            string? imageUrl,
-            string? imageUrlHigh,
-            Size[] sizes
-        ) {
-            Id = id;
-            Name = name;
-            Currency = currency;
-            ImageUrl = imageUrl;
-            ImageUrlHigh = imageUrlHigh;
-            Sizes = sizes;
-        }
-    }
-
-    public struct Size {
-        [JsonProperty("name")]
-        public string Name { get; internal set; }
-
-        [JsonProperty("id")]
-        public string Id { get; internal set; }
-
-        [JsonProperty("stock_level")]
-        public int StockLevel { get; internal set; }
-
-        public bool isStockAvailable {
-            get { return StockLevel > 0; }
+        public override bool Equals(object? obj) {
+            if (obj == null) { return false; }
+            return ((ItemDetails)obj).Item.Id == Item.Id;
         }
 
-        [JsonConstructor]
-        public Size(string name, string id, int stockLevel) {
-            Name = name;
-            Id = id;
-            StockLevel = stockLevel;
+        public override int GetHashCode() {
+            return Item.Id.GetHashCode();
+        }
+
+        public override string ToString() {
+            var styles = string.Join("\n\n", Styles.Select(s => s.ToString()));
+
+            return
+                $"(Id: {Item.Id}\n" +
+                $"Name: {Item.Name}\n" +
+                $"Styles: \n{styles})";
         }
     }
 }
