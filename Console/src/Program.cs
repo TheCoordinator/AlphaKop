@@ -69,6 +69,7 @@ namespace AlphaKop {
             services.AddTransient<ISupremeStartStep, SupremeStartStep>();
             services.AddTransient<IFetchItemStep, FetchItemStep>();
             services.AddTransient<IFetchItemDetailsStep, FetchItemDetailsStep>();
+            services.AddTransient<IFetchPookyStep, FetchPookyStep>();
         }
 
         private static void ConfigureApplication(IServiceCollection services) {
