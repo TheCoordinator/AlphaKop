@@ -25,9 +25,9 @@ namespace AlphaKop.Core.Services.TextMatching {
 
         public override string ToString() {
             if (typeof(T) == typeof(string)) {
-                return $"(string: {Value}, score: {Score}, index: {Index})";
+                return $"string: {Value}, score: {Score}, index: {Index}";
             }
-            return $"(value: {Value?.ToString()}, score: {Score}, index: {Index})";
+            return $"value: {Value?.ToString()}, score: {Score}, index: {Index}";
         }
     }
 }

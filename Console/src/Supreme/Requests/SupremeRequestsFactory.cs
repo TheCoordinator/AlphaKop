@@ -1,5 +1,7 @@
 using System;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using AlphaKop.Supreme.Requests.Extensions;
 
 namespace AlphaKop.Supreme.Requests {
@@ -20,9 +22,8 @@ namespace AlphaKop.Supreme.Requests {
             Method = HttpMethod.Get
         };
 
-        public HttpRequestMessage AddToBasket(AddBasketRequest basketRequest) {
+        public HttpRequestMessage AddBasket(AddBasketRequest basketRequest) {
             var uriBuilder = new UriBuilder(baseUrl + $"/shop/{basketRequest.ItemId}/add.json");
-            uriBuilder.Query = basketRequest.ToQuery();
 
             var cookies = basketRequest.Pooky.ToAddToCartCookiesString();
 
@@ -31,7 +32,16 @@ namespace AlphaKop.Supreme.Requests {
                 Method = HttpMethod.Post
             };
 
-            message.Headers.Add(name: "Cookie", value: cookies);
+            message.Content = basketRequest.ToFormUrlEncodedContent();
+            message.Headers.Add(
+                name: HttpRequestHeader.Cookie.ToString(), 
+                value: cookies
+            );
+
+            message.Headers.Add(
+                name: HttpRequestHeader.ContentType.ToString(), 
+                value: "application/x-www-form-urlencoded"
+            );
 
             return message;
         }

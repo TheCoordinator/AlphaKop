@@ -99,7 +99,7 @@ namespace AlphaKop.Supreme.Flows {
             IEnumerable<ExtractedResult<string>> results
         ) {
             if (job.CategoryName == null) {
-                return items.First();
+                return items.FirstOrDefault();
             }
 
             var categoryName = job.CategoryName.ToLower();

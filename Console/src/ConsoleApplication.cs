@@ -1,7 +1,6 @@
 using System;
 using AlphaKop.Core.Models.User;
 using AlphaKop.Supreme.Flows;
-using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -37,8 +36,8 @@ namespace AlphaKop {
                 profile: profile,
                 region: SupremeRegion.EU,
                 categoryName: null,
-                keywords: "Half Zip Pullover",
-                style: "red",
+                keywords: "studded ls top",
+                style: "navy",
                 size: null
             );
         }

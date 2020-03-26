@@ -34,6 +34,17 @@ namespace AlphaKop.Supreme.Flows {
             step.Job = job;
             step.Retries = retries;
             return step;
-        }        
+        }
+
+        public static IAddBasketStep CreateAddBasketStep(
+            this IServiceProvider provider,
+            SupremeJob job,
+            int retries = 0
+        ) {
+            var step = provider.GetRequiredService<IAddBasketStep>();
+            step.Job = job;
+            step.Retries = retries;
+            return step;
+        }
     }
 }

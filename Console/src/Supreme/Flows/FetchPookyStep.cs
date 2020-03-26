@@ -31,7 +31,16 @@ namespace AlphaKop.Supreme.Flows {
                     $"Fetched Pooky {parameter.Item.Id}"
                 );
 
-                // Next Step
+                var addBasketParam = new AddBasketStepParameter(
+                    item: parameter.Item,
+                    style: parameter.Style,
+                    size: parameter.Size,
+                    pooky: pooky
+                );
+                
+                await provider.CreateAddBasketStep(job)
+                    .Execute(addBasketParam);
+                    
             } catch (Exception ex) {
                 logger.LogError(JobEventId, ex, "Failed to Fetch Pooky");
 

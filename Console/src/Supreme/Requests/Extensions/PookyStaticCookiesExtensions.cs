@@ -8,9 +8,10 @@ namespace AlphaKop.Supreme.Requests.Extensions
         public static Dictionary<string, string> ToCookies(this PookyStatic staticData)
         {
             return new Dictionary<string, string>() {
-                { "pooky", staticData.Pooky },
+                { "pooky_use_cookie", staticData.PookyUseCookie.ToString() },
                 { "pooky_order_allow", staticData.PookyOrderAllow },
-                { "pooky_use_cookie", staticData.PookyOrderAllow.ToString() },
+                { "pooky", staticData.Pooky },
+                { "_supreme_sess", staticData.SupremeSession }
             };
         }
     }

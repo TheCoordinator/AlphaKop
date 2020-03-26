@@ -51,9 +51,9 @@ namespace AlphaKop.Supreme.Models {
             var sizes = string.Join("\n\n", Sizes.Select(s => s.ToString()));
 
             return
-                $"(Id: {Id}\n" +
+                $"Id: {Id}\n" +
                 $"Name: {Name}\n" +
-                $"Sizes: \n{sizes})";
+                $"Sizes: \n{sizes}";
         }
     }
 }
