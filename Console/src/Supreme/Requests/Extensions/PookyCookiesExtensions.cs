@@ -21,7 +21,7 @@ namespace AlphaKop.Supreme.Requests.Extensions {
             return dictionaries
                 .SelectMany(dict => dict)
                 .ToLookup(pair => pair.Key, pair => pair.Value)
-                .ToDictionary(group => group.Key, group => group.First());
+                .ToDictionary(group => group.Key, group => group.FirstOrDefault());
         }
     }
 }

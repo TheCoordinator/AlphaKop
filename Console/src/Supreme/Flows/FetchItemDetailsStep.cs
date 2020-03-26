@@ -106,7 +106,7 @@ namespace AlphaKop.Supreme.Flows {
 
         private Style? FindAvailableStyle(IEnumerable<Style> styles) {
             if (styles.Count() == 1) {
-                return styles.First();
+                return styles.FirstOrDefault();
             }
 
             return styles
@@ -141,7 +141,7 @@ namespace AlphaKop.Supreme.Flows {
             }
 
             if (sizes.Count() == 1) {
-                return sizes.First();
+                return sizes.FirstOrDefault();
             }
 
             Size? result;
@@ -161,7 +161,7 @@ namespace AlphaKop.Supreme.Flows {
 
         private Size? FindAvailableSize(Item item, IEnumerable<Size> sizes) {
             if (sizes.Count() == 1) {
-                return sizes.First();
+                return sizes.FirstOrDefault();
             }
 
             return sizes
