@@ -33,10 +33,10 @@ namespace AlphaKop.Supreme.Models {
 
         public override string ToString() {
             return
-                $"(Id: {Id}\n" +
+                $"Id: {Id}\n" +
                 $"Name: {Name}\n" +
                 $"NewItem: {NewItem}\n" +
-                $"CategoryName: {CategoryName})";
+                $"CategoryName: {CategoryName}";
         }
     }
 }

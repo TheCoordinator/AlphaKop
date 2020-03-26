@@ -13,5 +13,11 @@ namespace AlphaKop.Supreme.Responses {
             SizeId = sizeId;
             InStock = inStock;
         }
+
+        public override string ToString() {
+            return
+                $"SizeId: {SizeId}\n" +
+                $"InStock: {InStock}";
+        }        
     }
 }

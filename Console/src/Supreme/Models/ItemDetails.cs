@@ -23,9 +23,9 @@ namespace AlphaKop.Supreme.Models {
             var styles = string.Join("\n\n", Styles.Select(s => s.ToString()));
 
             return
-                $"(Id: {Item.Id}\n" +
+                $"Id: {Item.Id}\n" +
                 $"Name: {Item.Name}\n" +
-                $"Styles: \n{styles})";
+                $"Styles: \n{styles}";
         }
     }
 }

@@ -105,8 +105,7 @@ namespace AlphaKop.Supreme.Models {
         public string PookyOrderAllow { get; internal set; }
 
         [JsonProperty("pooky_use_cookie")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public bool PookyUseCookie { get; internal set; }
+        public string PookyUseCookie { get; internal set; }
 
         [JsonProperty("_supreme_sess")]
         public string SupremeSession { get; internal set; }
@@ -115,7 +114,7 @@ namespace AlphaKop.Supreme.Models {
         public PookyStatic(
             string pooky,
             string pookyOrderAllow,
-            bool pookyUseCookie,
+            string pookyUseCookie,
             string supremeSession
         ) {
             Pooky = pooky;
