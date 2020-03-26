@@ -64,11 +64,6 @@ namespace AlphaKop.Supreme.Repositories {
         }
 
         private async Task<JObject> SendJsonRequest(HttpRequestMessage request) {
-            request.Headers.Add(
-                name: HttpRequestHeader.UserAgent.ToString(),
-                value: client.GetSupremeMobileUserAgent()
-            );
-
             var response = await client.SendAsync(request: request);
             response.EnsureSuccessStatusCode();
 
