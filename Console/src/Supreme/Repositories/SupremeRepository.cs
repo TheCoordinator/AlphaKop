@@ -26,7 +26,7 @@ namespace AlphaKop.Supreme.Repositories {
         ) {
             this.baseUrl = config.Value.SupremeBaseUrl;
             this.requestsFactory = new SupremeRequestsFactory(baseUrl: baseUrl);
-            this.client = CreateHttpClient(baseUrl: baseUrl, requestsFactory: requestsFactory);
+            this.client = CreateHttpClient(baseUrl: baseUrl);
             this.logger = logger;
         }
 
@@ -64,22 +64,32 @@ namespace AlphaKop.Supreme.Repositories {
         }
 
         private async Task<JObject> SendJsonRequest(HttpRequestMessage request) {
+            request.Headers.Add(
+                name: HttpRequestHeader.UserAgent.ToString(),
+                value: client.GetSupremeMobileUserAgent()
+            );
+
             var response = await client.SendAsync(request: request);
             response.EnsureSuccessStatusCode();
 
             var jsonString = await response.Content.ReadAsStringAsync();
             return JObject.Parse(jsonString);
         }
-
+        
         #region Factory
 
-        private static HttpClient CreateHttpClient(string baseUrl, SupremeRequestsFactory requestsFactory) {
+        private static HttpClient CreateHttpClient(string baseUrl) {
             var client = new HttpClient() { BaseAddress = new Uri(uriString: baseUrl) };
 
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Add(
                 name: HttpRequestHeader.UserAgent.ToString(),
                 value: client.GetSupremeMobileUserAgent()
+            );
+
+            client.DefaultRequestHeaders.Add(
+                name: HttpRequestHeader.CacheControl.ToString(),
+                value: "no-cache"
             );
 
             return client;

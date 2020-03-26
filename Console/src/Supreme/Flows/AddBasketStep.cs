@@ -13,6 +13,7 @@ namespace AlphaKop.Supreme.Flows {
     public interface IAddBasketStep : ITaskStep<AddBasketStepParameter, SupremeJob> { }
 
     sealed class AddBasketStep : BaseStep<AddBasketStepParameter>, IAddBasketStep {
+        private const int maxRetries = 10;
         private readonly ISupremeRepository supremeRepository;
         private readonly ILogger<AddBasketStep> logger;
 
@@ -27,6 +28,13 @@ namespace AlphaKop.Supreme.Flows {
 
         protected override async Task Execute(AddBasketStepParameter parameter, SupremeJob job) {
             try {
+                if (Retries >= maxRetries) {
+                    await provider.CreateFetchItemDetailsStep(job)
+                        .Execute(parameter.Item);
+
+                    return;
+                }
+
                 var request = new AddBasketRequest(
                     itemId: parameter.Item.Id,
                     sizeId: parameter.Size.Id,
@@ -39,11 +47,16 @@ namespace AlphaKop.Supreme.Flows {
 
                 logger.LogInformation(
                     JobEventId,
-                    $"Fetched Add Basket Response Item {request.ItemId}\n" +
-                    response.ToString() // TODO: Response toString()
+                    $"Add Basket Response Item: {request.ItemId} Style: {request.StyleId}, Size: {request.SizeId}\n" +
+                    string.Join("\n", response.Select(r => r.ToString()))
                 );
 
-                // TODO: if (response.)
+                if (response.Any(r => r.InStock == true)) {
+                    // Next Step
+                } else {
+                    await provider.CreateAddBasketStep(job, Retries + 1)
+                        .Execute(parameter);
+                }
             } catch (Exception ex) {
                 logger.LogError(JobEventId, ex, "Failed to retrieve ItemDetails");
 
