@@ -1,18 +1,15 @@
-import { BrowserWindow, ipcMain, protocol, net } from 'electron'
+import { BrowserWindow, protocol, net, ipcMain } from 'electron'
 import * as fs from 'fs'
-import { IpcChannelInterface } from '../ipc/IpcChannelInterface'
-import { IpcRequest } from '../../shared/IpcRequest'
+import * as moment from 'moment'
 import { ICaptchaService } from '../../captcha/ICaptchaService'
+import { CaptchaResponse } from '../../captcha/CaptchaResponse'
 import { CaptchaRequest } from '../../captcha/CaptchaRequest'
 
 export class CaptchaScreen {
     private readonly window: BrowserWindow
     private readonly capthaService: ICaptchaService
 
-    public constructor(
-        window: BrowserWindow,
-        capthaService: ICaptchaService,
-    ) {
+    public constructor(window: BrowserWindow, capthaService: ICaptchaService) {
         this.window = window
         this.capthaService = capthaService
     }
@@ -20,10 +17,11 @@ export class CaptchaScreen {
     // Setup
 
     public start() {
-        this.setupCaptchaService()
-
         this.capthaService.start()
         this.loadWindow()
+
+        this.setupCaptchaService()
+        this.setupScreenEvents()
     }
 
     public close() {
@@ -41,6 +39,10 @@ export class CaptchaScreen {
     private didReceiveCaptchaRequest(request: CaptchaRequest) {
         this.setupCaptchaInterceptor(request)
         this.window.loadURL(request.host)
+    }
+
+    private didReceiveCaptchaResponse(response: CaptchaResponse) {
+        this.capthaService.didReceiveCaptchaResponse(response)
     }
 
     private setupCaptchaInterceptor(request: CaptchaRequest) {
@@ -86,28 +88,32 @@ export class CaptchaScreen {
             'utf8',
         )
 
-        return file.replace('siteKey_data', request.siteKey)
+        return file
+            .replace('data__siteKey', request.siteKey)
+            .replace('data__host', request.host)
     }
 
-    // App Events
+    // Screen
 
     private loadWindow() {
         this.window.loadFile('../../app/loader.html')
     }
 
-    // Channels
-
-    public registerIpcChannels<TRequest extends IpcRequest>(
-        ipcChannels: IpcChannelInterface<TRequest>[],
-    ) {
-        ipcChannels.forEach(this.registerIpcChannel)
+    private setupScreenEvents() {
+        this.setupSendCaptchaEvent()
     }
 
-    public registerIpcChannel<TRequest extends IpcRequest>(
-        ipcChannel: IpcChannelInterface<TRequest>,
-    ) {
-        ipcMain.on(ipcChannel.getName(), (event, request) =>
-            ipcChannel.handle(event, request),
-        )
+    private setupSendCaptchaEvent() {
+        const self = this
+
+        ipcMain.on('sendCaptcha', (_event: any, params: any) => {
+            const response: CaptchaResponse = {
+                token: params.token as string,
+                host: params.host as string,
+                timestamp: moment().toDate(),
+            }
+
+            self.didReceiveCaptchaResponse(response)
+        })
     }
 }

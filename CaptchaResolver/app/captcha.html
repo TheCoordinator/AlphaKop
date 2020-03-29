@@ -12,25 +12,29 @@
             <div
                 class="g-recaptcha"
                 id="captchaFrame"
-                data-sitekey="siteKey_data"
+                data-sitekey="siteKey"
                 data-callback="successCallback"
             ></div>
         </form>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
         <script>
-            const fs = require('fs')
-            const remote = require('electron').remote
-            const app = remote.app
-			const ipcRenderer = require('electron').ipcRenderer
-            const config = JSON.parse(fs.readFileSync('config.json'))
+            const ipcRenderer = require('electron').ipcRenderer
+            const siteKey = 'data__siteKey'
+            const host = 'data__host'
 
             let element = document.getElementsByClassName('g-recaptcha')[0]
-            element.setAttribute('data-sitekey', config.siteKey)
+            element.setAttribute('data-sitekey', siteKey)
 
             function successCallback() {
-                ipcRenderer.send('sendCaptcha', grecaptcha.getResponse())
+                const token = grecaptcha.getResponse()
+                
+                const params = {
+                    token: token,
+                    host: host
+                }
+
+                ipcRenderer.send('sendCaptcha', params)
                 grecaptcha.reset()
             }
         </script>

@@ -87,7 +87,7 @@ export class CaptchaService implements ICaptchaService {
                     captcha: first,
                 }
 
-                res.json(JSON.stringify(data))
+                res.json(data)
             }
         })
     }
