@@ -33,8 +33,10 @@
             "type": "process",
             "args": [
                 "clean",
-                "${workspaceFolder}/Console/src/Console.csproj"
             ],
+            "options": {
+                "cwd": "${workspaceFolder}/Console/src"
+            },
             "problemMatcher": "$msCompile"
         },
         {
@@ -42,10 +44,25 @@
             "command": "dotnet",
             "type": "process",
             "args": [
-                "build",
-                "${workspaceFolder}/Console/src/Console.csproj"
+                "build"
             ],
+            "options": {
+                "cwd": "${workspaceFolder}/Console/src"
+            },
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "buildCaptchaResolver",
+            "command": "npm",
+            "type": "process",
+            "args": [
+                "run",
+                "buildApp"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/CaptchaResolver"
+            },
+            "problemMatcher": "$msCompile",
         },
         {
             "label": "publish",
@@ -67,20 +84,6 @@
                 "watch",
                 "--project",
                 "${workspaceFolder}/Console/src/Console.csproj",
-                "run",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "watchCaptchaResolverApp",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "watch",
-                "--project",
-                "${workspaceFolder}/CaptchaResolverApp/src/CaptchaResolverApp.csproj",
                 "run",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
