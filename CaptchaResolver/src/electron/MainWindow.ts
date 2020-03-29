@@ -1,14 +1,13 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { IpcChannelInterface } from './ipc/IpcChannelInterface'
 import { IpcRequest } from '../shared/IpcRequest'
-import { CaptchaInfoChannel } from './captcha/CaptchaInfoChannel'
-import { CaptchaService } from '../captcha/CaptchaService'
+import { ICaptchaService } from '../captcha/ICaptchaService'
 
 export class MainWindow {
     private mainWindow: BrowserWindow
-    private readonly capthaService: CaptchaService
+    private readonly capthaService: ICaptchaService
 
-    public constructor(capthaService: CaptchaService) {
+    public constructor(capthaService: ICaptchaService) {
         this.capthaService = capthaService
 
         app.on('ready', this.createWindow)
