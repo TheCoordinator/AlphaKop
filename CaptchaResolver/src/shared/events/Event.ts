@@ -18,5 +18,5 @@ export interface Event<E> {
      * Desubscribe a handler from the dispatcher.
      * @param handler The handler to remove.
      */
-    unregister(handler: EventHandler<E>): void
+    deregister(handler: EventHandler<E>): void
 }

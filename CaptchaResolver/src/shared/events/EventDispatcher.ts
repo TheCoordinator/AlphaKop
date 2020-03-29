@@ -29,7 +29,7 @@ export class EventDispatcher<E> implements Event<E> {
      * Desubscribe a handler from the dispatcher.
      * @param handler The handler to remove.
      */
-    public unregister(handler: EventHandler<E>): void {
+    public deregister(handler: EventHandler<E>): void {
         for (let i = 0; i < this.handlers.length; i++) {
             if (this.handlers[i] === handler) {
                 this.handlers.splice(i, 1)

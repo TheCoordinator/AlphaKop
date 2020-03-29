@@ -61,7 +61,7 @@ export class CaptchaService implements ICaptchaService {
         const self = this
 
         this.api.post('/trigger', function(req, res) {
-            const request = req.body as CaptchaRequest    
+            const request = req.body as CaptchaRequest
 
             if (request && request.siteKey && request.host) {
                 self.didReceiveCaptchaRequest(request)
