@@ -12,6 +12,7 @@ app.on('ready', () => {
         title: `Harvester`,
         webPreferences: {
             allowRunningInsecureContent: true,
+            nodeIntegration: true
         },
     })
 

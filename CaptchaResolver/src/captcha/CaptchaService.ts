@@ -15,7 +15,8 @@ export class CaptchaService implements ICaptchaService {
     private server?: Server = null
     private readonly port: string
 
-    private readonly eventDispatcher = new EventDispatcher<CaptchaRequest>()
+    private readonly requestEventDispatcher = new EventDispatcher<CaptchaRequest>()
+    private readonly requestCancellationEventDispatcher = new EventDispatcher<CaptchaRequest>()
 
     private captchas: CaptchaResponse[] = new Array()
 
@@ -38,11 +39,19 @@ export class CaptchaService implements ICaptchaService {
     }
 
     addCaptchaRequestEvent(handler: EventHandler<CaptchaRequest>) {
-        this.eventDispatcher.register(handler)
+        this.requestEventDispatcher.register(handler)
+    }
+
+    addCaptchaRequestCancellationEvent(handler: EventHandler<CaptchaRequest>): void {
+        this.requestCancellationEventDispatcher.register(handler)
     }
 
     private didReceiveCaptchaRequest(request: CaptchaRequest): void {
-        this.eventDispatcher.dispatch(request)
+        this.requestEventDispatcher.dispatch(request)
+    }
+
+    private didReceiveCaptchaCancellationRequest(request: CaptchaRequest) {
+        this.requestCancellationEventDispatcher.dispatch(request)
     }
 
     didReceiveCaptchaResponse(response: CaptchaResponse): void {
@@ -63,12 +72,31 @@ export class CaptchaService implements ICaptchaService {
         this.api.post('/trigger', function(req, res) {
             const request = req.body as CaptchaRequest
 
-            if (request && request.siteKey && request.host) {
-                self.didReceiveCaptchaRequest(request)
-
+            if (request && request.siteKey && request.host && request.requestId) {
                 res.sendStatus(200)
+
+                self.didReceiveCaptchaRequest(request)
             } else {
                 res.status(400)
+
+                const data = {
+                    error: 'CapctahRequest missing',
+                }
+
+                res.json(data)
+            }
+        })
+
+        this.api.post('/canceltrigger', function(req, res) {
+            const request = req.body as CaptchaRequest
+
+            if (request && request.siteKey && request.host && request.requestId) {
+                res.sendStatus(200)
+
+                self.didReceiveCaptchaCancellationRequest(request)
+            } else {
+                res.status(400)
+
                 const data = {
                     error: 'CapctahRequest missing',
                 }

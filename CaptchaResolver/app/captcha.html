@@ -12,7 +12,7 @@
             <div
                 class="g-recaptcha"
                 id="captchaFrame"
-                data-sitekey="siteKey"
+                data-sitekey="data__siteKey"
                 data-callback="successCallback"
             ></div>
         </form>
@@ -20,21 +20,19 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script>
             const ipcRenderer = require('electron').ipcRenderer
-            const siteKey = 'data__siteKey'
             const host = 'data__host'
-
-            let element = document.getElementsByClassName('g-recaptcha')[0]
-            element.setAttribute('data-sitekey', siteKey)
 
             function successCallback() {
                 const token = grecaptcha.getResponse()
-                
+
                 const params = {
                     token: token,
-                    host: host
+                    host: host,
                 }
 
-                ipcRenderer.send('sendCaptcha', params)
+                console.log(`Captcha form received token with param ${params}`)
+                ipcRenderer.send('sendCaptchaSuccess', params)
+
                 grecaptcha.reset()
             }
         </script>

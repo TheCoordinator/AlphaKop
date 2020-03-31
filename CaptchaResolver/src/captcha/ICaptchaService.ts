@@ -5,5 +5,6 @@ import { CaptchaRequest } from './CaptchaRequest';
 export interface ICaptchaService {
     start(): void
     addCaptchaRequestEvent(handler: EventHandler<CaptchaRequest>): void
+    addCaptchaRequestCancellationEvent(handler: EventHandler<CaptchaRequest>): void
     didReceiveCaptchaResponse(response: CaptchaResponse): void
 }

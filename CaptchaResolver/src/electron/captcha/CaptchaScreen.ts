@@ -8,6 +8,7 @@ import { CaptchaRequest } from '../../captcha/CaptchaRequest'
 export class CaptchaScreen {
     private readonly window: BrowserWindow
     private readonly capthaService: ICaptchaService
+    private requests: CaptchaRequest[] = new Array()
 
     public constructor(window: BrowserWindow, capthaService: ICaptchaService) {
         this.window = window
@@ -18,7 +19,7 @@ export class CaptchaScreen {
 
     public start() {
         this.capthaService.start()
-        this.loadWindow()
+        this.loadLoader()
 
         this.setupCaptchaService()
         this.setupScreenEvents()
@@ -34,15 +35,66 @@ export class CaptchaScreen {
         this.capthaService.addCaptchaRequestEvent((request) =>
             this.didReceiveCaptchaRequest(request),
         )
+
+        this.capthaService.addCaptchaRequestCancellationEvent((request) =>
+            this.didReceiveCaptchaCancellationRequest(request),
+        )
     }
 
     private didReceiveCaptchaRequest(request: CaptchaRequest) {
-        this.setupCaptchaInterceptor(request)
-        this.window.loadURL(request.host)
+        if (this.requests.length == 0) {
+            this.loadCaptcha(request)
+        }
+
+        if (
+            this.requests.find((e) => e.requestId == request.requestId) == null
+        ) {
+            this.requests.push(request)
+        }
+    }
+
+    private didReceiveCaptchaCancellationRequest(request: CaptchaRequest) {
+        if (this.requests.length == 0) {
+            return
+        }
+
+        this.requests
+            .filter((elem) => elem.requestId == request.requestId)
+            .forEach((request) => {
+                const index = this.requests.findIndex(
+                    (elem) => elem.requestId == request.requestId,
+                )
+
+                if (index >= 0) {
+                    this.requests.splice(index, 1)
+                }
+            })
+
+        this.loadNextCaptcha(false)
     }
 
     private didReceiveCaptchaResponse(response: CaptchaResponse) {
         this.capthaService.didReceiveCaptchaResponse(response)
+
+        this.loadNextCaptcha(true)
+    }
+
+    private loadNextCaptcha(remove: Boolean) {
+        if (remove && this.requests.length > 0) {
+            this.requests.splice(0, 1)
+        }
+
+        if (this.requests.length > 0) {
+            const request = this.requests[0]
+            this.loadCaptcha(request)
+        } else {
+            this.loadLoader()
+        }
+    }
+
+    private loadCaptcha(request: CaptchaRequest) {
+        this.setupCaptchaInterceptor(request)
+        this.window.loadURL(request.host)
     }
 
     private setupCaptchaInterceptor(request: CaptchaRequest) {
@@ -95,7 +147,7 @@ export class CaptchaScreen {
 
     // Screen
 
-    private loadWindow() {
+    private loadLoader() {
         this.window.loadFile('../../app/loader.html')
     }
 
@@ -106,13 +158,16 @@ export class CaptchaScreen {
     private setupSendCaptchaEvent() {
         const self = this
 
-        ipcMain.on('sendCaptcha', (_event: any, params: any) => {
+        ipcMain.on('sendCaptchaSuccess', (_event: any, params: any) => {
             const response: CaptchaResponse = {
                 token: params.token as string,
                 host: params.host as string,
                 timestamp: moment().toDate(),
             }
 
+            console.log(
+                `Captcha Success for host ${response.host} token: ${response.token}`,
+            )
             self.didReceiveCaptchaResponse(response)
         })
     }
