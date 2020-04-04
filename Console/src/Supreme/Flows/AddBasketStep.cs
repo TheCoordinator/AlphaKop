@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AlphaKop.Core.Flows;
-using AlphaKop.Core.Services.TextMatching;
-using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Repositories;
 using AlphaKop.Supreme.Requests;
 using Microsoft.Extensions.Logging;
