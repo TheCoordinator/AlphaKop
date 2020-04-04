@@ -3,8 +3,8 @@ using AlphaKop.Core.Captcha.Network;
 
 namespace AlphaKop.Core.Captcha.Repositories {
     public interface ICaptchaRepository {
-        Task<CaptchaResponse> fetchCaptcha();
-        Task triggerCaptcha(CaptchaRequest request);
-        Task cancelTriggerCaptcha(CaptchaRequest request);
+        Task<CaptchaResponse?> FetchCaptcha();
+        Task TriggerCaptcha(CaptchaRequest request);
+        Task CancelTriggerCaptcha(CaptchaRequest request);
     }
 }
