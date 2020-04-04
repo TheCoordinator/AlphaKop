@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Threading;
+using AlphaKop.Core.Captcha.Config;
+using AlphaKop.Core.Captcha.Repositories;
 using AlphaKop.Core.Services.TextMatching;
 using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Flows;
@@ -53,6 +55,7 @@ namespace AlphaKop {
 
         private static void ConfigureCore(IServiceCollection services) {
             services.AddTransient<ITextMatching, TextMatching>();
+            services.AddSingleton<ICaptchaRepository, CaptchaRepository>();
         }
 
         private static void ConfigureSupreme(IServiceCollection services) {
@@ -71,6 +74,7 @@ namespace AlphaKop {
             services.AddTransient<IFetchItemDetailsStep, FetchItemDetailsStep>();
             services.AddTransient<IFetchPookyStep, FetchPookyStep>();
             services.AddTransient<IAddBasketStep, AddBasketStep>();
+            services.AddTransient<ICaptchaStep, CaptchaStep>();
         }
 
         private static void ConfigureApplication(IServiceCollection services) {
@@ -93,6 +97,7 @@ namespace AlphaKop {
             IConfigurationRoot config
         ) {
             services.Configure<SupremeConfig>(config.GetSection("Supreme"));
+            services.Configure<CaptchaConfig>(config.GetSection("CaptchaResolver"));
         }
 
         private static IConfigurationRoot GetConfiguration() {

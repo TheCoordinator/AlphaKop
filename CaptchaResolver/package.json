@@ -1,16 +1,29 @@
 {
-  "name": "captcha-resolver",
-  "version": "1.0.0",
-  "description": "Captcha Resolver",
-  "main": "main.js",
-  "scripts": {
-    "start": "electron ."
-  },
-  "author": "Peyman Khanjan",
-  "dependencies": {
-    "body-parser": "^1.19.0",
-    "electron": "^3.1.13",
-    "express": "^4.17.1",
-    "moment": "^2.24.0"
-  }
+    "name": "captcha-resolver",
+    "version": "1.0.0",
+    "description": "Captcha Resolver",
+    "scripts": {
+        "build": "tsc",
+        "html": "copyfiles app/**/*.html app/**/*.css dist/",
+        "buildApp": "npm run build && npm run html",
+        "watch": "tsc -w",
+        "lint": "tslint -c tslint.json -p tsconfig.json",
+        "start": "npm run buildApp && electron ./dist/app/main.js"
+    },
+    "author": "Peyman Khanjan",
+    "dependencies": {
+        "body-parser": "^1.19.0",
+        "electron": "^6.0.8",
+        "express": "^4.17.1",
+        "moment": "^2.24.0",
+        "morgan": "^1.10.0"
+    },
+    "devDependencies": {
+        "@types/express": "^4.17.3",
+        "@types/morgan": "^1.9.0",
+        "@types/node": "^13.9.5",
+        "copyfiles": "^2.2.0",
+        "tslint": "^5.19.0",
+        "typescript": "^3.8.3"
+    }
 }

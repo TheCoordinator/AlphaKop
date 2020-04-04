@@ -46,5 +46,16 @@ namespace AlphaKop.Supreme.Flows {
             step.Retries = retries;
             return step;
         }
+
+        public static ICaptchaStep CreateCaptchaStep(
+            this IServiceProvider provider,
+            SupremeJob job,
+            int retries = 0
+        ) {
+            var step = provider.GetRequiredService<ICaptchaStep>();
+            step.Job = job;
+            step.Retries = retries;
+            return step;
+        }
     }
 }

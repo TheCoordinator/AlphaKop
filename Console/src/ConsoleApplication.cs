@@ -36,8 +36,8 @@ namespace AlphaKop {
                 profile: profile,
                 region: SupremeRegion.EU,
                 categoryName: null,
-                keywords: "studded ls top",
-                style: "navy",
+                keywords: "stitch pocket",
+                style: "black",
                 size: null
             );
         }

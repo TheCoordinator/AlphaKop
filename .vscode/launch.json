@@ -5,6 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "node",
+            "request": "launch",
+            "name": "Captcha Resolver",
+            "cwd": "${workspaceFolder}/CaptchaResolver",
+            "preLaunchTask": "buildCaptchaResolver",
+            "runtimeExecutable": "${workspaceFolder}/CaptchaResolver/node_modules/.bin/electron",
+            "program": "${workspaceFolder}/CaptchaResolver/dist/app/main.js",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
             "name": "Console",
             "type": "coreclr",
             "request": "launch",
@@ -17,17 +29,6 @@
             "console": "internalConsole",
             "stopAtEntry": false
         },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Captcha Resolver",
-            "runtimeExecutable": "${workspaceFolder}/CaptchaResolver/node_modules/.bin/electron",
-            "program": "${workspaceFolder}/CaptchaResolver/main.js",
-            "cwd": "${workspaceFolder}/CaptchaResolver",
-            "skipFiles": [
-                "CaptchaResolver/<node_internals>/**"
-            ]
-        },        
         {
             "name": ".NET Core Attach",
             "type": "coreclr",
