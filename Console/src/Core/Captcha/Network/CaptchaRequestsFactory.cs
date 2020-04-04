@@ -38,5 +38,10 @@ namespace AlphaKop.Core.Captcha.Network {
 
             return message;
         }
+
+        public HttpRequestMessage FetchCaptcha => new HttpRequestMessage {
+            RequestUri = new Uri(baseUrl + "/fetch"),
+            Method = HttpMethod.Get
+        };
     }
 }

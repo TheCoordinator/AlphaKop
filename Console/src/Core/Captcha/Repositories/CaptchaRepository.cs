@@ -5,6 +5,7 @@ using AlphaKop.Core.Captcha.Config;
 using AlphaKop.Core.Captcha.Network;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace AlphaKop.Core.Captcha.Repositories {
     public sealed class CaptchaRepository : ICaptchaRepository {
@@ -35,8 +36,18 @@ namespace AlphaKop.Core.Captcha.Repositories {
             response.EnsureSuccessStatusCode();
         }
 
-        public Task<CaptchaResponse?> FetchCaptcha() {
-            throw new NotImplementedException();
+        public async Task<CaptchaResponse> FetchCaptcha() {
+            return await SendJsonRequest<CaptchaResponse>(
+                request: requestsFactory.FetchCaptcha
+            );
+        }
+
+        private async Task<T> SendJsonRequest<T>(HttpRequestMessage request) {
+            var response = await client.SendAsync(request: request);
+            response.EnsureSuccessStatusCode();
+
+            var jsonString = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<T>(jsonString);
         }
 
         #region Factory
