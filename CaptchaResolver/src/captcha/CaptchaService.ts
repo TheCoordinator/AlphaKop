@@ -1,5 +1,6 @@
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
+import * as morgan from 'morgan'
 import * as moment from 'moment'
 import { Server } from 'http'
 import { EventHandler } from '../shared/events/Event'
@@ -64,6 +65,7 @@ export class CaptchaService implements ICaptchaService {
         this.api.set('port', this.port)
         this.api.use(bodyParser.json())
         this.api.use(bodyParser.urlencoded({ extended: true }))
+        this.api.use(morgan('dev'))
     }
 
     private setupRequests() {
