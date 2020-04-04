@@ -49,13 +49,23 @@ namespace AlphaKop.Supreme.Flows {
                 );
 
                 if (response.Any(r => r.InStock == true)) {
-                    // Next Step
+                    // TODO: Add Cookies
+
+                    var captchaParam = new CaptchaStepParameter(
+                        item: parameter.Item,
+                        style: parameter.Style,
+                        size: parameter.Size,
+                        pooky: parameter.Pooky
+                    );
+
+                    await provider.CreateCaptchaStep(job)
+                        .Execute(captchaParam);
                 } else {
                     await provider.CreateAddBasketStep(job, Retries + 1)
                         .Execute(parameter);
                 }
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "Failed to retrieve ItemDetails");
+                logger.LogError(JobEventId, ex, "Failed to retrieve AddBasket");
 
                 await provider.CreateAddBasketStep(job, Retries + 1)
                     .Execute(parameter);

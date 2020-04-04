@@ -2,16 +2,32 @@ using System;
 using Newtonsoft.Json;
 
 namespace AlphaKop.Core.Captcha.Network {
-    public sealed class CaptchaResponse {
-        public string Token { get; }
-        public DateTime Date { get; }
-        public string host { get; }
+    public sealed class CaptchaResponse
+    {
+        [JsonProperty("captcha")]
+        public Captcha Captcha { get; }
 
         [JsonConstructor]
-        public CaptchaResponse(string token, DateTime date, string host) {
+        public CaptchaResponse(Captcha captcha) {
+            Captcha = captcha;
+        }
+    }
+
+    public sealed class Captcha {
+        [JsonProperty("token")]
+        public string Token { get; }
+
+        [JsonProperty("timestamp")]
+        public DateTime Timestamp { get; }
+
+        [JsonProperty("host")]
+        public string Host { get; }
+
+        [JsonConstructor]
+        public Captcha(string token, DateTime timestamp, string host) {
             Token = token;
-            Date = date;
-            this.host = host;
+            Timestamp = timestamp;
+            Host = host;
         }
     }
 }
