@@ -6,8 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Models;
-using AlphaKop.Supreme.Requests;
-using AlphaKop.Supreme.Responses;
+using AlphaKop.Supreme.Network;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -41,10 +40,10 @@ namespace AlphaKop.Supreme.Repositories {
                 request: requestsFactory.GetItemDetails(itemId: item.Id)
             );
 
-            Style[] styles = result.SelectToken("styles")?
+            ItemStyle[] styles = result.SelectToken("styles")?
                 .Children()
-                .Select(e => e.ToObject<Style>())
-                .ToArray() ?? Array.Empty<Style>();
+                .Select(e => e.ToObject<ItemStyle>())
+                .ToArray() ?? Array.Empty<ItemStyle>();
 
             return new ItemDetails(item: item, styles: styles);
         }

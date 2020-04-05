@@ -2,15 +2,15 @@ using AlphaKop.Supreme.Models;
 
 namespace AlphaKop.Supreme.Flows {
     public struct CaptchaStepParameter {
-        public Item Item { get; internal set; }
-        public Style Style { get; internal set; }
-        public Size Size { get; internal set; }
-        public Pooky Pooky { get; internal set; }
+        public Item Item { get; }
+        public ItemStyle Style { get; }
+        public ItemSize Size { get; }
+        public Pooky Pooky { get; }
 
         public CaptchaStepParameter(
             Item item,
-            Style style,
-            Size size,
+            ItemStyle style,
+            ItemSize size,
             Pooky pooky
         ) {
             Item = item;

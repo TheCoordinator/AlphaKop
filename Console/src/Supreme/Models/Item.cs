@@ -6,13 +6,13 @@ namespace AlphaKop.Supreme.Models {
         public string Id { get; }
 
         [JsonProperty("name")]
-        public string Name { get; internal set; }
+        public string Name { get; }
 
         [JsonProperty("new_item")]
-        public bool? NewItem { get; internal set; }
+        public bool? NewItem { get; }
 
         [JsonProperty("category_name")]
-        public string? CategoryName { get; internal set; }
+        public string? CategoryName { get; }
 
         [JsonConstructor]
         public Item(string id, string name, bool? newItem, string? categoryName) {

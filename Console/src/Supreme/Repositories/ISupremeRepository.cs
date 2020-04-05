@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AlphaKop.Supreme.Models;
-using AlphaKop.Supreme.Requests;
-using AlphaKop.Supreme.Responses;
+using AlphaKop.Supreme.Network;
 
 namespace AlphaKop.Supreme.Repositories {
     public interface ISupremeRepository {

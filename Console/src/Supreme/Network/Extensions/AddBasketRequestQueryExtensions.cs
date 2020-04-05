@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Web;
 
-namespace AlphaKop.Supreme.Requests.Extensions {
+namespace AlphaKop.Supreme.Network.Extensions {
     static class AddBasketRequestQueryExtensions {
         public static FormUrlEncodedContent ToFormUrlEncodedContent(this AddBasketRequest request) {
             return new FormUrlEncodedContent(new[] {

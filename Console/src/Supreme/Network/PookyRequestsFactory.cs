@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Http;
 using AlphaKop.Supreme.Models;
 
-namespace AlphaKop.Supreme.Requests {
+namespace AlphaKop.Supreme.Network {
     sealed class PookyRequestsFactory {
         private readonly string baseUrl;
         private readonly string authentication;

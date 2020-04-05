@@ -1,6 +1,6 @@
 using System.Net.Http;
 
-namespace AlphaKop.Supreme.Requests {
+namespace AlphaKop.Supreme.Network {
     static class SupremeHttpClientExtensions {
         public static string GetSupremeMobileUserAgent(this HttpClient client) 
         {

@@ -1,14 +1,14 @@
 namespace AlphaKop.Core.Models.User {
     public struct Address {
-        public string FirstName { get; internal set; }
-        public string LastName { get; internal set; }
-        public string LineOne { get; internal set; }
-        public string? LineTwo { get; internal set; }
-        public string? LineThree { get; internal set; }
-        public string City { get; internal set; }
-        public string? State { get; internal set; }
-        public string CountryCode { get; internal set; }
-        public string PostCode { get; internal set; }
+        public string FirstName { get; }
+        public string LastName { get; }
+        public string LineOne { get; }
+        public string? LineTwo { get; }
+        public string? LineThree { get; }
+        public string City { get; }
+        public string? State { get; }
+        public string CountryCode { get; }
+        public string PostCode { get; }
 
         public Address(
             string firstName,

@@ -2,10 +2,10 @@ using System.Linq;
 
 namespace AlphaKop.Supreme.Models {
     public struct ItemDetails {
-        public Item Item { get; internal set; }
-        public Style[] Styles { get; internal set; }
+        public Item Item { get; }
+        public ItemStyle[] Styles { get; }
 
-        public ItemDetails(Item item, Style[] styles) {
+        public ItemDetails(Item item, ItemStyle[] styles) {
             Item = item;
             Styles = styles;
         }

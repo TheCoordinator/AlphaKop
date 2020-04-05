@@ -82,14 +82,14 @@ namespace AlphaKop.Supreme.Flows {
 
         #region Style
 
-        private Style FindStyle(ItemDetails details, SupremeJob job) {
+        private ItemStyle FindStyle(ItemDetails details, SupremeJob job) {
             var styles = details.Styles;
 
             if (styles.Count() == 0) {
                 throw new StyleNotFoundException(null, itemId: details.Item.Id, styleName: job.Style);
             }
 
-            Style? result;
+            ItemStyle? result;
 
             if (job.Style != null) {
                 result = FindMatchingStyle(styles: styles, styleName: job.Style);
@@ -104,7 +104,7 @@ namespace AlphaKop.Supreme.Flows {
             return result.Value;
         }
 
-        private Style? FindAvailableStyle(IEnumerable<Style> styles) {
+        private ItemStyle? FindAvailableStyle(IEnumerable<ItemStyle> styles) {
             if (styles.Count() == 1) {
                 return styles.FirstOrDefault();
             }
@@ -116,7 +116,7 @@ namespace AlphaKop.Supreme.Flows {
                 });
         }
 
-        private Style? FindMatchingStyle(IEnumerable<Style> styles, string styleName) {
+        private ItemStyle? FindMatchingStyle(IEnumerable<ItemStyle> styles, string styleName) {
             var styleNames = styles
                 .Select(style => style.Name);
 
@@ -133,7 +133,7 @@ namespace AlphaKop.Supreme.Flows {
 
         #region Size
 
-        private Size FindSize(Item item, Style style, SupremeJob job) {
+        private ItemSize FindSize(Item item, ItemStyle style, SupremeJob job) {
             var sizes = style.Sizes;
 
             if (sizes.Count() == 0) {
@@ -144,7 +144,7 @@ namespace AlphaKop.Supreme.Flows {
                 return sizes.FirstOrDefault();
             }
 
-            Size? result;
+            ItemSize? result;
 
             if (job.Size != null) {
                 result = FindMatchingSize(item: item, sizes: sizes, sizeName: job.Size);
@@ -159,7 +159,7 @@ namespace AlphaKop.Supreme.Flows {
             return result.Value;
         }
 
-        private Size? FindAvailableSize(Item item, IEnumerable<Size> sizes) {
+        private ItemSize? FindAvailableSize(Item item, IEnumerable<ItemSize> sizes) {
             if (sizes.Count() == 1) {
                 return sizes.FirstOrDefault();
             }
@@ -168,8 +168,8 @@ namespace AlphaKop.Supreme.Flows {
                 .First(size => size.isStockAvailable == true);
         }
 
-        private Size? FindMatchingSize(Item item, IEnumerable<Size> sizes, string sizeName) {
-            Size? result;
+        private ItemSize? FindMatchingSize(Item item, IEnumerable<ItemSize> sizes, string sizeName) {
+            ItemSize? result;
 
             try {
                 if (item.CategoryName?.ToLower() == "shoes") {
@@ -186,7 +186,7 @@ namespace AlphaKop.Supreme.Flows {
             return FindSizeByText(sizes: sizes, sizeName: sizeName);
         }
 
-        private Size? FindShoesSize(IEnumerable<Size> sizes, string sizeName) {
+        private ItemSize? FindShoesSize(IEnumerable<ItemSize> sizes, string sizeName) {
             if (sizeName.Length == 1) {
                 // For some reason textMathing can't detect number characters
                 return sizes
@@ -196,17 +196,17 @@ namespace AlphaKop.Supreme.Flows {
             return FindSizeByText(sizes: sizes, sizeName: sizeName);
         }
 
-        private Size? FindClothingSize(IEnumerable<Size> sizes, string sizeName) {
-            var clothingSize = StyleSizeTypeUtil.From(sizeName);
+        private ItemSize? FindClothingSize(IEnumerable<ItemSize> sizes, string sizeName) {
+            var clothingSize = ItemStyleSizeTypeUtil.From(sizeName);
             if (clothingSize == null) {
                 return null;
             }
 
             return sizes
-                .First(size => StyleSizeTypeUtil.From(size.Name) == clothingSize);
+                .First(size => ItemStyleSizeTypeUtil.From(size.Name) == clothingSize);
         }
 
-        private Size? FindSizeByText(IEnumerable<Size> sizes, string sizeName) {
+        private ItemSize? FindSizeByText(IEnumerable<ItemSize> sizes, string sizeName) {
             var sizeNames = sizes
                 .Select(size => size.Name);
 

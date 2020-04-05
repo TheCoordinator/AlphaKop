@@ -4,10 +4,10 @@ using Newtonsoft.Json;
 namespace AlphaKop.Supreme.Models {
     public struct Stock {
         [JsonProperty("products_and_categories")]
-        public Dictionary<string, Item[]> Items { get; internal set; }
+        public Dictionary<string, Item[]> Items { get; }
 
         [JsonProperty("release_week")]
-        public string? ReleaseWeek { get; internal set; }
+        public string? ReleaseWeek { get; }
 
         [JsonConstructor]
         public Stock(Dictionary<string, Item[]> items,

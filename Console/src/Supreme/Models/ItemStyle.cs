@@ -2,33 +2,33 @@ using System.Linq;
 using Newtonsoft.Json;
 
 namespace AlphaKop.Supreme.Models {
-    public struct Style {
+    public struct ItemStyle {
         [JsonProperty("id")]
-        public string Id { get; internal set; }
+        public string Id { get; }
 
         [JsonProperty("name")]
-        public string Name { get; internal set; }
+        public string Name { get; }
 
         [JsonProperty("currency")]
-        public string? Currency { get; internal set; }
+        public string? Currency { get; }
 
         [JsonProperty("image_url")]
-        public string? ImageUrl { get; internal set; }
+        public string? ImageUrl { get; }
 
         [JsonProperty("image_url_hi")]
-        public string? ImageUrlHigh { get; internal set; }
+        public string? ImageUrlHigh { get; }
 
         [JsonProperty("sizes")]
-        public Size[] Sizes { get; internal set; }
+        public ItemSize[] Sizes { get; }
 
         [JsonConstructor]
-        public Style(
+        public ItemStyle(
             string id,
             string name,
             string? currency,
             string? imageUrl,
             string? imageUrlHigh,
-            Size[] sizes
+            ItemSize[] sizes
         ) {
             Id = id;
             Name = name;
@@ -40,7 +40,7 @@ namespace AlphaKop.Supreme.Models {
 
         public override bool Equals(object? obj) {
             if (obj == null) { return false; }
-            return ((Style)obj).Id == Id;
+            return ((ItemStyle)obj).Id == Id;
         }
 
         public override int GetHashCode() {
