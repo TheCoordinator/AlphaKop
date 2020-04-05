@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace AlphaKop.Supreme.Models {
     public struct PookyPageData {
         [JsonProperty("mappings")]
-        public PookyCheckoutMapping[] Mappings { get; }
+        public IEnumerable<PookyCheckoutMapping> Mappings { get; }
 
         [JsonProperty("siteKey")]
         public string SiteKey { get; }
@@ -16,7 +17,7 @@ namespace AlphaKop.Supreme.Models {
 
         [JsonConstructor]
         public PookyPageData(
-            PookyCheckoutMapping[] mappings,
+            IEnumerable<PookyCheckoutMapping> mappings,
             string siteKey,
             string region,
             PookyCart cart

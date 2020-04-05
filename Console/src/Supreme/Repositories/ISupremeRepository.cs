@@ -7,6 +7,6 @@ namespace AlphaKop.Supreme.Repositories {
     public interface ISupremeRepository {
         Task<Stock> FetchStock();
         Task<ItemDetails> FetchItemDetails(Item item);
-        Task<IEnumerable<AddBasketResponse>> AddBasket(AddBasketRequest basketRequest);
+        Task<AddBasketResponse> AddBasket(AddBasketRequest basketRequest);
     }
 }

@@ -1,23 +1,17 @@
-using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Net;
 
 namespace AlphaKop.Supreme.Network {
     public struct AddBasketResponse {
-        [JsonProperty("size_id")]
-        public string SizeId { get; }
+        public IEnumerable<ItemAddBasketSizeStock> ItemSizesStock { get; }
+        public IEnumerable<Cookie> ResponseCookies { get; }
 
-        [JsonProperty("in_stock")]
-        public bool InStock { get; }
-
-        [JsonConstructor]
-        public AddBasketResponse(string sizeId, bool inStock) {
-            SizeId = sizeId;
-            InStock = inStock;
+        public AddBasketResponse(
+            IEnumerable<ItemAddBasketSizeStock> itemSizesStock,
+            IEnumerable<Cookie> responseCookies
+        ) {
+            ItemSizesStock = itemSizesStock;
+            ResponseCookies = responseCookies;
         }
-
-        public override string ToString() {
-            return
-                $"SizeId: {SizeId}\n" +
-                $"InStock: {InStock}";
-        }        
     }
 }

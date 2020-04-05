@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
@@ -19,7 +20,7 @@ namespace AlphaKop.Supreme.Models {
         public string? ImageUrlHigh { get; }
 
         [JsonProperty("sizes")]
-        public ItemSize[] Sizes { get; }
+        public IEnumerable<ItemSize> Sizes { get; }
 
         [JsonConstructor]
         public ItemStyle(
@@ -28,7 +29,7 @@ namespace AlphaKop.Supreme.Models {
             string? currency,
             string? imageUrl,
             string? imageUrlHigh,
-            ItemSize[] sizes
+            IEnumerable<ItemSize> sizes
         ) {
             Id = id;
             Name = name;
