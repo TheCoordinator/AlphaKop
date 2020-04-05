@@ -1,6 +1,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
-using AlphaKop.Core.Network.Extensions;
+using AlphaKop.Core.Network.Http;
 using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Network;
@@ -25,7 +25,9 @@ namespace AlphaKop.Supreme.Repositories {
         }
 
         public async Task<Pooky> FetchPooky(PookyRegion region) {
-            return await client.SendJsonRequest<Pooky>(request: requestsFactory.Pooky(region));
+            return await client.ReadJsonAsync<Pooky>(
+                request: requestsFactory.Pooky(region)
+            );
         }
     }
 }

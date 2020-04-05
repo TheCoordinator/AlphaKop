@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -31,6 +34,20 @@ namespace AlphaKop.Core.Network.Http {
             }
 
             throw new HttpRequestException(msg);
+        }
+
+        public static IEnumerable<Cookie> GetCookies(this HttpResponseMessage response) {
+            response.Headers.TryGetValues("Set-Cookie", out var setCookie);
+            
+            if (setCookie == null) {
+                return Array.Empty<Cookie>();
+            }
+
+            return setCookie
+                .Select(cookie => cookie.Split(';'))
+                .Select(cookies => cookies.FirstOrDefault())
+                .Select(cookie => cookie.Split('='))
+                .Select(cookieValues => new Cookie(name: cookieValues[0], value: cookieValues[1]));
         }
     }
 }

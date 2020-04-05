@@ -45,10 +45,10 @@ namespace AlphaKop.Supreme.Flows {
                 logger.LogInformation(
                     JobEventId,
                     $"Add Basket Response Item: {request.ItemId} Style: {request.StyleId}, Size: {request.SizeId}\n" +
-                    string.Join("\n", response.Select(r => r.ToString()))
+                    string.Join("\n", response.ItemSizesStock.Select(r => r.ToString()))
                 );
 
-                if (response.Any(r => r.InStock == true)) {
+                if (response.ItemSizesStock.Any(r => r.InStock == true)) {
                     // TODO: Add Cookies
 
                     var captchaParam = new CaptchaStepParameter(
