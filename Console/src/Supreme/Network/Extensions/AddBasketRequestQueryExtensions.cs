@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
-using System.Web;
 
 namespace AlphaKop.Supreme.Network.Extensions {
     static class AddBasketRequestQueryExtensions {

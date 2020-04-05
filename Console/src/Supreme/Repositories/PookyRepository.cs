@@ -1,13 +1,11 @@
-using System;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AlphaKop.Core.Network.Extensions;
 using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Network;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace AlphaKop.Supreme.Repositories {
     sealed class PookyRepository : IPookyRepository {
@@ -22,36 +20,12 @@ namespace AlphaKop.Supreme.Repositories {
                 baseUrl: baseUrl,
                 authentication: config.Value.PookyAuthentication
             );
-            this.client = CreateHttpClient(baseUrl: baseUrl);
+            this.client = SupremeHttpClientFactory.CreateHttpClient(baseUrl: baseUrl);
             this.logger = logger;
         }
 
         public async Task<Pooky> FetchPooky(PookyRegion region) {
-            return await SendJsonRequest<Pooky>(request: requestsFactory.Pooky(region));
+            return await client.SendJsonRequest<Pooky>(request: requestsFactory.Pooky(region));
         }
-
-        private async Task<T> SendJsonRequest<T>(HttpRequestMessage request) {
-            var response = await client.SendAsync(request: request);
-            response.EnsureSuccessStatusCode();
-
-            var jsonString = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(jsonString);
-        }
-
-        #region Factory
-
-        private static HttpClient CreateHttpClient(string baseUrl) {
-            var client = new HttpClient() { BaseAddress = new Uri(uriString: baseUrl) };
-
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Add(
-                name: HttpRequestHeader.UserAgent.ToString(),
-                value: client.GetSupremeMobileUserAgent()
-            );
-
-            return client;
-        }
-
-        #endregion
     }
 }

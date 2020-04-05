@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AlphaKop.Core.Captcha.Config;
 using AlphaKop.Core.Captcha.Network;
+using AlphaKop.Core.Network.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -37,17 +38,9 @@ namespace AlphaKop.Core.Captcha.Repositories {
         }
 
         public async Task<CaptchaResponse> FetchCaptcha() {
-            return await SendJsonRequest<CaptchaResponse>(
+            return await client.SendJsonRequest<CaptchaResponse>(
                 request: requestsFactory.FetchCaptcha
             );
-        }
-
-        private async Task<T> SendJsonRequest<T>(HttpRequestMessage request) {
-            var response = await client.SendAsync(request: request);
-            response.EnsureSuccessStatusCode();
-
-            var jsonString = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(jsonString);
         }
 
         #region Factory
