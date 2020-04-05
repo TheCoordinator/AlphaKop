@@ -47,6 +47,17 @@ namespace AlphaKop.Supreme.Flows {
             return step;
         }
 
+        public static IFetchPookyTicketStep CreateFetchPookyTicketStep(
+            this IServiceProvider provider,
+            SupremeJob job,
+            int retries = 0
+        ) {
+            var step = provider.GetRequiredService<IFetchPookyTicketStep>();
+            step.Job = job;
+            step.Retries = retries;
+            return step;
+        }
+
         public static ICaptchaStep CreateCaptchaStep(
             this IServiceProvider provider,
             SupremeJob job,

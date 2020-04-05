@@ -27,15 +27,15 @@ namespace AlphaKop.Supreme.Flows {
             try {
                 if (Retries >= maxRetries) {
                     await provider.CreateFetchItemDetailsStep(job)
-                        .Execute(parameter.Item);
+                        .Execute(parameter.SelectedItem.Item);
 
                     return;
                 }
 
                 var request = new AddBasketRequest(
-                    itemId: parameter.Item.Id,
-                    sizeId: parameter.Size.Id,
-                    styleId: parameter.Style.Id,
+                    itemId: parameter.SelectedItem.Item.Id,
+                    sizeId: parameter.SelectedItem.Size.Id,
+                    styleId: parameter.SelectedItem.Style.Id,
                     quantity: 1,
                     pooky: parameter.Pooky
                 );
@@ -48,18 +48,16 @@ namespace AlphaKop.Supreme.Flows {
                     string.Join("\n", response.ItemSizesStock.Select(r => r.ToString()))
                 );
 
-                if (response.ItemSizesStock.Any(r => r.InStock == true)) {
-                    // TODO: Add Cookies
-
-                    var captchaParam = new CaptchaStepParameter(
-                        item: parameter.Item,
-                        style: parameter.Style,
-                        size: parameter.Size,
+                if (response.ItemSizesStock.Any(r => r.InStock == true) && response.Ticket != null) {
+                    var pookyTicketParam = new PookyTicketStepParameter(
+                        selectedItem: parameter.SelectedItem,
+                        basketResponse: response,
+                        basketTicket: response.Ticket,
                         pooky: parameter.Pooky
                     );
 
-                    await provider.CreateCaptchaStep(job)
-                        .Execute(captchaParam);
+                    await provider.CreateFetchPookyTicketStep(job)
+                        .Execute(pookyTicketParam);
                 } else {
                     await provider.CreateAddBasketStep(job, Retries + 1)
                         .Execute(parameter);
