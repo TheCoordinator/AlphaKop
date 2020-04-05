@@ -1,8 +1,8 @@
 namespace AlphaKop.Supreme.Config {
     public sealed class SupremeConfig {
-        public string SupremeBaseUrl { get; set; } = "";
-        public string PookyBaseUrl { get; set; } = "";
-        public string PookyAuthentication { get; set; } = "";
-        public string SupremeCaptchaHost { get; set; } = "";
+        public string SupremeBaseUrl { get; set; } = string.Empty;
+        public string PookyBaseUrl { get; set; } = string.Empty;
+        public string PookyAuthentication { get; set; } = string.Empty;
+        public string SupremeCaptchaHost { get; set; } = string.Empty;
     }
 }
