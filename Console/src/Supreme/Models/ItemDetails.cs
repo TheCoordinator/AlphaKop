@@ -1,11 +1,12 @@
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AlphaKop.Supreme.Models {
     public struct ItemDetails {
         public Item Item { get; }
-        public ItemStyle[] Styles { get; }
+        public IEnumerable<ItemStyle> Styles { get; }
 
-        public ItemDetails(Item item, ItemStyle[] styles) {
+        public ItemDetails(Item item, IEnumerable<ItemStyle> styles) {
             Item = item;
             Styles = styles;
         }

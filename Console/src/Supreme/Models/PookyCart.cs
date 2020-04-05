@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace AlphaKop.Supreme.Models {
@@ -6,10 +7,10 @@ namespace AlphaKop.Supreme.Models {
         public string Url { get; }
 
         [JsonProperty("properties")]
-        public PookyCartProperty[] Properties { get; }
+        public IEnumerable<PookyCartProperty> Properties { get; }
 
         [JsonConstructor]
-        public PookyCart(string url, PookyCartProperty[] properties) {
+        public PookyCart(string url, IEnumerable<PookyCartProperty> properties) {
             Url = url;
             Properties = properties;
         }

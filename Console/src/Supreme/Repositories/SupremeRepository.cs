@@ -40,10 +40,9 @@ namespace AlphaKop.Supreme.Repositories {
                 request: requestsFactory.GetItemDetails(itemId: item.Id)
             );
 
-            ItemStyle[] styles = result.SelectToken("styles")?
+            var styles = result.SelectToken("styles")?
                 .Children()
-                .Select(e => e.ToObject<ItemStyle>())
-                .ToArray() ?? Array.Empty<ItemStyle>();
+                .Select(e => e.ToObject<ItemStyle>()) ?? Array.Empty<ItemStyle>();
 
             return new ItemDetails(item: item, styles: styles);
         }

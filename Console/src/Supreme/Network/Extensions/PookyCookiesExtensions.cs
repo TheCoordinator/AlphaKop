@@ -12,7 +12,7 @@ namespace AlphaKop.Supreme.Network.Extensions {
             return string.Join("; ", cookiesStringArray);
         }
 
-        public static Dictionary<string, string> ToAddToCartCookies(this PookyCookies pookyCookies) {
+        public static IDictionary<string, string> ToAddToCartCookies(this PookyCookies pookyCookies) {
             IDictionary<string, string>[] dictionaries = { 
                 pookyCookies.AddToCartCookies, pookyCookies.StaticCookies 
             };
