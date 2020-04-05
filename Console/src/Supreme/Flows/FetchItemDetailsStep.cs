@@ -54,7 +54,7 @@ namespace AlphaKop.Supreme.Flows {
                 );
 
                 if (size.isStockAvailable == true) {
-                    var pookyParam = new PookyStepParameter(
+                    var pookyParam = new SelectedItemParameter(
                         item: parameter,
                         style: style,
                         size: size

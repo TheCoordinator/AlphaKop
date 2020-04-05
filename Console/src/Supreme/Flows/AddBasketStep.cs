@@ -27,15 +27,15 @@ namespace AlphaKop.Supreme.Flows {
             try {
                 if (Retries >= maxRetries) {
                     await provider.CreateFetchItemDetailsStep(job)
-                        .Execute(parameter.Item);
+                        .Execute(parameter.SelectedItem.Item);
 
                     return;
                 }
 
                 var request = new AddBasketRequest(
-                    itemId: parameter.Item.Id,
-                    sizeId: parameter.Size.Id,
-                    styleId: parameter.Style.Id,
+                    itemId: parameter.SelectedItem.Item.Id,
+                    sizeId: parameter.SelectedItem.Size.Id,
+                    styleId: parameter.SelectedItem.Style.Id,
                     quantity: 1,
                     pooky: parameter.Pooky
                 );
@@ -52,9 +52,7 @@ namespace AlphaKop.Supreme.Flows {
                     // TODO: Add Cookies
 
                     var captchaParam = new CaptchaStepParameter(
-                        item: parameter.Item,
-                        style: parameter.Style,
-                        size: parameter.Size,
+                        selectedItem: parameter.SelectedItem,
                         pooky: parameter.Pooky
                     );
 
