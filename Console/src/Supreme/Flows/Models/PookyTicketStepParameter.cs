@@ -2,22 +2,22 @@ using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Network;
 
 namespace AlphaKop.Supreme.Flows {
-    public struct CaptchaStepParameter {
+    public struct PookyTicketStepParameter {
         public SelectedItemParameter SelectedItem { get; }
         public AddBasketResponse BasketResponse { get; }
+        public string BasketTicket { get; }
         public Pooky Pooky { get; }
-        public PookyTicket PookyTicket { get; }
 
-        public CaptchaStepParameter(
+        public PookyTicketStepParameter(
             SelectedItemParameter selectedItem,
             AddBasketResponse basketResponse,
-            Pooky pooky,
-            PookyTicket pookyTicket
+            string basketTicket,
+            Pooky pooky
         ) {
             SelectedItem = selectedItem;
             BasketResponse = basketResponse;
+            BasketTicket = basketTicket;
             Pooky = pooky;
-            PookyTicket = pookyTicket;
         }
     }
 }

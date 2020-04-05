@@ -9,6 +9,7 @@ namespace AlphaKop.Supreme.Flows {
     public interface IFetchPookyStep : ITaskStep<SelectedItemParameter, SupremeJob> { }
 
     sealed class FetchPookyStep : BaseStep<SelectedItemParameter>, IFetchPookyStep {
+        private const int maxRetries = 10;
         private readonly IPookyRepository pookyRepository;
         private readonly ILogger<FetchPookyStep> logger;
 
@@ -22,6 +23,13 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         protected override async Task Execute(SelectedItemParameter parameter, SupremeJob job) {
+            if (Retries >= maxRetries) {
+                await provider.CreateFetchItemDetailsStep(job)
+                    .Execute(parameter.Item);
+
+                return;
+            }
+
             try {
                 var pookyRegion = PookyRegionUtil.From(job.Region);
                 var pooky = await pookyRepository.FetchPooky(pookyRegion);
@@ -35,10 +43,10 @@ namespace AlphaKop.Supreme.Flows {
                     selectedItem: parameter,
                     pooky: pooky
                 );
-                
+
                 await provider.CreateAddBasketStep(job)
                     .Execute(addBasketParam);
-                    
+
             } catch (Exception ex) {
                 logger.LogError(JobEventId, ex, "Failed to Fetch Pooky");
 

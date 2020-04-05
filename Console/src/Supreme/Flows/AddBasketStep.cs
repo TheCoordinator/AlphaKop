@@ -48,16 +48,16 @@ namespace AlphaKop.Supreme.Flows {
                     string.Join("\n", response.ItemSizesStock.Select(r => r.ToString()))
                 );
 
-                if (response.ItemSizesStock.Any(r => r.InStock == true)) {
-                    // TODO: Add Cookies
-
-                    var captchaParam = new CaptchaStepParameter(
+                if (response.ItemSizesStock.Any(r => r.InStock == true) && response.Ticket != null) {
+                    var pookyTicketParam = new PookyTicketStepParameter(
                         selectedItem: parameter.SelectedItem,
+                        basketResponse: response,
+                        basketTicket: response.Ticket,
                         pooky: parameter.Pooky
                     );
 
-                    await provider.CreateCaptchaStep(job)
-                        .Execute(captchaParam);
+                    await provider.CreateFetchPookyTicketStep(job)
+                        .Execute(pookyTicketParam);
                 } else {
                     await provider.CreateAddBasketStep(job, Retries + 1)
                         .Execute(parameter);

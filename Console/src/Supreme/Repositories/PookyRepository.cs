@@ -30,7 +30,7 @@ namespace AlphaKop.Supreme.Repositories {
             );
         }
 
-        public async Task<PookyTicket> FetchPookyTickte(PookyRegion region, string ticket) {
+        public async Task<PookyTicket> FetchPookyTicket(PookyRegion region, string ticket) {
             return await client.ReadJsonAsync<PookyTicket>(
                 request: requestsFactory.PookyTicket(region: region, ticket: ticket)
             );
