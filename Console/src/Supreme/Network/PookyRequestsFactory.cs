@@ -24,6 +24,17 @@ namespace AlphaKop.Supreme.Network {
             };
         }
 
+        public HttpRequestMessage PookyTicket(PookyRegion region, string ticket) {
+            string regionName = RegionName(region: region);
+            return new HttpRequestMessage {
+                RequestUri = new Uri(baseUrl + $"/{regionName}/ticket/{ticket}"),
+                Method = HttpMethod.Get,
+                Headers = {
+                   { "Auth", authentication }
+                }
+            };
+        }
+
         private string RegionName(PookyRegion region) {
             switch (region) {
                 case PookyRegion.EU:

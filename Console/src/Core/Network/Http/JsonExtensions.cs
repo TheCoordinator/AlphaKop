@@ -11,7 +11,7 @@ namespace AlphaKop.Core.Network.Http {
             return JsonConvert.DeserializeObject<T>(json);
         }
 
-		public static async Task<JObject> ReadJsonObjectAsync(
+        public static async Task<JObject> ReadJsonObjectAsync(
             this HttpContent content
         ) {
             var jsonString = await content.ReadAsStringAsync();
