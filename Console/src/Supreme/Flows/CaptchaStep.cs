@@ -1,12 +1,9 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using AlphaKop.Core.Captcha.Network;
 using AlphaKop.Core.Captcha.Repositories;
 using AlphaKop.Core.Flows;
 using AlphaKop.Supreme.Config;
-using AlphaKop.Supreme.Repositories;
-using AlphaKop.Supreme.Requests;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

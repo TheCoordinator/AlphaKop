@@ -1,12 +1,12 @@
 using Newtonsoft.Json;
 
-namespace AlphaKop.Supreme.Responses {
+namespace AlphaKop.Supreme.Network {
     public struct AddBasketResponse {
         [JsonProperty("size_id")]
-        public string SizeId { get; internal set; }
+        public string SizeId { get; }
 
         [JsonProperty("in_stock")]
-        public bool InStock { get; internal set; }
+        public bool InStock { get; }
 
         [JsonConstructor]
         public AddBasketResponse(string sizeId, bool inStock) {

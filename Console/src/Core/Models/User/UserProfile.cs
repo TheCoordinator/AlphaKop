@@ -1,10 +1,10 @@
 namespace AlphaKop.Core.Models.User {
     public struct UserProfile {
-        public string Name { get; internal set; }
-        public string Email { get; internal set; }
-        public string PhoneNumber { get; internal set; }
-        public Address Address { get; internal set; }
-        public CardDetails CardDetails { get; internal set; }
+        public string Name { get; }
+        public string Email { get; }
+        public string PhoneNumber { get; }
+        public Address Address { get; }
+        public CardDetails CardDetails { get; }
 
         public UserProfile (
             string name,

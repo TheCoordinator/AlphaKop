@@ -2,13 +2,13 @@ using AlphaKop.Core.Models.User;
 
 namespace AlphaKop.Supreme.Models {
     public struct SupremeTask {
-        public UserProfile Profile { get; internal set; }
-        public string? CategoryName { get; internal set; }
-        public string? Keywords { get; internal set; }
-        public string? Style { get; internal set; }
-        public string? Size { get; internal set; }
-        public int CheckoutDelay { get; internal set; }
-        public int RetryDelay { get; internal set; }
+        public UserProfile Profile { get; }
+        public string? CategoryName { get; }
+        public string? Keywords { get; }
+        public string? Style { get; }
+        public string? Size { get; }
+        public int CheckoutDelay { get; }
+        public int RetryDelay { get; }
 
         public SupremeTask(
             UserProfile profile,

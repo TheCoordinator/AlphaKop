@@ -1,10 +1,9 @@
 using System;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using AlphaKop.Supreme.Requests.Extensions;
+using AlphaKop.Supreme.Network.Extensions;
 
-namespace AlphaKop.Supreme.Requests {
+namespace AlphaKop.Supreme.Network {
     sealed class SupremeRequestsFactory {
         private readonly string baseUrl;
 
@@ -25,7 +24,7 @@ namespace AlphaKop.Supreme.Requests {
         public HttpRequestMessage AddBasket(AddBasketRequest basketRequest) {
             var uriBuilder = new UriBuilder(baseUrl + $"/shop/{basketRequest.ItemId}/add.json");
 
-            var cookies = basketRequest.Pooky.ToAddToCartCookiesString();
+            var cookies = basketRequest.Pooky.Cookies.ToAddToCartCookiesString();
 
             var message = new HttpRequestMessage() {
                 RequestUri = uriBuilder.Uri,

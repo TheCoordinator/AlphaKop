@@ -1,12 +1,12 @@
 using AlphaKop.Supreme.Models;
 
-namespace AlphaKop.Supreme.Requests {
+namespace AlphaKop.Supreme.Network {
     public struct AddBasketRequest {
-        public string ItemId { get; internal set; }
-        public string SizeId { get; internal set; }
-        public string StyleId { get; internal set; }
-        public int Quantity { get; internal set; }
-        public Pooky Pooky { get; internal set; }
+        public string ItemId { get; }
+        public string SizeId { get; }
+        public string StyleId { get; }
+        public int Quantity { get; }
+        public Pooky Pooky { get; }
 
         public AddBasketRequest(
             string itemId,

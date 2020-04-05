@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AlphaKop.Core.Flows;
 using AlphaKop.Supreme.Repositories;
-using AlphaKop.Supreme.Requests;
+using AlphaKop.Supreme.Network;
 using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {

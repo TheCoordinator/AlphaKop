@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Models;
-using AlphaKop.Supreme.Requests;
+using AlphaKop.Supreme.Network;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace AlphaKop.Supreme.Models {
-    enum StyleSizeType {
+    enum ItemStyleSizeType {
         XXS,
         XS,
         S,
@@ -12,22 +12,22 @@ namespace AlphaKop.Supreme.Models {
         XXL
     }
 
-    sealed class StyleSizeTypeUtil {
-        public static StyleSizeType? From(string size) {
+    sealed class ItemStyleSizeTypeUtil {
+        public static ItemStyleSizeType? From(string size) {
             if (IsXXSmall(size)) {
-                return StyleSizeType.XXS;
+                return ItemStyleSizeType.XXS;
             } else if (IsXSmall(size)) {
-                return StyleSizeType.XS;
+                return ItemStyleSizeType.XS;
             } else if (IsSmall(size)) {
-                return StyleSizeType.S;
+                return ItemStyleSizeType.S;
             } else if (IsMedium(size)) {
-                return StyleSizeType.M;
+                return ItemStyleSizeType.M;
             } else if (IsLarge(size)) {
-                return StyleSizeType.L;
+                return ItemStyleSizeType.L;
             } else if (IsXLarge(size)) {
-                return StyleSizeType.XL;
+                return ItemStyleSizeType.XL;
             } else if (IsXXLarge(size)) {
-                return StyleSizeType.XXL;
+                return ItemStyleSizeType.XXL;
             }
 
             return null;           

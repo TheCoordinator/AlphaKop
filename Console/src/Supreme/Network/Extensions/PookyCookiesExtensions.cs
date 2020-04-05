@@ -2,21 +2,20 @@ using System.Collections.Generic;
 using System.Linq;
 using AlphaKop.Supreme.Models;
 
-namespace AlphaKop.Supreme.Requests.Extensions {
+namespace AlphaKop.Supreme.Network.Extensions {
     static class PookyCookiesExtensions {
-        public static string ToAddToCartCookiesString(this Pooky pooky) {
-            var cookies = ToAddToCartCookies(pooky);
+        public static string ToAddToCartCookiesString(this PookyCookies pookyCookies) {
+            var cookies = ToAddToCartCookies(pookyCookies);
             var cookiesStringArray = cookies
                 .Select(pair => $"{pair.Key}={pair.Value}");
 
             return string.Join("; ", cookiesStringArray);
         }
 
-        public static Dictionary<string, string> ToAddToCartCookies(this Pooky pooky) {
-            var addToCart = pooky.Cookies.AddToCart.ToCookies();
-            var staticData = pooky.Cookies.StaticData.ToCookies();
-
-            Dictionary<string, string>[] dictionaries = { addToCart, staticData };
+        public static Dictionary<string, string> ToAddToCartCookies(this PookyCookies pookyCookies) {
+            IDictionary<string, string>[] dictionaries = { 
+                pookyCookies.AddToCartCookies, pookyCookies.StaticCookies 
+            };
 
             return dictionaries
                 .SelectMany(dict => dict)

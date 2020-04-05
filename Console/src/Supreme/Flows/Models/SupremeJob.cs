@@ -3,18 +3,18 @@ using AlphaKop.Core.Models.User;
 
 namespace AlphaKop.Supreme.Flows {
     public struct SupremeJob : IJob {
-        public string JobId { get; internal set; }
-        public int JobEventId { get; internal set; }
+        public string JobId { get; }
+        public int JobEventId { get; }
 
-        public UserProfile Profile { get; internal set; }
-        public SupremeRegion Region { get; internal set; }
+        public UserProfile Profile { get; }
+        public SupremeRegion Region { get; }
 
-        public string? CategoryName { get; internal set; }
-        public string Keywords { get; internal set; }
-        public string? Style { get; internal set; }
-        public string? Size { get; internal set; }
-        public int CheckoutDelay { get; internal set; }
-        public int StartDelay { get; internal set; }
+        public string? CategoryName { get; }
+        public string Keywords { get; }
+        public string? Style { get; }
+        public string? Size { get; }
+        public int CheckoutDelay { get; }
+        public int StartDelay { get; }
 
         public SupremeJob(
             UserProfile profile,
