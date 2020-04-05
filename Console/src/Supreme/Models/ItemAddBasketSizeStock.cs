@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 
 namespace AlphaKop.Supreme.Network {
-    public struct AddBasketStockAvailability {
+    public struct ItemAddBasketSizeStock {
         [JsonProperty("size_id")]
         public string SizeId { get; }
 
@@ -9,7 +9,7 @@ namespace AlphaKop.Supreme.Network {
         public bool InStock { get; }
 
         [JsonConstructor]
-        public AddBasketStockAvailability(string sizeId, bool inStock) {
+        public ItemAddBasketSizeStock(string sizeId, bool inStock) {
             SizeId = sizeId;
             InStock = inStock;
         }
