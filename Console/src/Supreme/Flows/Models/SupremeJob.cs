@@ -7,7 +7,7 @@ namespace AlphaKop.Supreme.Flows {
         public int JobEventId { get; }
 
         public UserProfile Profile { get; }
-        public SupremeRegion Region { get; }
+        public string Region { get; }
 
         public string? CategoryName { get; }
         public string Keywords { get; }
@@ -18,7 +18,7 @@ namespace AlphaKop.Supreme.Flows {
 
         public SupremeJob(
             UserProfile profile,
-            SupremeRegion region,
+            string region,
             string jobId,
             int jobEventId,
             string? categoryName,

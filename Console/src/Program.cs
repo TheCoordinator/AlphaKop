@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading;
+using AlphaKop.ConsoleApp;
 using AlphaKop.Core.Captcha.Config;
 using AlphaKop.Core.Captcha.Repositories;
 using AlphaKop.Core.Services.TextMatching;
@@ -32,6 +33,7 @@ namespace AlphaKop {
             logger = serviceProvider.GetService<ILogger<Program>>();
 
             var application = serviceProvider.GetService<ConsoleApplication>();
+            application.CsvTaskPath = args[0];
 
             application.Run();
 

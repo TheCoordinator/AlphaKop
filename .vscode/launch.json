@@ -23,7 +23,9 @@
             "preLaunchTask": "buildConsole",
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/Console/src/bin/Debug/netcoreapp3.1/Console.dll",
-            "args": [],
+            "args": [
+                "${workspaceFolder}/Console/src/supreme.csv"
+            ],
             "cwd": "${workspaceFolder}/Console/src",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
