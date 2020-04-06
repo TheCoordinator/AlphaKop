@@ -27,7 +27,7 @@ namespace AlphaKop.ConsoleApp {
                 throw new ArgumentException("Task path not provided");
             }
 
-            var tasks = new SupremeParser(CsvTaskPath)
+            var tasks = new SupremeCsvParser(CsvTaskPath)
                 .Parse()
                 .Select(job => {
                     var task = provider.GetRequiredService<ISupremeStartStep>();
