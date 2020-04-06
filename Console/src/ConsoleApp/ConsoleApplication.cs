@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using AlphaKop.ConsoleApp.Csv;
 using AlphaKop.Core.Models.User;
 using AlphaKop.Supreme.Flows;
@@ -21,21 +22,22 @@ namespace AlphaKop.ConsoleApp {
 
         public async void Run() {
             logger.LogDebug("Starting Application");
-            
+
             if (CsvTaskPath.Length == 0) {
                 throw new ArgumentException("Task path not provided");
             }
 
-            var jobs = new SupremeParser(CsvTaskPath)
-                .Parse();
+            var tasks = new SupremeParser(CsvTaskPath)
+                .Parse()
+                .Select(job => {
+                    var task = provider.GetRequiredService<ISupremeStartStep>();
+                    task.Job = job;
+                    return task;
+                });
 
-            // var profile = CreateUserProfile();
-            // var job = CreateSupremeJob(profile: profile);
-
-            // var start = provider.GetRequiredService<ISupremeStartStep>();
-            // start.Job = job;
-            
-            // await start.Execute(job);
+            foreach (var task in tasks) {
+                await task.Execute(task.Job.GetValueOrDefault());
+            }
         }
     }
 }
