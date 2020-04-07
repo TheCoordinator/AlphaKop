@@ -65,6 +65,9 @@ namespace AlphaKop.ConsoleApp.Csv {
         [Name("job.size")]
         public string? JobSize { get; set; } = null;
 
+        [Name("job.quantity")]
+        public int JobQuantity { get; set; } = 1;
+
         [Name("job.start_delay")]
         public int JobStartDelay { get; set; } = 1000;
     }
