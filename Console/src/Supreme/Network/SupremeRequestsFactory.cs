@@ -48,5 +48,21 @@ namespace AlphaKop.Supreme.Network {
 
             return message;
         }
+
+        public HttpRequestMessage Checkout(ICheckoutRequest request) {
+            var uriBuilder = new UriBuilder(baseUrl + $"/checkout.json");
+            var cookies = GetCheckoutCookies(request);
+
+
+        }
+
+        private string GetCheckoutCookies(ICheckoutRequest request) {
+            return new List<IEnumerable<Cookie>>() {
+                request.Pooky.Cookies.StaticCookies,
+                request.Pooky.Cookies.CheckoutCookies,
+                request.BasketResponse.ResponseCookies,
+                new Cookie[] { new Cookie(name: "ticket", value: request.PookyTicket.Ticket) }
+            }.ToCookiesString();
+        }
     }
 }
