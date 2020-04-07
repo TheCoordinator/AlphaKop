@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using AlphaKop.ConsoleApp.Csv;
 using AlphaKop.Core.Models.User;
 using AlphaKop.Supreme.Flows;
@@ -33,11 +34,10 @@ namespace AlphaKop.ConsoleApp {
                     var task = provider.GetRequiredService<ISupremeStartStep>();
                     task.Job = job;
                     return task;
-                });
+                })
+                .Select(task => task.Execute(task.Job.GetValueOrDefault()));
 
-            foreach (var task in tasks) {
-                await task.Execute(task.Job.GetValueOrDefault());
-            }
+            await Task.WhenAll(tasks);
         }
     }
 }
