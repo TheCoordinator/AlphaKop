@@ -63,5 +63,9 @@ namespace AlphaKop.Supreme.Repositories {
                 responseCookies: cookies
             );
         }
+
+        public Task Checkout(ICheckoutRequest request) {
+            throw new NotImplementedException();
+        }
     }
 }
