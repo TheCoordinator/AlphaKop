@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using AlphaKop.Core.CreditCard;
-using AlphaKop.Supreme.Models;
 
 using FormValue = System.Collections.Generic.KeyValuePair<string, string>;
 
@@ -42,6 +41,13 @@ namespace AlphaKop.Supreme.Network.Extensions {
 
             return new HashSet<FormValue>() {
                 new FormValue("cookie-sub", json)
+            };
+        }
+
+        private static ISet<FormValue> GetCaptchaValues(ICheckoutRequest request) {
+            var captcha = request.Captcha;
+            return new HashSet<FormValue>() {
+                new FormValue("g-recaptcha-response", captcha.Token)
             };
         }
 

@@ -49,7 +49,16 @@ namespace AlphaKop.Supreme.Flows {
                 if (captcha.Host == config.SupremeCaptchaHost) {
                     await captchaRepository.CancelTriggerCaptcha(request: request);
 
-                    // Next Step
+                    var checkoutStepParameter = new CheckoutStepParameter(
+                        selectedItem: parameter.SelectedItem,
+                        basketResponse: parameter.BasketResponse,
+                        pooky: parameter.Pooky,
+                        pookyTicket: parameter.PookyTicket,
+                        captcha: captcha
+                    );
+
+                    await provider.CreateCheckoutStep(job, 0)
+                        .Execute(checkoutStepParameter);
                 } else {
                     await provider.CreateCaptchaStep(job, Retries + 1)
                         .Execute(parameter);

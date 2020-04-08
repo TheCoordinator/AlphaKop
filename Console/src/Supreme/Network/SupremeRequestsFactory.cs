@@ -59,7 +59,19 @@ namespace AlphaKop.Supreme.Network {
             var uriBuilder = new UriBuilder(baseUrl + $"/checkout.json");
             var cookies = GetCheckoutCookies(request);
 
-            throw new NotImplementedException();
+            var message = new HttpRequestMessage() {
+                RequestUri = uriBuilder.Uri,
+                Method = HttpMethod.Post
+            };
+
+            message.Content = request.ToFormUrlEncodedContent(creditCardFormatter: creditCardFormatter);
+
+            message.Headers.Add(
+                name: HttpRequestHeader.Cookie.ToString(),
+                value: cookies
+            );
+
+            return message;
         }
 
         private string GetCheckoutCookies(ICheckoutRequest request) {

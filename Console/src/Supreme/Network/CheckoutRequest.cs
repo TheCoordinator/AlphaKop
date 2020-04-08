@@ -1,3 +1,4 @@
+using AlphaKop.Core.Captcha.Network;
 using AlphaKop.Core.Models.User;
 using AlphaKop.Supreme.Models;
 
@@ -10,6 +11,7 @@ namespace AlphaKop.Supreme.Network {
         public AddBasketResponse BasketResponse { get; }
         public Pooky Pooky { get; }
         public PookyTicket PookyTicket { get; }
+        public Captcha Captcha { get; }
         public UserProfile Profile { get; }
 
         public CheckoutRequest(
@@ -20,6 +22,7 @@ namespace AlphaKop.Supreme.Network {
             AddBasketResponse basketResponse,
             Pooky pooky,
             PookyTicket pookyTicket,
+            Captcha captcha,
             UserProfile profile
         ) {
             ItemId = itemId;
@@ -29,7 +32,8 @@ namespace AlphaKop.Supreme.Network {
             BasketResponse = basketResponse;
             Pooky = pooky;
             PookyTicket = pookyTicket;
-            this.Profile = profile;
+            Captcha = captcha;
+            Profile = profile;
         }
     }
 }

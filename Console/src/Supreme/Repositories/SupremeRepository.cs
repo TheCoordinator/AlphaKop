@@ -66,8 +66,12 @@ namespace AlphaKop.Supreme.Repositories {
             );
         }
 
-        public Task Checkout(ICheckoutRequest request) {
-            throw new NotImplementedException();
+        public async Task Checkout(ICheckoutRequest request) {
+            var response = await client.SendAsync(
+                request: requestsFactory.Checkout(request: request)
+            );
+
+            await response.EnsureSuccess();
         }
     }
 }

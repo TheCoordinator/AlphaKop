@@ -81,6 +81,7 @@ namespace AlphaKop {
             services.AddTransient<IAddBasketStep, AddBasketStep>();
             services.AddTransient<IFetchPookyTicketStep, FetchPookyTicketStep>();
             services.AddTransient<ICaptchaStep, CaptchaStep>();
+            services.AddTransient<ICheckoutStep, CheckoutStep>();
         }
 
         private static void ConfigureApplication(IServiceCollection services) {

@@ -68,5 +68,16 @@ namespace AlphaKop.Supreme.Flows {
             step.Retries = retries;
             return step;
         }
+
+        public static ICheckoutStep CreateCheckoutStep(
+            this IServiceProvider provider,
+            SupremeJob job,
+            int retries = 0
+        ) {
+            var step = provider.GetRequiredService<ICheckoutStep>();
+            step.Job = job;
+            step.Retries = retries;
+            return step;
+        }        
     }
 }
