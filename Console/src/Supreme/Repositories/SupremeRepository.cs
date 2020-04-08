@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AlphaKop.Core.CreditCard;
 using AlphaKop.Core.Network.Http;
 using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Models;
@@ -19,10 +20,11 @@ namespace AlphaKop.Supreme.Repositories {
 
         public SupremeRepository(
             IOptions<SupremeConfig> config,
+            ICreditCardFormatter creditCardFormatter,
             ILogger<SupremeRepository> logger
         ) {
             this.baseUrl = config.Value.SupremeBaseUrl;
-            this.requestsFactory = new SupremeRequestsFactory(baseUrl: baseUrl);
+            this.requestsFactory = new SupremeRequestsFactory(baseUrl: baseUrl, creditCardFormatter: creditCardFormatter);
             this.client = SupremeHttpClientFactory.CreateHttpClient(baseUrl: baseUrl);
             this.logger = logger;
         }

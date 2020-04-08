@@ -69,9 +69,9 @@ namespace AlphaKop.ConsoleApp.Csv {
             }
 
             return new UserProfile(
-                name: csv.ProfileName,
-                email: csv.ProfileEmail,
-                phoneNumber: csv.ProfilePhoneNumber,
+                name: csv.ProfileName.Trim(),
+                email: csv.ProfileEmail.Trim().ToLower(),
+                phoneNumber: csv.ProfilePhoneNumber.Trim().ToLower(),
                 address: ToAddress(csv),
                 cardDetails: cardDetails.Value
             );
@@ -94,15 +94,15 @@ namespace AlphaKop.ConsoleApp.Csv {
 
         private Address ToAddress(SupremeJobCsv csv) {
             return new Address(
-                firstName: csv.AddressFirstName,
-                lastName: csv.AddressLastName,
-                lineOne: csv.AddressLineOne,
+                firstName: csv.AddressFirstName.Trim(),
+                lastName: csv.AddressLastName.Trim(),
+                lineOne: csv.AddressLineOne.Trim(),
                 lineTwo: csv.AddressLineTwo?.NullIfEmptyTrimmed(),
                 lineThree: csv.AddressLineThree?.NullIfEmptyTrimmed(),
-                city: csv.AddressCity,
+                city: csv.AddressCity.Trim(),
                 state: csv.AddressState?.NullIfEmptyTrimmed(),
-                countryCode: csv.AddressCountryCode,
-                postCode: csv.AddressPostCode
+                countryCode: csv.AddressCountryCode.Trim().ToUpper(),
+                postCode: csv.AddressPostCode.Trim()
             );
         }
     }

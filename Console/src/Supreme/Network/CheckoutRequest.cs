@@ -10,7 +10,7 @@ namespace AlphaKop.Supreme.Network {
         public AddBasketResponse BasketResponse { get; }
         public Pooky Pooky { get; }
         public PookyTicket PookyTicket { get; }
-        public UserProfile profile { get; }
+        public UserProfile Profile { get; }
 
         public CheckoutRequest(
             string itemId,
@@ -29,7 +29,7 @@ namespace AlphaKop.Supreme.Network {
             BasketResponse = basketResponse;
             Pooky = pooky;
             PookyTicket = pookyTicket;
-            this.profile = profile;
+            this.Profile = profile;
         }
     }
 }

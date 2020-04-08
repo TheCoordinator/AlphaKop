@@ -10,6 +10,6 @@ namespace AlphaKop.Supreme.Network {
         AddBasketResponse BasketResponse { get; }
         Pooky Pooky { get; }
         PookyTicket PookyTicket { get; }
-        UserProfile profile { get; }
+        UserProfile Profile { get; }
     }
 }

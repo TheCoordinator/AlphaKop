@@ -2,14 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using AlphaKop.Core.CreditCard;
 using AlphaKop.Supreme.Network.Extensions;
 
 namespace AlphaKop.Supreme.Network {
     sealed class SupremeRequestsFactory {
         private readonly string baseUrl;
+        private readonly ICreditCardFormatter creditCardFormatter;
 
-        public SupremeRequestsFactory(string baseUrl) {
+        public SupremeRequestsFactory(
+            string baseUrl,
+            ICreditCardFormatter creditCardFormatter
+        ) {
             this.baseUrl = baseUrl;
+            this.creditCardFormatter = creditCardFormatter;
         }
 
         public HttpRequestMessage MobileStock => new HttpRequestMessage {
@@ -53,7 +59,7 @@ namespace AlphaKop.Supreme.Network {
             var uriBuilder = new UriBuilder(baseUrl + $"/checkout.json");
             var cookies = GetCheckoutCookies(request);
 
-
+            throw new NotImplementedException();
         }
 
         private string GetCheckoutCookies(ICheckoutRequest request) {

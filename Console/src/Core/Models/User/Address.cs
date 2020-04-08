@@ -1,3 +1,6 @@
+using System.Linq;
+using AlphaKop.Core.System.Extensions;
+
 namespace AlphaKop.Core.Models.User {
     public struct Address {
         public string FirstName { get; }
@@ -9,6 +12,14 @@ namespace AlphaKop.Core.Models.User {
         public string? State { get; }
         public string CountryCode { get; }
         public string PostCode { get; }
+
+        public string FullName {
+            get {
+                return new string[]{ FirstName, LastName }
+                    .Select(s => s.NullIfEmptyTrimmed())
+                    .JoinStrings(' ');
+            }
+        }
 
         public Address(
             string firstName,
