@@ -59,6 +59,7 @@ namespace AlphaKop {
         private static void ConfigureCore(IServiceCollection services) {
             services.AddTransient<ITextMatching, TextMatching>();
             services.AddTransient<ICreditCardValidator, DefaultCreditCardValidator>();
+            services.AddTransient<ICreditCardFormatter, CreditCardFormatter>();
             services.AddSingleton<ICaptchaRepository, CaptchaRepository>();
         }
 
