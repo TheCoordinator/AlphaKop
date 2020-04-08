@@ -20,15 +20,6 @@ namespace AlphaKop.Core.CreditCard {
             );
         }
 
-        public string FormatCardNumber(CreditCardData cardData) {
-            switch (cardData.Issuer) {
-                case CardIssuer.AmericanExpress:
-                    return String.Format("{0:0000 000000 00000}", (Int64.Parse(cardData.CardNumber)));
-                default:
-                    return String.Format("{0:0000 0000 0000 0000}", (Int64.Parse(cardData.CardNumber)));
-            }
-        }
-
         private CardIssuer ConvertIssuer(CreditCardValidator.CardIssuer brand) {
             switch (brand) {
                 case CreditCardValidator.CardIssuer.Visa:
