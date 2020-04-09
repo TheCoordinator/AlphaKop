@@ -10,7 +10,7 @@ namespace AlphaKop.Supreme.Flows {
     public interface ICheckoutStep : ITaskStep<CheckoutStepParameter, SupremeJob> { }
 
     sealed class CheckoutStep : BaseStep<CheckoutStepParameter>, ICheckoutStep {
-        private const int maxRetries = 10;
+        private const int maxRetries = 5;
         private readonly ISupremeRepository supremeRepository;
         private readonly ILogger<CheckoutStep> logger;
 
@@ -32,46 +32,94 @@ namespace AlphaKop.Supreme.Flows {
                     return;
                 }
 
-                var request = new CheckoutRequest(
-                    itemId: parameter.SelectedItem.Item.Id,
-                    sizeId: parameter.SelectedItem.Size.Id,
-                    styleId: parameter.SelectedItem.Style.Id,
-                    quantity: 1,
-                    basketResponse: parameter.BasketResponse,
-                    pooky: parameter.Pooky,
-                    pookyTicket: parameter.PookyTicket,
-                    captcha: parameter.Captcha,
-                    profile: job.Profile
+                var response = await PerformCheckout(parameter, job);
+                await PerformPostCheckoutResponse(
+                    response: response,
+                    parameter: parameter,
+                    job: job
                 );
-
-                await supremeRepository.Checkout(request);
-
-                // logger.LogInformation(
-                //     JobEventId,
-                //     $"Add Basket Response Item: {request.ItemId} Style: {request.StyleId}, Size: {request.SizeId}\n" +
-                //     string.Join("\n", response.ItemSizesStock.Select(r => r.ToString()))
-                // );
-
-                // if (response.ItemSizesStock.Any(r => r.InStock == true) && response.Ticket != null) {
-                //     var pookyTicketParam = new PookyTicketStepParameter(
-                //         selectedItem: parameter.SelectedItem,
-                //         basketResponse: response,
-                //         basketTicket: response.Ticket,
-                //         pooky: parameter.Pooky
-                //     );
-
-                //     await provider.CreateFetchPookyTicketStep(job)
-                //         .Execute(pookyTicketParam);
-                // } else {
-                //     await provider.CreateCheckoutStep(job, Retries + 1)
-                //         .Execute(parameter);
-                // }
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "Failed to retrieve Checkout");
+                logger.LogError(JobEventId, ex, "Failed to retrieve Checkout Response");
 
                 await provider.CreateCheckoutStep(job, Retries + 1)
                     .Execute(parameter);
             }
+        }
+
+        private async Task<CheckoutResponse> PerformCheckout(CheckoutStepParameter parameter, SupremeJob job) {
+            var request = new CheckoutRequest(
+                itemId: parameter.SelectedItem.Item.Id,
+                sizeId: parameter.SelectedItem.Size.Id,
+                styleId: parameter.SelectedItem.Style.Id,
+                quantity: 1,
+                basketResponse: parameter.BasketResponse,
+                pooky: parameter.Pooky,
+                pookyTicket: parameter.PookyTicket,
+                captcha: parameter.Captcha,
+                profile: job.Profile
+            );
+
+            return await supremeRepository.Checkout(request);
+        }
+
+        private async Task PerformPostCheckoutResponse(CheckoutResponse response, CheckoutStepParameter parameter, SupremeJob job) {
+            LogResponse(response, parameter);
+
+            var status = response.Status.Status;
+
+            if (status == "paid") {
+                await PerformPostCheckoutPaid(response, parameter, job);
+            } else if (status == "queued" && response.Status.Slug != null) {
+                await PerformPostCheckoutQueued(response.Status.Slug, response, parameter, job);
+            } else if (status == "failed") {
+                await PerformPostCheckoutFailed(response, parameter, job);
+            } else {
+                // Not Sure What happened here. Could be outOfStock or an unknwon state. Check the logs
+                await RevertToItemDetails(parameter.SelectedItem, job);
+            }
+        }
+
+        private async Task PerformPostCheckoutPaid(CheckoutResponse response, CheckoutStepParameter parameter, SupremeJob job) {
+            // TODO
+            await Task.Delay(1);
+        }
+
+        private async Task PerformPostCheckoutQueued(string slug, CheckoutResponse response, CheckoutStepParameter parameter, SupremeJob job) {
+            // TODO
+            await Task.Delay(1);
+        }
+
+        private async Task PerformPostCheckoutFailed(CheckoutResponse response, CheckoutStepParameter parameter, SupremeJob job) {
+            var purchaseAttempt = response.Status.PurchaseAttempt;
+
+            if (purchaseAttempt == null || purchaseAttempt.Value.SoldOut == true) {
+                await RevertToItemDetails(parameter.SelectedItem, job);
+                return;
+            }
+
+            await RevertToFetchPooky(parameter, job);
+        }
+
+        private async Task RevertToFetchPooky(CheckoutStepParameter parameter, SupremeJob job) {
+            var selectedItem = parameter.SelectedItem;
+
+            await provider.CreateFetchPookyStep(job)
+                .Execute(selectedItem);
+        }
+
+        private async Task RevertToItemDetails(SelectedItemParameter itemParameter, SupremeJob job) {
+            var item = itemParameter.Item;
+
+            await provider.CreateFetchItemDetailsStep(job)
+                .Execute(item);
+        }
+
+        private void LogResponse(CheckoutResponse response, CheckoutStepParameter parameter) {
+            var selectedItem = parameter.SelectedItem;
+            logger.LogInformation(
+                JobEventId, 
+                $@"--[CheckoutStep] Status [{response.Status.Status}] {parameter.SelectedItem.ToString()}"
+            );
         }
     }
 }

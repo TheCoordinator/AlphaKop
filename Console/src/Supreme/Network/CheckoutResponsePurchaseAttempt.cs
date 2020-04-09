@@ -23,9 +23,6 @@ namespace AlphaKop.Supreme.Network {
         [JsonProperty("Category")]
         public string? Category { get; }
 
-        [JsonProperty("Sold Out?")]
-        public bool SoldOut { get; }
-
         [JsonProperty("Product Name")]
         public string? ProductName { get; }
 
@@ -41,8 +38,20 @@ namespace AlphaKop.Supreme.Network {
         [JsonProperty("Product Cost")]
         public string? ProductCost { get; }
 
+        [JsonProperty("Failure Reason")]
+        public string? FailureReason { get; }
+
+        [JsonProperty("Sold Out?")]
+        private bool InternalSoldOut { get; }
+
         [JsonProperty("Success?")]
         public bool Success { get; }
+
+        public bool SoldOut {
+            get {
+                return InternalSoldOut == true || FailureReason?.ToLower() == "sold out";
+            }
+        }
 
         [JsonConstructor]
         public CheckoutResponsePurchaseAttempt(
@@ -53,12 +62,13 @@ namespace AlphaKop.Supreme.Network {
             string? shippingCity,
             string? shippingCountry,
             string? category,
-            bool soldOut,
+            bool soldOutInternal,
             string? productName,
             string? productNumber,
             string? productColor,
             string? productSize,
             string? productCost,
+            string? failureReason,
             bool success
         ) {
             ReleaseDate = releaseDate;
@@ -68,12 +78,13 @@ namespace AlphaKop.Supreme.Network {
             ShippingCity = shippingCity;
             ShippingCountry = shippingCountry;
             Category = category;
-            SoldOut = soldOut;
             ProductName = productName;
             ProductNumber = productNumber;
             ProductColor = productColor;
             ProductSize = productSize;
             ProductCost = productCost;
+            FailureReason = failureReason;
+            InternalSoldOut = soldOutInternal;
             Success = success;
         }
     }

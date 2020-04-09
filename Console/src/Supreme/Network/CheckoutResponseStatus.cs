@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace AlphaKop.Supreme.Network {
@@ -7,7 +8,7 @@ namespace AlphaKop.Supreme.Network {
         public string Status { get; }
 
         [JsonProperty("slug")]
-        public string? slug { get; }
+        public string? Slug { get; }
 
         [JsonProperty("id")]
         public string? Id { get; }
@@ -18,19 +19,30 @@ namespace AlphaKop.Supreme.Network {
         [JsonProperty("mpa")]
         public IEnumerable<CheckoutResponsePurchaseAttempt>? PurchaseAttempts { get; }
 
+        [JsonProperty("mps")]
+        public CheckoutResponsePurchaseSale? PurchaseSale { get; }
+
+        public CheckoutResponsePurchaseAttempt? PurchaseAttempt {
+            get {
+                return PurchaseAttempts?.FirstOrDefault();
+            }
+        }
+
         [JsonConstructor]
         public CheckoutResponseStatus(
             string status,
             string? slug,
             string? id,
             CheckoutResponseInfo? info,
-            IEnumerable<CheckoutResponsePurchaseAttempt>? purchaseAttempts
+            IEnumerable<CheckoutResponsePurchaseAttempt>? purchaseAttempts,
+            CheckoutResponsePurchaseSale? purchaseSale
         ) {
             Status = status;
-            this.slug = slug;
+            this.Slug = slug;
             Id = id;
             Info = info;
             PurchaseAttempts = purchaseAttempts;
+            PurchaseSale = purchaseSale;
         }
     }
 }
