@@ -6,15 +6,15 @@ namespace AlphaKop.Supreme.Models {
         public string Name { get; }
 
         [JsonProperty("mapping")]
-        public string MappingMapping { get; }
+        public string? Mapping { get; }
 
         [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
         public string? Value { get; }
 
         [JsonConstructor]
-        public PookyCheckoutMapping(string name, string mappingMapping, string? value) {
+        public PookyCheckoutMapping(string name, string? mapping, string? value) {
             Name = name;
-            MappingMapping = mappingMapping;
+            Mapping = mapping;
             Value = value;
         }
     }

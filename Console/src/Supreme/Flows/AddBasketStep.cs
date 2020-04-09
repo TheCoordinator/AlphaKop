@@ -42,11 +42,7 @@ namespace AlphaKop.Supreme.Flows {
 
                 var response = await supremeRepository.AddBasket(request);
 
-                logger.LogInformation(
-                    JobEventId,
-                    $"Add Basket Response Item: {request.ItemId} Style: {request.StyleId}, Size: {request.SizeId}\n" +
-                    string.Join("\n", response.ItemSizesStock.Select(r => r.ToString()))
-                );
+                LogResponse(response, parameter);
 
                 if (response.ItemSizesStock.Any(r => r.InStock == true) && response.Ticket != null) {
                     var pookyTicketParam = new PookyTicketStepParameter(
@@ -63,11 +59,19 @@ namespace AlphaKop.Supreme.Flows {
                         .Execute(parameter);
                 }
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "Failed to retrieve AddBasket");
+                logger.LogError(JobEventId, ex, "--[AddBasket] Error");
 
                 await provider.CreateAddBasketStep(job, Retries + 1)
                     .Execute(parameter);
             }
+        }
+
+        private void LogResponse(AddBasketResponse response, AddBasketStepParameter parameter) {
+            var selectedItem = parameter.SelectedItem;
+            logger.LogInformation(
+                JobEventId,
+                $@"--[AddBasket] Status [In Stock] {parameter.SelectedItem.ToString()}"
+            );
         }
     }
 }

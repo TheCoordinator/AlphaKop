@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using AlphaKop.Core.CreditCard;
 using AlphaKop.Core.Models.User;
 using AlphaKop.Core.System.Extensions;
 using AlphaKop.Supreme.Flows;
@@ -11,9 +12,11 @@ using CsvHelper.Configuration;
 namespace AlphaKop.ConsoleApp.Csv {
     sealed class SupremeCsvParser {
         private readonly string SupremeTaskFilePath;
+        private readonly ICreditCardValidator creditCardValidator;
 
-        public SupremeCsvParser(string supremeTaskFilePath) {
+        public SupremeCsvParser(string supremeTaskFilePath, ICreditCardValidator creditCardValidator) {
             SupremeTaskFilePath = supremeTaskFilePath;
+            this.creditCardValidator = creditCardValidator;
         }
 
         public IEnumerable<SupremeJob> Parse() {
@@ -25,7 +28,9 @@ namespace AlphaKop.ConsoleApp.Csv {
                     .ToList()
                     .Select((csvValue, index) => {
                         return ToSupremeJob(csvValue, index);
-                    });
+                    })
+                    .Where(job => job != null)
+                    .Select(job => job.GetValueOrDefault());
             }
         }
 
@@ -35,9 +40,15 @@ namespace AlphaKop.ConsoleApp.Csv {
             config.HasHeaderRecord = true;
         }
 
-        private SupremeJob ToSupremeJob(SupremeJobCsv csv, int index) {
+        private SupremeJob? ToSupremeJob(SupremeJobCsv csv, int index) {
+            var profile = ToUserProfile(csv);
+
+            if (profile == null) {
+                return null;
+            }
+
             return new SupremeJob(
-                profile: ToUserProfile(csv),
+                profile: profile.Value,
                 region: csv.JobRegion,
                 jobId: index.ToString(),
                 jobEventId: index,
@@ -45,40 +56,53 @@ namespace AlphaKop.ConsoleApp.Csv {
                 keywords: csv.JobKeywords,
                 style: csv.JobStyle?.NullIfEmptyTrimmed(),
                 size: csv.JobSize?.NullIfEmptyTrimmed(),
+                quantity: csv.JobQuantity,
                 startDelay: csv.JobStartDelay
             );
         }
 
-        private UserProfile ToUserProfile(SupremeJobCsv csv) {
+        private UserProfile? ToUserProfile(SupremeJobCsv csv) {
+            var cardDetails = ToCardDetails(csv);
+
+            if (cardDetails == null) {
+                return null;
+            }
+
             return new UserProfile(
-                name: csv.ProfileName,
-                email: csv.ProfileEmail,
-                phoneNumber: csv.ProfilePhoneNumber,
+                name: csv.ProfileName.Trim(),
+                email: csv.ProfileEmail.Trim().ToLower(),
+                phoneNumber: csv.ProfilePhoneNumber.Trim().ToLower(),
                 address: ToAddress(csv),
-                cardDetails: ToCardDetails(csv)
+                cardDetails: cardDetails.Value
             );
         }
 
-        private CardDetails ToCardDetails(SupremeJobCsv csv) {
+        private CardDetails? ToCardDetails(SupremeJobCsv csv) {
+            var cardData = creditCardValidator.GetCardData(csv.CardNumber);
+
+            if (cardData == null) {
+                return null;
+            }
+
             return new CardDetails(
-                cardNumber: csv.CardNumber,
-                expiryMonth: csv.CardExpiryMonth,
-                expiryYear: csv.CardExpiryYear,
-                verification: csv.CardVerification
+                cardData: cardData.Value,
+                expiryMonth: csv.CardExpiryMonth.Trim(),
+                expiryYear: csv.CardExpiryYear.Trim(),
+                verification: csv.CardVerification.Trim()
             );
         }
 
         private Address ToAddress(SupremeJobCsv csv) {
             return new Address(
-                firstName: csv.AddressFirstName,
-                lastName: csv.AddressLastName,
-                lineOne: csv.AddressLineOne,
+                firstName: csv.AddressFirstName.Trim(),
+                lastName: csv.AddressLastName.Trim(),
+                lineOne: csv.AddressLineOne.Trim(),
                 lineTwo: csv.AddressLineTwo?.NullIfEmptyTrimmed(),
                 lineThree: csv.AddressLineThree?.NullIfEmptyTrimmed(),
-                city: csv.AddressCity,
+                city: csv.AddressCity.Trim(),
                 state: csv.AddressState?.NullIfEmptyTrimmed(),
-                countryCode: csv.AddressCountryCode,
-                postCode: csv.AddressPostCode
+                countryCode: csv.AddressCountryCode.Trim().ToUpper(),
+                postCode: csv.AddressPostCode.Trim()
             );
         }
     }

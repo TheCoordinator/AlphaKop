@@ -34,10 +34,7 @@ namespace AlphaKop.Supreme.Flows {
                 var pookyRegion = PookyRegionUtil.From(job.Region);
                 var pooky = await pookyRepository.FetchPooky(pookyRegion);
 
-                logger.LogInformation(
-                    JobEventId,
-                    $"Fetched Pooky {parameter.Item.Id}"
-                );
+                LogResponse(pooky, parameter);
 
                 var addBasketParam = new AddBasketStepParameter(
                     selectedItem: parameter,
@@ -48,11 +45,18 @@ namespace AlphaKop.Supreme.Flows {
                     .Execute(addBasketParam);
 
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "Failed to Fetch Pooky");
+                logger.LogError(JobEventId, ex, "--[FetchPooky] Error");
 
                 await provider.CreateFetchPookyStep(job, Retries + 1)
                     .Execute(parameter);
             }
+        }
+
+        private void LogResponse(Pooky response, SelectedItemParameter parameter) {
+            logger.LogInformation(
+                JobEventId,
+                $@"--[FetchPooky] Status [Fetched] {parameter.ToString()}"
+            );
         }
     }
 }

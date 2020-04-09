@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 
 namespace AlphaKop.Supreme.Network.Extensions {
-    static class AddBasketRequestQueryExtensions {
+    static class AddBasketRequestFormExtensions {
         public static FormUrlEncodedContent ToFormUrlEncodedContent(this AddBasketRequest request) {
             return new FormUrlEncodedContent(new[] {
                     new KeyValuePair<string, string>("size", request.SizeId),

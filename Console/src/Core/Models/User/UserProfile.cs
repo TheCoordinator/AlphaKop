@@ -6,7 +6,7 @@ namespace AlphaKop.Core.Models.User {
         public Address Address { get; }
         public CardDetails CardDetails { get; }
 
-        public UserProfile (
+        public UserProfile(
             string name,
             string email,
             string phoneNumber,

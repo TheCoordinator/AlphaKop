@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using AlphaKop.ConsoleApp.Csv;
+using AlphaKop.Core.CreditCard;
 using AlphaKop.Core.Models.User;
 using AlphaKop.Supreme.Flows;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,17 +29,18 @@ namespace AlphaKop.ConsoleApp {
                 throw new ArgumentException("Task path not provided");
             }
 
-            var tasks = new SupremeCsvParser(CsvTaskPath)
+            var supremeParser = new SupremeCsvParser(CsvTaskPath, creditCardValidator: provider.GetRequiredService<ICreditCardValidator>());
+            
+            var tasks = supremeParser
                 .Parse()
                 .Select(job => {
                     var task = provider.GetRequiredService<ISupremeStartStep>();
                     task.Job = job;
                     return task;
-                });
+                })
+                .Select(task => task.Execute(task.Job.GetValueOrDefault()));
 
-            foreach (var task in tasks) {
-                await task.Execute(task.Job.GetValueOrDefault());
-            }
+            await Task.WhenAll(tasks);
         }
     }
 }

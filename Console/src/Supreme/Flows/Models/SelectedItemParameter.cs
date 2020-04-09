@@ -11,5 +11,9 @@ namespace AlphaKop.Supreme.Flows {
             Style = style;
             Size = size;
         }
+
+        public override string ToString() {
+            return $@"Item [{Item.Id}, {Item.Name}] Style [{Style.Id}, {Style.Name}] Size [{Size.Id}, {Size.Name}]]";
+        }
     }
 }

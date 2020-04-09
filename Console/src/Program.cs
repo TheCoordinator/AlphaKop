@@ -4,6 +4,7 @@ using System.Threading;
 using AlphaKop.ConsoleApp;
 using AlphaKop.Core.Captcha.Config;
 using AlphaKop.Core.Captcha.Repositories;
+using AlphaKop.Core.CreditCard;
 using AlphaKop.Core.Services.TextMatching;
 using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Flows;
@@ -57,6 +58,8 @@ namespace AlphaKop {
 
         private static void ConfigureCore(IServiceCollection services) {
             services.AddTransient<ITextMatching, TextMatching>();
+            services.AddTransient<ICreditCardValidator, DefaultCreditCardValidator>();
+            services.AddTransient<ICreditCardFormatter, CreditCardFormatter>();
             services.AddSingleton<ICaptchaRepository, CaptchaRepository>();
         }
 
@@ -78,6 +81,9 @@ namespace AlphaKop {
             services.AddTransient<IAddBasketStep, AddBasketStep>();
             services.AddTransient<IFetchPookyTicketStep, FetchPookyTicketStep>();
             services.AddTransient<ICaptchaStep, CaptchaStep>();
+            services.AddTransient<ICheckoutStep, CheckoutStep>();
+            services.AddTransient<ICheckoutQueueStep, CheckoutQueueStep>();
+            services.AddTransient<ISupremeSuccessStep, SupremeSuccessStep>();
         }
 
         private static void ConfigureApplication(IServiceCollection services) {

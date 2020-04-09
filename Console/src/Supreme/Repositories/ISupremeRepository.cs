@@ -8,5 +8,7 @@ namespace AlphaKop.Supreme.Repositories {
         Task<Stock> FetchStock();
         Task<ItemDetails> FetchItemDetails(Item item);
         Task<AddBasketResponse> AddBasket(AddBasketRequest basketRequest);
+        Task<CheckoutResponse> Checkout(CheckoutRequest request);
+        Task<CheckoutResponse> CheckoutQueue(CheckoutQueueRequest request);
     }
 }

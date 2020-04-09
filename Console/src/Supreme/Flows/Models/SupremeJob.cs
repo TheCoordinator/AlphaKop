@@ -13,6 +13,7 @@ namespace AlphaKop.Supreme.Flows {
         public string Keywords { get; }
         public string? Style { get; }
         public string? Size { get; }
+        public int Quantity { get; }
         public int StartDelay { get; }
 
         public SupremeJob(
@@ -24,6 +25,7 @@ namespace AlphaKop.Supreme.Flows {
             string keywords,
             string? style,
             string? size,
+            int quantity,
             int startDelay = 1000
         ) {
             JobId = jobId;
@@ -34,6 +36,7 @@ namespace AlphaKop.Supreme.Flows {
             Keywords = keywords;
             Style = style;
             Size = size;
+            Quantity = quantity;
             StartDelay = startDelay;
         }
     }
