@@ -32,8 +32,10 @@ namespace AlphaKop.Supreme.Flows {
                     return;
                 }
 
-                var response = await PerformCheckout(parameter, job);
+                var request = CreateCheckoutRequest(parameter, job);
+                var response = await PerformCheckout(request);
                 await PerformPostCheckoutResponse(
+                    request: request,
                     response: response,
                     parameter: parameter,
                     job: job
@@ -46,8 +48,8 @@ namespace AlphaKop.Supreme.Flows {
             }
         }
 
-        private async Task<CheckoutResponse> PerformCheckout(CheckoutStepParameter parameter, SupremeJob job) {
-            var request = new CheckoutRequest(
+        private CheckoutRequest CreateCheckoutRequest(CheckoutStepParameter parameter, SupremeJob job) {
+            return new CheckoutRequest(
                 itemId: parameter.SelectedItem.Item.Id,
                 sizeId: parameter.SelectedItem.Size.Id,
                 styleId: parameter.SelectedItem.Style.Id,
@@ -58,11 +60,18 @@ namespace AlphaKop.Supreme.Flows {
                 captcha: parameter.Captcha,
                 profile: job.Profile
             );
+        }
 
+        private async Task<CheckoutResponse> PerformCheckout(CheckoutRequest request) {
             return await supremeRepository.Checkout(request);
         }
 
-        private async Task PerformPostCheckoutResponse(CheckoutResponse response, CheckoutStepParameter parameter, SupremeJob job) {
+        private async Task PerformPostCheckoutResponse(
+            CheckoutRequest request,
+            CheckoutResponse response,
+            CheckoutStepParameter parameter,
+            SupremeJob job
+        ) {
             LogResponse(response, parameter);
 
             var status = response.Status.Status;
@@ -70,7 +79,7 @@ namespace AlphaKop.Supreme.Flows {
             if (status == "paid") {
                 await PerformPostCheckoutPaid(response, parameter, job);
             } else if (status == "queued" && response.Status.Slug != null) {
-                await PerformPostCheckoutQueued(response.Status.Slug, response, parameter, job);
+                await PerformPostCheckoutQueued(request, response, parameter, job);
             } else if (status == "failed") {
                 await PerformPostCheckoutFailed(response, parameter, job);
             } else {
@@ -89,9 +98,20 @@ namespace AlphaKop.Supreme.Flows {
                 .Execute(successParam);
         }
 
-        private async Task PerformPostCheckoutQueued(string slug, CheckoutResponse response, CheckoutStepParameter parameter, SupremeJob job) {
-            // TODO
-            await Task.Delay(1);
+        private async Task PerformPostCheckoutQueued(
+            CheckoutRequest request,
+            CheckoutResponse response,
+            CheckoutStepParameter parameter,
+            SupremeJob job
+        ) {
+            var checkoutQueueParam = new CheckoutQueueStepParameter(
+                selectedItem: parameter.SelectedItem,
+                checkoutRequest: request,
+                checkoutResponse: response
+            );
+
+            await provider.CreateCheckoutQueueStep(job)
+                .Execute(checkoutQueueParam);
         }
 
         private async Task PerformPostCheckoutFailed(CheckoutResponse response, CheckoutStepParameter parameter, SupremeJob job) {

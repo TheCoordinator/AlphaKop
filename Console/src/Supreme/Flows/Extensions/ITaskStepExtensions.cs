@@ -80,6 +80,17 @@ namespace AlphaKop.Supreme.Flows {
             return step;
         }
 
+        public static ICheckoutQueueStep CreateCheckoutQueueStep(
+            this IServiceProvider provider,
+            SupremeJob job,
+            int retries = 0
+        ) {
+            var step = provider.GetRequiredService<ICheckoutQueueStep>();
+            step.Job = job;
+            step.Retries = retries;
+            return step;
+        }        
+
         public static ISupremeSuccessStep CreateSuccessStep(
             this IServiceProvider provider,
             SupremeJob job

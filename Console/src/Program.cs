@@ -82,7 +82,7 @@ namespace AlphaKop {
             services.AddTransient<IFetchPookyTicketStep, FetchPookyTicketStep>();
             services.AddTransient<ICaptchaStep, CaptchaStep>();
             services.AddTransient<ICheckoutStep, CheckoutStep>();
-            
+            services.AddTransient<ICheckoutQueueStep, CheckoutQueueStep>();
             services.AddTransient<ISupremeSuccessStep, SupremeSuccessStep>();
         }
 
