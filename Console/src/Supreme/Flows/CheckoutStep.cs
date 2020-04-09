@@ -80,8 +80,13 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         private async Task PerformPostCheckoutPaid(CheckoutResponse response, CheckoutStepParameter parameter, SupremeJob job) {
-            // TODO
-            await Task.Delay(1);
+            var successParam = new SuccessStepParameter(
+                selectedItem: parameter.SelectedItem,
+                checkoutResponse: response
+            );
+
+            await provider.CreateSuccessStep(job)
+                .Execute(successParam);
         }
 
         private async Task PerformPostCheckoutQueued(string slug, CheckoutResponse response, CheckoutStepParameter parameter, SupremeJob job) {
