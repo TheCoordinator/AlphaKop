@@ -55,9 +55,25 @@ namespace AlphaKop.Supreme.Network {
             return message;
         }
 
-        public HttpRequestMessage Checkout(ICheckoutRequest request) {
-            var uriBuilder = new UriBuilder(baseUrl + $"/checkout.json");
-            var cookies = GetCheckoutCookies(request);
+        public HttpRequestMessage Checkout(CheckoutRequest request) {
+            return CreateCheckoutRequestMessage(
+                path: "/checkout.json",
+                request: request,
+                responseCookies: Array.Empty<Cookie>()
+            );
+        }
+
+        public HttpRequestMessage CheckoutQueue(CheckoutQueueRequest request) {
+            return CreateCheckoutRequestMessage(
+                path: $"/checkout/{request.CheckoutResponse.Status.Slug}/status.json",
+                request: request,
+                responseCookies: request.CheckoutResponse.ResponseCookies
+            );
+        }
+
+        private HttpRequestMessage CreateCheckoutRequestMessage(string path, ICheckoutRequest request, IEnumerable<Cookie> responseCookies) {
+            var uriBuilder = new UriBuilder(baseUrl + path);
+            var cookies = GetCheckoutCookies(request, responseCookies);
 
             var message = new HttpRequestMessage() {
                 RequestUri = uriBuilder.Uri,
@@ -74,11 +90,12 @@ namespace AlphaKop.Supreme.Network {
             return message;
         }
 
-        private string GetCheckoutCookies(ICheckoutRequest request) {
+        private string GetCheckoutCookies(ICheckoutRequest request, IEnumerable<Cookie> responseCookies) {
             return new List<IEnumerable<Cookie>>() {
                 request.Pooky.Cookies.StaticCookies,
                 request.Pooky.Cookies.CheckoutCookies,
                 request.BasketResponse.ResponseCookies,
+                responseCookies,
                 new Cookie[] { new Cookie(name: "ticket", value: request.PookyTicket.Ticket) }
             }.ToCookiesString();
         }

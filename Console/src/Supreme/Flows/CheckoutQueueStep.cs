@@ -24,40 +24,46 @@ namespace AlphaKop.Supreme.Flows {
 
         protected override async Task Execute(CheckoutQueueStepParameter parameter, SupremeJob job) {
             try {
+                var request = CreateRequest(parameter, job);
+                var response = await PerformCheckoutQueue(request);
+
+                await PerformPostCheckoutResponse(request, response, parameter, job);
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "Failed to retrieve Checkout Response");
+                logger.LogError(JobEventId, ex, "Failed to retrieve Checkout Queue Response");
 
                 await provider.CreateCheckoutQueueStep(job, Retries + 1)
                     .Execute(parameter);
             }
         }
 
-        private async Task<CheckoutResponse> PerformCheckoutQueue(CheckoutQueueStepParameter parameter, SupremeJob job) {
-            throw new NotImplementedException();
-            // var request = new CheckoutRequest(
-            //     itemId: parameter.SelectedItem.Item.Id,
-            //     sizeId: parameter.SelectedItem.Size.Id,
-            //     styleId: parameter.SelectedItem.Style.Id,
-            //     quantity: 1,
-            //     basketResponse: parameter.BasketResponse,
-            //     pooky: parameter.Pooky,
-            //     pookyTicket: parameter.PookyTicket,
-            //     captcha: parameter.Captcha,
-            //     profile: job.Profile
-            // );
-
-            // return await supremeRepository.Checkout(request);
+        private CheckoutQueueRequest CreateRequest(CheckoutQueueStepParameter parameter, SupremeJob job) {
+            return new CheckoutQueueRequest(
+                itemId: parameter.SelectedItem.Item.Id,
+                sizeId: parameter.SelectedItem.Size.Id,
+                styleId: parameter.SelectedItem.Style.Id,
+                quantity: job.Quantity,
+                basketResponse: parameter.CheckoutRequest.BasketResponse,
+                checkoutResponse: parameter.CheckoutResponse,
+                pooky: parameter.CheckoutRequest.Pooky,
+                pookyTicket: parameter.CheckoutRequest.PookyTicket,
+                captcha: parameter.CheckoutRequest.Captcha,
+                profile: parameter.CheckoutRequest.Profile
+            );
         }
 
-        private async Task PerformPostCheckoutResponse(CheckoutResponse response, CheckoutQueueStepParameter parameter, SupremeJob job) {
+        private async Task<CheckoutResponse> PerformCheckoutQueue(CheckoutQueueRequest request) {
+            return await supremeRepository.CheckoutQueue(request);
+        }
+
+        private async Task PerformPostCheckoutResponse(CheckoutQueueRequest request, CheckoutResponse response, CheckoutQueueStepParameter parameter, SupremeJob job) {
             LogResponse(response, parameter);
 
             var status = response.Status.Status;
 
             if (status == "paid") {
                 await PerformPostCheckoutPaid(response, parameter, job);
-            } else if (status == "queued" && response.Status.Slug != null) {
-                await PerformPostCheckoutQueued(response.Status.Slug, response, parameter, job);
+            } else if (status == "queued") {
+                await RetryStep(parameter, job);
             } else if (status == "failed") {
                 await PerformPostCheckoutFailed(response, parameter, job);
             } else {
@@ -76,9 +82,9 @@ namespace AlphaKop.Supreme.Flows {
                 .Execute(successParam);
         }
 
-        private async Task PerformPostCheckoutQueued(string slug, CheckoutResponse response, CheckoutQueueStepParameter parameter, SupremeJob job) {
-            // TODO
-            await Task.Delay(1);
+        private async Task RetryStep(CheckoutQueueStepParameter parameter, SupremeJob job) {
+            await provider.CreateCheckoutQueueStep(job, retries: Retries + 1)
+                .Execute(parameter);
         }
 
         private async Task PerformPostCheckoutFailed(CheckoutResponse response, CheckoutQueueStepParameter parameter, SupremeJob job) {

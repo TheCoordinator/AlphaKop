@@ -66,9 +66,25 @@ namespace AlphaKop.Supreme.Repositories {
             );
         }
 
-        public async Task<CheckoutResponse> Checkout(ICheckoutRequest request) {
+        public async Task<CheckoutResponse> Checkout(CheckoutRequest request) {
             var response = await client.SendAsync(
                 request: requestsFactory.Checkout(request: request)
+            );
+
+            await response.EnsureSuccess();
+
+            var status = await response.Content.ReadJsonAsync<CheckoutResponseStatus>();
+            var cookies = response.GetCookies();
+
+            return new CheckoutResponse(
+                status: status,
+                responseCookies: cookies
+            );
+        }
+
+        public async Task<CheckoutResponse> CheckoutQueue(CheckoutQueueRequest request) {
+            var response = await client.SendAsync(
+                request: requestsFactory.CheckoutQueue(request: request)
             );
 
             await response.EnsureSuccess();

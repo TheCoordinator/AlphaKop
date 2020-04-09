@@ -142,7 +142,7 @@ namespace AlphaKop.Supreme.Flows {
         private void LogResponse(CheckoutResponse response, CheckoutStepParameter parameter) {
             var selectedItem = parameter.SelectedItem;
             logger.LogInformation(
-                JobEventId, 
+                JobEventId,
                 $@"--[CheckoutStep] Status [{response.Status.Status}] {parameter.SelectedItem.ToString()}"
             );
         }
