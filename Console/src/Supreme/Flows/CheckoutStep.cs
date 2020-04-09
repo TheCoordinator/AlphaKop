@@ -41,7 +41,7 @@ namespace AlphaKop.Supreme.Flows {
                     job: job
                 );
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "Failed to retrieve Checkout Response");
+                logger.LogError(JobEventId, ex, "--[Checkout] Error");
 
                 await provider.CreateCheckoutStep(job, Retries + 1)
                     .Execute(parameter);

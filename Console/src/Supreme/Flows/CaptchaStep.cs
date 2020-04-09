@@ -39,12 +39,7 @@ namespace AlphaKop.Supreme.Flows {
                 var response = await captchaRepository.FetchCaptcha();
                 var captcha = response.Captcha;
 
-                logger.LogInformation(
-                    JobEventId,
-                    "Captcha Response\n" +
-                    $"Token [{captcha.Token}]\n"+
-                    $"Host [{captcha.Host}]"
-                );
+                LogResponse(response, parameter);
 
                 if (captcha.Host == config.SupremeCaptchaHost) {
                     await captchaRepository.CancelTriggerCaptcha(request: request);
@@ -64,11 +59,18 @@ namespace AlphaKop.Supreme.Flows {
                         .Execute(parameter);
                 }
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "Failed to retrieve Captcha");
+                logger.LogError(JobEventId, ex, "--[Captcha] Error");
 
                 await provider.CreateCaptchaStep(job, Retries + 1)
                     .Execute(parameter);
             }
         }
+
+        private void LogResponse(CaptchaResponse response, CaptchaStepParameter parameter) {
+            logger.LogInformation(
+                JobEventId, 
+                $@"--[Captcha] Token [{response.Captcha.Token}] {parameter.SelectedItem.ToString()}"
+            );
+        }        
     }
 }

@@ -29,7 +29,7 @@ namespace AlphaKop.Supreme.Flows {
 
                 await PerformPostCheckoutResponse(request, response, parameter, job);
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "Failed to retrieve Checkout Queue Response");
+                logger.LogError(JobEventId, ex, "[CheckoutQueue]");
 
                 await provider.CreateCheckoutQueueStep(job, Retries + 1)
                     .Execute(parameter);
@@ -116,7 +116,7 @@ namespace AlphaKop.Supreme.Flows {
             var selectedItem = parameter.SelectedItem;
             logger.LogInformation(
                 JobEventId, 
-                $@"--[CheckoutQueueStep] Status [{response.Status.Status}] {parameter.SelectedItem.ToString()}"
+                $@"--[CheckoutQueue] Status [{response.Status.Status}] {parameter.SelectedItem.ToString()}"
             );
         }
     }

@@ -37,10 +37,7 @@ namespace AlphaKop.Supreme.Flows {
                     ticket: parameter.BasketTicket
                 );
 
-                logger.LogInformation(
-                    JobEventId,
-                    $"Fetched Pooky Ticket {parameter.SelectedItem.Item.Id}"
-                );
+                LogResponse(pookyTicket, parameter);
 
                 var captchaStepParam = new CaptchaStepParameter(
                     selectedItem: parameter.SelectedItem,
@@ -53,11 +50,18 @@ namespace AlphaKop.Supreme.Flows {
                     .Execute(captchaStepParam);
 
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "Failed to Fetch Pooky Ticket");
+                logger.LogError(JobEventId, ex, "--[FetchPookyTicket] Error");
 
                 await provider.CreateFetchPookyTicketStep(job, Retries + 1)
                     .Execute(parameter);
             }
         }
+
+        private void LogResponse(PookyTicket response, PookyTicketStepParameter parameter) {
+            logger.LogInformation(
+                JobEventId,
+                $@"--[FetchPookyTicket] Status [Fetched] {parameter.SelectedItem.ToString()}"
+            );
+        }        
     }
 }
