@@ -31,8 +31,12 @@ namespace AlphaKop.ConsoleApp {
 
             var supremeParser = new SupremeCsvParser(CsvTaskPath, creditCardValidator: provider.GetRequiredService<ICreditCardValidator>());
             
-            var tasks = supremeParser
-                .Parse()
+            var parsedTasks = supremeParser
+                .Parse();
+
+            logger.LogInformation($"Loaded {parsedTasks.Count()} Tasks");
+            
+            var tasks = parsedTasks
                 .Select(job => {
                     var task = provider.GetRequiredService<ISupremeStartStep>();
                     task.Job = job;
