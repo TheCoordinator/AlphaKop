@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.IO;
 using System.Threading;
 using AlphaKop.ConsoleApp;
@@ -12,65 +13,98 @@ using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 
 namespace AlphaKop {
     class Program {
+        private static IHost? host;
         private static ManualResetEvent quitEvent = new ManualResetEvent(false);
-        private static IServiceCollection? services;
-        private static IConfigurationRoot? config;
-        private static ILogger<Program>? logger;
 
         static void Main(string[] args) {
             Console.CancelKeyPress += (sender, eArgs) => {
-                logger.LogDebug("Stopping the application");
                 quitEvent.Set();
                 eArgs.Cancel = true;
             };
 
-            config = GetConfiguration();
-            services = ConfigureServices(config);
+            var hostBuilder = new HostBuilder()
+                .ConfigureAppConfiguration(ConfigureConfiguration)
+                .ConfigureLogging(ConfigureLogging)
+                .ConfigureServices(ConfigureServicesConfig)
+                .ConfigureServices(ConfigureCoreServices)
+                .ConfigureServices(ConfigureSupremeServices)
+                .ConfigureServices(ConfigureApplication);
 
-            var serviceProvider = services.BuildServiceProvider();
-            logger = serviceProvider.GetService<ILogger<Program>>();
+            host = hostBuilder.Build();
 
-            var application = serviceProvider.GetService<ConsoleApplication>();
+            var application = host.Services.GetService<ConsoleApplication>();
             application.CsvTaskPath = args[0];
 
             application.Run();
 
             quitEvent.WaitOne();
-
-            logger.LogDebug("Stopped the application");
         }
 
-        private static IServiceCollection ConfigureServices(IConfigurationRoot config) {
-            IServiceCollection services = new ServiceCollection();
+        #region AppConfiguration
 
-            ConfigureLogging(services, config);
-            ConfigureServicesConfig(services, config);
-
-            ConfigureCore(services);
-            ConfigureSupreme(services);
-            ConfigureApplication(services);
-
-            return services;
+        private static void ConfigureConfiguration(IConfigurationBuilder builder) {
+            builder.SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
         }
 
-        private static void ConfigureCore(IServiceCollection services) {
+        private static void ConfigureServicesConfig(
+            HostBuilderContext context,
+            IServiceCollection services
+        ) {
+            var config = context.Configuration;
+
+            services.Configure<SupremeConfig>(config.GetSection("Supreme"));
+            services.Configure<CaptchaConfig>(config.GetSection("CaptchaResolver"));
+        }
+
+        private static void ConfigureLogging(ILoggingBuilder builder) {
+            builder.AddConsole();
+            builder.AddFile();
+        }
+
+        #endregion
+
+        #region Core
+
+        private static void ConfigureCoreServices(HostBuilderContext context, IServiceCollection services) {
             services.AddTransient<ITextMatching, TextMatching>();
             services.AddTransient<ICreditCardValidator, DefaultCreditCardValidator>();
             services.AddTransient<ICreditCardFormatter, CreditCardFormatter>();
             services.AddSingleton<ICaptchaRepository, CaptchaRepository>();
+
+            // TODO: Captcha HttpClient.
         }
 
-        private static void ConfigureSupreme(IServiceCollection services) {
+        #endregion
+
+        #region Console
+
+        private static void ConfigureApplication(
+            HostBuilderContext context,
+            IServiceCollection services
+        ) {
+            services.AddSingleton<ConsoleApplication>();
+        }
+
+        #endregion
+
+        #region Supreme
+
+        private static void ConfigureSupremeServices(
+            HostBuilderContext context,
+            IServiceCollection services
+        ) {
             ConfigureSupremeRepositories(services);
             ConfigureSupremeFlows(services);
         }
 
         private static void ConfigureSupremeRepositories(IServiceCollection services) {
-            services.AddSingleton<IPookyRepository, PookyRepository>();
             services.AddSingleton<ISupremeRepository, SupremeRepository>();
+            services.AddSingleton<IPookyRepository, PookyRepository>();
         }
 
         private static void ConfigureSupremeFlows(IServiceCollection services) {
@@ -86,35 +120,6 @@ namespace AlphaKop {
             services.AddTransient<ISupremeSuccessStep, SupremeSuccessStep>();
         }
 
-        private static void ConfigureApplication(IServiceCollection services) {
-            services.AddSingleton<ConsoleApplication>();
-        }
-
-        private static void ConfigureLogging(
-            IServiceCollection services,
-            IConfigurationRoot config
-        ) {
-            services.AddLogging(logging => {
-                logging.AddConfiguration(config.GetSection("Logging"));
-                logging.AddConsole();
-                logging.AddFile();
-            });
-        }
-
-        private static void ConfigureServicesConfig(
-            IServiceCollection services,
-            IConfigurationRoot config
-        ) {
-            services.Configure<SupremeConfig>(config.GetSection("Supreme"));
-            services.Configure<CaptchaConfig>(config.GetSection("CaptchaResolver"));
-        }
-
-        private static IConfigurationRoot GetConfiguration() {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
-
-            return builder.Build();
-        }
+        #endregion
     }
 }
