@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Net.Http;
+using AlphaKop.Core.Http;
 using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Flows;
 using AlphaKop.Supreme.Network;
