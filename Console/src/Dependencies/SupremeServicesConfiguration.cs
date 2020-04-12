@@ -7,6 +7,7 @@ using AlphaKop.Supreme.Network;
 using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace AlphaKop {
@@ -69,10 +70,13 @@ namespace AlphaKop {
             );
         }
 
-        private HttpMessageHandler ConfigurePrimaryHttpHandler() {
-            return new HttpClientHandler() {
-                UseCookies = false
-            };
+        private HttpMessageHandler ConfigurePrimaryHttpHandler(IServiceProvider provider) {
+            return new LoggingHandler(
+                innerHandler: new HttpClientHandler() {
+                   UseCookies = false
+                },
+                logger: provider.GetService<ILogger<LoggingHandler>>()
+            );
         }
 
         private void ConfigureRepositories() {
