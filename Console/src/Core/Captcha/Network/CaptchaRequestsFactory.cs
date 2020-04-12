@@ -4,18 +4,25 @@ using System.Text;
 using Newtonsoft.Json;
 
 namespace AlphaKop.Core.Captcha.Network {
-    sealed class CaptchaRequestsFactory {
-        private readonly string baseUrl;
+    public interface ICaptchaRequestsFactory {
+        HttpRequestMessage GetFetchCaptcha();
+        HttpRequestMessage GetCancelTriggerRequest(CaptchaRequest request);
+        HttpRequestMessage GetTriggerRequest(CaptchaRequest request);
+    }
 
-        public CaptchaRequestsFactory(string baseUrl) {
-            this.baseUrl = baseUrl;
+    public sealed class CaptchaRequestsFactory : ICaptchaRequestsFactory {
+        public HttpRequestMessage GetFetchCaptcha() {
+            return new HttpRequestMessage {
+                RequestUri = new Uri("/fetch", UriKind.Relative),
+                Method = HttpMethod.Get
+            };
         }
 
         public HttpRequestMessage GetTriggerRequest(CaptchaRequest request) {
             var uriBuilder = new UriBuilder();
 
             var message = new HttpRequestMessage() {
-                RequestUri = new Uri(uriString: baseUrl + "/trigger"),
+                RequestUri = new Uri("/trigger", UriKind.Relative),
                 Method = HttpMethod.Post
             };
 
@@ -29,7 +36,7 @@ namespace AlphaKop.Core.Captcha.Network {
             var uriBuilder = new UriBuilder();
 
             var message = new HttpRequestMessage() {
-                RequestUri = new Uri(uriString: baseUrl + "/canceltrigger"),
+                RequestUri = new Uri("/canceltrigger", UriKind.Relative),
                 Method = HttpMethod.Post
             };
 
@@ -38,10 +45,5 @@ namespace AlphaKop.Core.Captcha.Network {
 
             return message;
         }
-
-        public HttpRequestMessage FetchCaptcha => new HttpRequestMessage {
-            RequestUri = new Uri(baseUrl + "/fetch"),
-            Method = HttpMethod.Get
-        };
     }
 }

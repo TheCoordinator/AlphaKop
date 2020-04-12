@@ -1,9 +1,12 @@
+using System;
 using AlphaKop.Core.Captcha.Config;
+using AlphaKop.Core.Captcha.Network;
 using AlphaKop.Core.Captcha.Repositories;
 using AlphaKop.Core.CreditCard;
 using AlphaKop.Core.Services.TextMatching;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace AlphaKop {
     public sealed class CoreServicesConfiguration {
@@ -33,6 +36,12 @@ namespace AlphaKop {
         }
 
         private void ConfigureCaptcha() {
+            services.AddHttpClient("captcha", (provider, client) => {
+                var config = provider.GetRequiredService<IOptions<CaptchaConfig>>().Value;
+                client.BaseAddress = new Uri(config.baseUrl);
+            });
+            
+            services.AddTransient<ICaptchaRequestsFactory, CaptchaRequestsFactory>();
             services.AddSingleton<ICaptchaRepository, CaptchaRepository>();
         }
     }

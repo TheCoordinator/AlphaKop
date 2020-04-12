@@ -1,11 +1,8 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using AlphaKop.Core.Network.Http;
-using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Network;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace AlphaKop.Supreme.Repositories {
     public sealed class PookyRepository : IPookyRepository {
