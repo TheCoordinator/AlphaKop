@@ -4,34 +4,25 @@ using System.Net.Http;
 using AlphaKop.Supreme.Models;
 
 namespace AlphaKop.Supreme.Network {
-    sealed class PookyRequestsFactory {
-        private readonly string baseUrl;
-        private readonly string authentication;
+    public interface IPookyRequestsFactory {
+        HttpRequestMessage Pooky(PookyRegion region);
+        HttpRequestMessage PookyTicket(PookyRegion region, string ticket);
+    }
 
-        public PookyRequestsFactory(string baseUrl, string authentication) {
-            this.baseUrl = baseUrl;
-            this.authentication = authentication;
-        }
-
+    public sealed class PookyRequestsFactory : IPookyRequestsFactory {
         public HttpRequestMessage Pooky(PookyRegion region) {
             string regionName = RegionName(region: region);
             return new HttpRequestMessage {
-                RequestUri = new Uri(baseUrl + $"/{regionName}/all"),
+                RequestUri = new Uri($"/{regionName}/all", UriKind.Relative),
                 Method = HttpMethod.Get,
-                Headers = {
-                   { "Auth", authentication }
-                }
             };
         }
 
         public HttpRequestMessage PookyTicket(PookyRegion region, string ticket) {
             string regionName = RegionName(region: region);
             return new HttpRequestMessage {
-                RequestUri = new Uri(baseUrl + $"/{regionName}/ticket/{ticket}"),
+                RequestUri = new Uri($"/{regionName}/ticket/{ticket}", UriKind.Relative),
                 Method = HttpMethod.Get,
-                Headers = {
-                   { "Auth", authentication }
-                }
             };
         }
 
