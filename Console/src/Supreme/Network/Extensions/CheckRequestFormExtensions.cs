@@ -22,8 +22,6 @@ namespace AlphaKop.Supreme.Network.Extensions {
                     .SelectMany(value => value)
                     .OrderBy(value => value.Key);
 
-            var stringValue = string.Join('\n', values.Select(v => v.ToString()));
-
             return new FormUrlEncodedContent(values);
         }
 

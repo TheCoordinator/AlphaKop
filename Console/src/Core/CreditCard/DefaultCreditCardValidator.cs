@@ -11,7 +11,7 @@ namespace AlphaKop.Core.CreditCard {
             }
 
             var issuer = ConvertIssuer(brand: detector.Brand);
-            var issuerName = detector.BrandName;
+            var issuerName = GetCardIssuerName(issuer, detector);
 
             return new CreditCardData(
                 cardNumber: detector.CardNumber,
@@ -32,6 +32,22 @@ namespace AlphaKop.Core.CreditCard {
                     return CardIssuer.Discover;
                 default:
                     return CardIssuer.Unknown;
+            }
+        }
+
+
+        private string GetCardIssuerName(CardIssuer issuer, CreditCardDetector detector) {
+            switch (issuer) {
+                case CardIssuer.VISA:
+                    return "visa";
+                case CardIssuer.MasterCard:
+                    return "master";
+                case CardIssuer.AmericanExpress:
+                    return "american_express";
+                case CardIssuer.Discover:
+                    return "discover";
+                default:
+                    return detector.BrandName;
             }
         }
     }

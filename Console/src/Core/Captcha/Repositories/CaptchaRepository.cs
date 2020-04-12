@@ -1,27 +1,19 @@
-using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AlphaKop.Core.Captcha.Config;
 using AlphaKop.Core.Captcha.Network;
 using AlphaKop.Core.Network.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace AlphaKop.Core.Captcha.Repositories {
     public sealed class CaptchaRepository : ICaptchaRepository {
-        private readonly string baseUrl;
-        private readonly CaptchaRequestsFactory requestsFactory;
+        private readonly ICaptchaRequestsFactory requestsFactory;
         private readonly HttpClient client;
-        private readonly ILogger<CaptchaRepository> logger;
 
         public CaptchaRepository(
-            IOptions<CaptchaConfig> config,
-            ILogger<CaptchaRepository> logger
+            IHttpClientFactory clientFactory,
+            ICaptchaRequestsFactory requestsFactory
         ) {
-            this.baseUrl = config.Value.baseUrl;
-            this.requestsFactory = new CaptchaRequestsFactory(baseUrl);
-            this.client = CreateHttpClient(baseUrl);
-            this.logger = logger;
+            this.requestsFactory = requestsFactory;
+            this.client = clientFactory.CreateClient("captcha");
         }
 
         public async Task TriggerCaptcha(CaptchaRequest request) {
@@ -37,15 +29,7 @@ namespace AlphaKop.Core.Captcha.Repositories {
         }
 
         public async Task<CaptchaResponse> FetchCaptcha() {
-            return await client.ReadJsonAsync<CaptchaResponse>(requestsFactory.FetchCaptcha);
+            return await client.ReadJsonAsync<CaptchaResponse>(requestsFactory.GetFetchCaptcha());
         }
-
-        #region Factory
-
-        private static HttpClient CreateHttpClient(string baseUrl) {
-            return new HttpClient() { BaseAddress = new Uri(uriString: baseUrl) };
-        }
-
-        #endregion
     }
 }

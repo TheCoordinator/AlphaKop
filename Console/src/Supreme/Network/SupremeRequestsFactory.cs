@@ -6,30 +6,37 @@ using AlphaKop.Core.CreditCard;
 using AlphaKop.Supreme.Network.Extensions;
 
 namespace AlphaKop.Supreme.Network {
-    sealed class SupremeRequestsFactory {
-        private readonly string baseUrl;
+    public interface ISupremeRequestsFactory {
+        HttpRequestMessage GetMobileStock();
+        HttpRequestMessage GetItemDetails(string itemId);
+        HttpRequestMessage AddBasket(AddBasketRequest basketRequest);
+        HttpRequestMessage Checkout(CheckoutRequest request);
+        HttpRequestMessage CheckoutQueue(CheckoutQueueRequest request);
+    }
+
+    public sealed class SupremeRequestsFactory : ISupremeRequestsFactory {
         private readonly ICreditCardFormatter creditCardFormatter;
 
         public SupremeRequestsFactory(
-            string baseUrl,
             ICreditCardFormatter creditCardFormatter
         ) {
-            this.baseUrl = baseUrl;
             this.creditCardFormatter = creditCardFormatter;
         }
 
-        public HttpRequestMessage MobileStock => new HttpRequestMessage {
-            RequestUri = new Uri(baseUrl + "/mobile_stock.json"),
-            Method = HttpMethod.Get
-        };
+        public HttpRequestMessage GetMobileStock() {
+            return new HttpRequestMessage {
+                RequestUri = new Uri("/mobile_stock.json", UriKind.Relative),
+                Method = HttpMethod.Get
+            };
+        }
 
         public HttpRequestMessage GetItemDetails(string itemId) => new HttpRequestMessage() {
-            RequestUri = new Uri(baseUrl + $"/shop/{itemId}.json"),
+            RequestUri = new Uri($"/shop/{itemId}.json", UriKind.Relative),
             Method = HttpMethod.Get
         };
 
         public HttpRequestMessage AddBasket(AddBasketRequest basketRequest) {
-            var uriBuilder = new UriBuilder(baseUrl + $"/shop/{basketRequest.ItemId}/add.json");
+            var uri = new Uri($"/shop/{basketRequest.ItemId}/add.json", UriKind.Relative);
 
             var cookies = new List<IEnumerable<Cookie>>() {
                 basketRequest.Pooky.Cookies.StaticCookies,
@@ -37,7 +44,7 @@ namespace AlphaKop.Supreme.Network {
             }.ToCookiesString();
 
             var message = new HttpRequestMessage() {
-                RequestUri = uriBuilder.Uri,
+                RequestUri = uri,
                 Method = HttpMethod.Post
             };
 
@@ -72,11 +79,11 @@ namespace AlphaKop.Supreme.Network {
         }
 
         private HttpRequestMessage CreateCheckoutRequestMessage(string path, ICheckoutRequest request, IEnumerable<Cookie> responseCookies) {
-            var uriBuilder = new UriBuilder(baseUrl + path);
+            var uri = new Uri(path, UriKind.Relative);
             var cookies = GetCheckoutCookies(request, responseCookies);
 
             var message = new HttpRequestMessage() {
-                RequestUri = uriBuilder.Uri,
+                RequestUri = uri,
                 Method = HttpMethod.Post
             };
 

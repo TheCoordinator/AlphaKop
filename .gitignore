@@ -350,4 +350,4 @@ MigrationBackup/
 .ionide/
 
 
-**/supreme.csv
+**/supreme**.csv
