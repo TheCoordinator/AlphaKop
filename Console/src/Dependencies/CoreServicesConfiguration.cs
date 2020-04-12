@@ -24,15 +24,15 @@ namespace AlphaKop {
             ConfigureCaptcha();
         }
 
+        private void ConfigureConfigurations() {
+            var config = context.Configuration;
+            services.Configure<CaptchaConfig>(config.GetSection("CaptchaResolver"));
+        }
+
         private void ConfigureDefaultServices() {
             services.AddTransient<ITextMatching, TextMatching>();
             services.AddTransient<ICreditCardValidator, DefaultCreditCardValidator>();
             services.AddTransient<ICreditCardFormatter, CreditCardFormatter>();
-        }
-
-        private void ConfigureConfigurations() {
-            var config = context.Configuration;
-            services.Configure<CaptchaConfig>(config.GetSection("CaptchaResolver"));
         }
 
         private void ConfigureCaptcha() {
