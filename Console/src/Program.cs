@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace AlphaKop {
     class Program {
@@ -38,9 +39,12 @@ namespace AlphaKop {
                 .AddJsonFile("appsettings.json");
         }
 
-        private static void ConfigureLogging(ILoggingBuilder builder) {
-            builder.AddConsole();
-            builder.AddFile();
+        private static void ConfigureLogging(HostBuilderContext context, ILoggingBuilder builder) {
+            var logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(context.Configuration)
+                .CreateLogger();
+
+            builder.AddSerilog(logger);
         }
 
         private static void ConfigureApplication(HostBuilderContext context, IServiceCollection services) {
