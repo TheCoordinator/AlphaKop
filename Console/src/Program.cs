@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Net.Http;
 using System.IO;
 using System.Threading;
@@ -9,11 +10,13 @@ using AlphaKop.Core.CreditCard;
 using AlphaKop.Core.Services.TextMatching;
 using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Flows;
+using AlphaKop.Supreme.Network;
 using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace AlphaKop {
     class Program {
@@ -98,11 +101,42 @@ namespace AlphaKop {
             HostBuilderContext context,
             IServiceCollection services
         ) {
+            ConfigureSupremeHttpClients(services);
             ConfigureSupremeRepositories(services);
             ConfigureSupremeFlows(services);
         }
 
+        private static void ConfigureSupremeHttpClients(IServiceCollection services) {
+            services.AddHttpClient("supreme", (provider, client) => {
+                var config = provider.GetRequiredService<IOptions<SupremeConfig>>().Value;
+                client.BaseAddress = new Uri(config.SupremeBaseUrl);
+                ConfigureSupremeDefaultHttpClient(client, config);
+            })
+            .ConfigurePrimaryHttpMessageHandler(ConfigureSupremePrimaryHttpHandler);
+        }
+
+        private static void ConfigureSupremeDefaultHttpClient(HttpClient client, SupremeConfig config) {
+            client.DefaultRequestHeaders.Accept.Clear();
+
+            client.DefaultRequestHeaders.Add(
+                name: HttpRequestHeader.UserAgent.ToString(),
+                value: config.UserAgent
+            );
+
+            client.DefaultRequestHeaders.Add(
+                name: HttpRequestHeader.CacheControl.ToString(),
+                value: "no-cache"
+            );
+        }
+
+        private static HttpMessageHandler ConfigureSupremePrimaryHttpHandler() {
+            return new HttpClientHandler() {
+                UseCookies = false
+            };
+        }
+
         private static void ConfigureSupremeRepositories(IServiceCollection services) {
+            services.AddTransient<ISupremeRequestsFactory, SupremeRequestsFactory>();
             services.AddSingleton<ISupremeRepository, SupremeRepository>();
             services.AddSingleton<IPookyRepository, PookyRepository>();
         }

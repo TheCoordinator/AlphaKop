@@ -3,35 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AlphaKop.Core.CreditCard;
 using AlphaKop.Core.Network.Http;
-using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Network;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace AlphaKop.Supreme.Repositories {
     sealed class SupremeRepository : ISupremeRepository {
-        private readonly string baseUrl;
-        private readonly SupremeRequestsFactory requestsFactory;
         private readonly HttpClient client;
-        private readonly ILogger<SupremeRepository> logger;
+        private readonly ISupremeRequestsFactory requestsFactory;
 
         public SupremeRepository(
-            IOptions<SupremeConfig> config,
-            ICreditCardFormatter creditCardFormatter,
-            ILogger<SupremeRepository> logger
+            IHttpClientFactory clientFactory,
+            ISupremeRequestsFactory requestsFactory
         ) {
-            this.baseUrl = config.Value.SupremeBaseUrl;
-            this.requestsFactory = new SupremeRequestsFactory(baseUrl: baseUrl, creditCardFormatter: creditCardFormatter);
-            this.client = SupremeHttpClientFactory.CreateHttpClient(baseUrl: baseUrl);
-            this.logger = logger;
+            this.client = clientFactory.CreateClient("supreme");
+            this.requestsFactory = requestsFactory;
         }
 
         public async Task<Stock> FetchStock() {
             return await client.ReadJsonAsync<Stock>(
-                request: requestsFactory.MobileStock
+                request: requestsFactory.GetMobileStock()
             );
         }
 
