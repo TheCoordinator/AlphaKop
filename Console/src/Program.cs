@@ -21,8 +21,6 @@ namespace AlphaKop {
             var hostBuilder = new HostBuilder()
                 .ConfigureAppConfiguration(ConfigureConfiguration)
                 .ConfigureLogging(ConfigureLogging)
-                .ConfigureServices(ConfigureCoreServices)
-                .ConfigureServices(ConfigureSupremeServices)
                 .ConfigureServices(ConfigureApplication);
 
             host = hostBuilder.Build();
@@ -46,17 +44,13 @@ namespace AlphaKop {
         }
 
         private static void ConfigureApplication(HostBuilderContext context, IServiceCollection services) {
-            services.AddSingleton<ConsoleApplication>();
-        }
-
-        private static void ConfigureCoreServices(HostBuilderContext context, IServiceCollection services) {
             new CoreServicesConfiguration(context, services)
                 .ConfigureServices();
-        }
 
-        private static void ConfigureSupremeServices(HostBuilderContext context, IServiceCollection services) {
             new SupremeServicesConfiguration(context, services)
                 .ConfigureServices();
+
+            services.AddSingleton<ConsoleApplication>();
         }
     }
 }
