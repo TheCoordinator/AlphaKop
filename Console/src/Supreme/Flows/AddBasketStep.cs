@@ -10,7 +10,7 @@ namespace AlphaKop.Supreme.Flows {
     public interface IAddBasketStep : ITaskStep<AddBasketStepParameter, SupremeJob> { }
 
     sealed class AddBasketStep : BaseStep<AddBasketStepParameter>, IAddBasketStep {
-        private const int maxRetries = 10;
+        private const int maxRetries = 20;
         private readonly ISupremeRepository supremeRepository;
         private readonly ILogger<AddBasketStep> logger;
 
