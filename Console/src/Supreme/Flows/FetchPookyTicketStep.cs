@@ -6,70 +6,89 @@ using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {
-    public interface IFetchPookyTicketStep : ITaskStep<PookyTicketStepParameter, SupremeJob> { }
+    public interface IFetchPookyTicketStep : ITaskStep<PookyTicketStepInput> { }
 
-    sealed class FetchPookyTicketStep : BaseStep<PookyTicketStepParameter>, IFetchPookyTicketStep {
+    sealed class FetchPookyTicketStep : IFetchPookyTicketStep {
         private const int maxRetries = 10;
+        private const int delayInMilliSeconds = 200;
+
         private readonly IPookyRepository pookyRepository;
+        private readonly IServiceProvider provider;
         private readonly ILogger logger;
+
+        public int Retries { get; set; }
 
         public FetchPookyTicketStep(
             IPookyRepository pookyRepository,
             IServiceProvider provider,
             ILogger<FetchPookyTicketStep> logger
-        ) : base(provider) {
+        ) {
             this.pookyRepository = pookyRepository;
+            this.provider = provider;
             this.logger = logger;
         }
 
-        protected override async Task Execute(PookyTicketStepParameter parameter, SupremeJob job) {
+        public async Task Execute(PookyTicketStepInput input) {
             if (Retries >= maxRetries) {
-                await RevertToItemDetailsStep(parameter.SelectedItem, job);
+                await RevertToItemDetailsStep(input);
                 return;
             }
 
             try {
-                var pookyRegion = PookyRegionUtil.From(job.Region);
+                await Task.Delay(delayInMilliSeconds);
+
+                var pookyRegion = PookyRegionUtil.From(input.Job.Region);
                 var pookyTicket = await pookyRepository.FetchPookyTicket(
                     region: pookyRegion,
-                    ticket: parameter.BasketTicket
+                    ticket: input.BasketTicket
                 );
 
-                LogResponse(pookyTicket, parameter);
-
-                var captchaStepParam = new CaptchaStepParameter(
-                    selectedItem: parameter.SelectedItem,
-                    basketResponse: parameter.BasketResponse,
-                    pooky: parameter.Pooky,
-                    pookyTicket: pookyTicket
-                );
-
-                await provider.CreateCaptchaStep(job)
-                    .Execute(captchaStepParam);
-
+                await PerformPostPookyTicket(input, pookyTicket);
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "--[FetchPookyTicket] Error");
+                logger.LogError(input.Job.ToEventId(), ex, "--[FetchPookyTicketStep] Unhandled Exception");
 
-                await provider.CreateFetchPookyTicketStep(job, Retries + 1)
-                    .Execute(parameter);
+                await RetryStep(input);
             }
         }
 
-        private async Task RevertToItemDetailsStep(SelectedItem itemParameter, SupremeJob job) {
+        private async Task PerformPostPookyTicket(PookyTicketStepInput input, PookyTicket pookyTicket) {
+            LogResponse(input, pookyTicket);
+
+            await PerformCaptchaStep(input, pookyTicket);
+        }
+
+        private async Task PerformCaptchaStep(PookyTicketStepInput input, PookyTicket pookyTicket) {
+            var captchaStepParam = new CaptchaStepParameter(
+                selectedItem: input.SelectedItem,
+                basketResponse: input.BasketResponse,
+                pooky: input.Pooky,
+                pookyTicket: pookyTicket
+            );
+
+            await provider.CreateCaptchaStep(input.Job)
+                .Execute(captchaStepParam);
+        }
+
+        private async Task RevertToItemDetailsStep(PookyTicketStepInput input) {
             var itemDetailsInput = new ItemDetailsStepInput(
-                item: itemParameter.Item,
-                job: job
+                item: input.SelectedItem.Item,
+                job: input.Job
             );
 
             await provider.CreateStep<ItemDetailsStepInput, IFetchItemDetailsStep>()
                 .Execute(itemDetailsInput);
         }
 
-        private void LogResponse(PookyTicket response, PookyTicketStepParameter parameter) {
+        private async Task RetryStep(PookyTicketStepInput input) {
+            await provider.CreateStep<PookyTicketStepInput, IFetchPookyTicketStep>(Retries + 1)
+                .Execute(input);
+        }
+
+        private void LogResponse(PookyTicketStepInput input, PookyTicket response) {
             logger.LogInformation(
-                JobEventId,
-                $@"--[FetchPookyTicket] Status [Fetched] {parameter.SelectedItem.ToString()}"
+                input.Job.ToEventId(),
+                $@"--[FetchPookyTicketStep] Status [Fetched] {input.SelectedItem.ToString()}"
             );
-        }        
+        }
     }
 }

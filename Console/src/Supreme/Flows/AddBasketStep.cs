@@ -71,15 +71,16 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         private async Task PerformPookyTicketStep(AddBasketStepInput input, AddBasketResponse response, string ticket) {
-            var pookyTicketParam = new PookyTicketStepParameter(
+            var pookyTicketInput = new PookyTicketStepInput(
                 selectedItem: input.SelectedItem,
                 basketResponse: response,
                 basketTicket: ticket,
-                pooky: input.Pooky
+                pooky: input.Pooky,
+                job: input.Job
             );
 
-            await provider.CreateFetchPookyTicketStep(input.Job)
-                .Execute(pookyTicketParam);
+            await provider.CreateStep<PookyTicketStepInput, IFetchPookyTicketStep>()
+                .Execute(pookyTicketInput);
         }
 
         private async Task RetryStep(AddBasketStepInput input) {
