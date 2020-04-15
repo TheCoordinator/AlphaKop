@@ -42,11 +42,11 @@ namespace AlphaKop.Supreme.Flows {
 
                 await PerformPostItemDetails(input: input, style: style, size: size);
             } catch (StyleNotFoundException ex) {
-                logger.LogInformation(input.Job.ToEventId(), $"--FetchItemDetailsStep Style Not Found. Item [{ex.ItemId}] Style [{ex.StyleName}]");
+                logger.LogError(input.Job.ToEventId(), $"--FetchItemDetailsStep Style Not Found. Item [{ex.ItemId}] Style [{ex.StyleName}]");
 
                 await RetryStep(input);
             } catch (SizeNotFoundException ex) {
-                logger.LogInformation(input.Job.ToEventId(), $"--FetchItemDetailsStep Size Not Found. Item [{ex.ItemId}] Size [{ex.SizeName}]");
+                logger.LogError(input.Job.ToEventId(), $"--FetchItemDetailsStep Size Not Found. Item [{ex.ItemId}] Size [{ex.SizeName}]");
 
                 await RetryStep(input);
             } catch (Exception ex) {

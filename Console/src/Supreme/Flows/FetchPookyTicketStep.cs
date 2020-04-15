@@ -58,15 +58,16 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         private async Task PerformCaptchaStep(PookyTicketStepInput input, PookyTicket pookyTicket) {
-            var captchaStepParam = new CaptchaStepParameter(
+            var captchaStepInput = new CaptchaStepInput(
                 selectedItem: input.SelectedItem,
                 basketResponse: input.BasketResponse,
                 pooky: input.Pooky,
-                pookyTicket: pookyTicket
+                pookyTicket: pookyTicket,
+                job: input.Job
             );
 
-            await provider.CreateCaptchaStep(input.Job)
-                .Execute(captchaStepParam);
+            await provider.CreateStep<CaptchaStepInput, ICaptchaStep>()
+                .Execute(captchaStepInput);
         }
 
         private async Task RevertToItemDetailsStep(PookyTicketStepInput input) {

@@ -43,7 +43,7 @@ namespace AlphaKop.Supreme.Flows {
 
                 await PerformItemDetailsStep(item, input);
             } catch (ItemNotFoundException ex) {
-                logger.LogInformation(input.Job.ToEventId(), $"--FetchItemStep Item Not Found. Keywords [{ex.Keywords}]");
+                logger.LogError(input.Job.ToEventId(), $"--FetchItemStep Item Not Found. Keywords [{ex.Keywords}]");
 
                 await RetryStep(input);
             } catch (Exception ex) {
