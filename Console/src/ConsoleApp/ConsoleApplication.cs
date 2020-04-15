@@ -39,7 +39,7 @@ namespace AlphaKop.ConsoleApp {
             var tasks = parsedTasks
                 .Select(job => {
                     var task = provider.GetRequiredService<ISupremeStartStep>();
-                    return task.Execute(input: job);
+                    return task.Execute(input: new InitialStepInput(job));
                 });
 
             await Task.WhenAll(tasks);

@@ -9,7 +9,7 @@ using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {
-    public interface IFetchItemStep : ITaskStep<SupremeJob> { }
+    public interface IFetchItemStep : ITaskStep<InitialStepInput> { }
 
     public sealed class FetchItemStep : IFetchItemStep {
         private readonly ISupremeRepository supremeRepository;
@@ -31,51 +31,51 @@ namespace AlphaKop.Supreme.Flows {
             this.logger = logger;
         }
 
-        public async Task Execute(SupremeJob input) {
+        public async Task Execute(InitialStepInput input) {
             try {
-                await Task.Delay(input.StartDelay);
+                await Task.Delay(input.Job.StartDelay);
 
                 var stock = await supremeRepository.FetchStock();
-                var item = FindItem(stock: stock, input: input);
+                var item = FindItem(stock: stock, job: input.Job);
 
-                logger.LogInformation(input.ToEventId(), $"--FetchItemStep Item Fetched. [{item.Id}, {item.Name}] Keywords [{input.Keywords}]");
+                logger.LogInformation(input.Job.ToEventId(), $"--FetchItemStep Item Fetched. [{item.Id}, {item.Name}] Keywords [{input.Job.Keywords}]");
 
                 await PerformItemDetailsStep(item, input);
             } catch (ItemNotFoundException ex) {
-                logger.LogInformation(input.ToEventId(), $"--FetchItemStep Item Not Found. Keywords [{ex.Keywords}]");
+                logger.LogInformation(input.Job.ToEventId(), $"--FetchItemStep Item Not Found. Keywords [{ex.Keywords}]");
 
                 await RetryStep(input);
             } catch (Exception ex) {
-                logger.LogError(input.ToEventId(), ex, "--FetchItemStep Unhandled Exception");
+                logger.LogError(input.Job.ToEventId(), ex, "--FetchItemStep Unhandled Exception");
 
                 await RetryStep(input);
             }
         }
 
-        private async Task PerformItemDetailsStep(Item item, SupremeJob input) {
-            await provider.CreateFetchItemDetailsStep(input)
+        private async Task PerformItemDetailsStep(Item item, InitialStepInput input) {
+            await provider.CreateFetchItemDetailsStep(input.Job)
                 .Execute(item);
         }
 
-        private async Task RetryStep(SupremeJob input) {
-            await provider.CreateStep<SupremeJob, IFetchItemStep>(Retries + 1)
+        private async Task RetryStep(InitialStepInput input) {
+            await provider.CreateStep<InitialStepInput, IFetchItemStep>(Retries + 1)
                 .Execute(input);
         }
 
-        private Item FindItem(Stock stock, SupremeJob input) {
+        private Item FindItem(Stock stock, SupremeJob job) {
             var items = GetAllItems(stock: stock);
             var names = items.Select(item => item.Name);
 
-            var results = textMatching.ExtractAll(query: input.Keywords, choices: names);
+            var results = textMatching.ExtractAll(query: job.Keywords, choices: names);
 
             if (results.Count() == 0) {
-                throw new ItemNotFoundException(null, keywords: input.Keywords);
+                throw new ItemNotFoundException(null, keywords: job.Keywords);
             }
 
             var foundItems = ConvertResults(allItems: items, results: results);
 
             return SelectItem(
-                input: input,
+                job: job,
                 items: foundItems,
                 results: results
             );
@@ -89,19 +89,19 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         private Item SelectItem(
-            SupremeJob input,
+            SupremeJob job,
             IEnumerable<Item> items,
             IEnumerable<ExtractedResult<string>> results
         ) {
-            if (input.CategoryName == null) {
+            if (job.CategoryName == null) {
                 return items.FirstOrDefault();
             }
 
-            var categoryName = input.CategoryName.ToLower();
+            var categoryName = job.CategoryName.ToLower();
             Item? item = items.FirstOrDefault(item => item.CategoryName?.ToLower() == categoryName);
 
             if (item == null) {
-                throw new ItemNotFoundException(null, keywords: input.Keywords);
+                throw new ItemNotFoundException(null, keywords: job.Keywords);
             }
 
             return item.Value;

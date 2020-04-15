@@ -5,7 +5,7 @@ using AlphaKop.Core.Flows;
 using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {
-    public interface ISupremeStartStep : ITaskStep<SupremeJob> { }
+    public interface ISupremeStartStep : ITaskStep<InitialStepInput> { }
 
     sealed class SupremeStartStep : ISupremeStartStep {
         public int Retries { get; set; }
@@ -21,8 +21,8 @@ namespace AlphaKop.Supreme.Flows {
             this.logger = logger;
         }
 
-        public async Task Execute(SupremeJob input) {
-            await provider.CreateStep<SupremeJob, IFetchItemStep>()
+        public async Task Execute(InitialStepInput input) {
+            await provider.CreateStep<InitialStepInput, IFetchItemStep>()
                 .Execute(input);
         }
     }
