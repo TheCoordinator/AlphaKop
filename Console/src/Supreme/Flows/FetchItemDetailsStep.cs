@@ -14,7 +14,7 @@ namespace AlphaKop.Supreme.Flows {
     sealed class FetchItemDetailsStep : BaseStep<Item>, IFetchItemDetailsStep {
         private readonly ISupremeRepository supremeRepository;
         private readonly ITextMatching textMatching;
-        private readonly ILogger<FetchItemDetailsStep> logger;
+        private readonly ILogger logger;
 
         public FetchItemDetailsStep(
             ISupremeRepository supremeRepository,
@@ -110,7 +110,7 @@ namespace AlphaKop.Supreme.Flows {
             }
 
             return styles
-                .First(style => {
+                .FirstOrDefault(style => {
                     return style.Sizes
                         .Any(size => size.isStockAvailable == true);
                 });
@@ -126,7 +126,7 @@ namespace AlphaKop.Supreme.Flows {
                 return null;
             }
 
-            return styles.First(style => style.Name == result.Value.Value);
+            return styles.FirstOrDefault(style => style.Name == result.Value.Value);
         }
 
         #endregion
@@ -165,7 +165,7 @@ namespace AlphaKop.Supreme.Flows {
             }
 
             return sizes
-                .First(size => size.isStockAvailable == true);
+                .FirstOrDefault(size => size.isStockAvailable == true);
         }
 
         private ItemSize? FindMatchingSize(Item item, IEnumerable<ItemSize> sizes, string sizeName) {
@@ -190,7 +190,7 @@ namespace AlphaKop.Supreme.Flows {
             if (sizeName.Length == 1) {
                 // For some reason textMathing can't detect number characters
                 return sizes
-                    .First(size => size.Name.ToLower().Contains(sizeName.ToLower()));
+                    .FirstOrDefault(size => size.Name.ToLower().Contains(sizeName.ToLower()));
             }
 
             return FindSizeByText(sizes: sizes, sizeName: sizeName);
@@ -203,7 +203,7 @@ namespace AlphaKop.Supreme.Flows {
             }
 
             return sizes
-                .First(size => ItemStyleSizeTypeUtil.From(size.Name) == clothingSize);
+                .FirstOrDefault(size => ItemStyleSizeTypeUtil.From(size.Name) == clothingSize);
         }
 
         private ItemSize? FindSizeByText(IEnumerable<ItemSize> sizes, string sizeName) {
@@ -212,7 +212,7 @@ namespace AlphaKop.Supreme.Flows {
 
             var result = textMatching.ExtractOne(sizeName, choices: sizeNames);
 
-            return sizes.First(size => size.Name == result?.Value);
+            return sizes.FirstOrDefault(size => size.Name == result?.Value);
         }
 
         #endregion

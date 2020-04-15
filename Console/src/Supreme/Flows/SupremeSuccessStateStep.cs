@@ -8,7 +8,7 @@ namespace AlphaKop.Supreme.Flows {
     public interface ISupremeSuccessStep : ITaskStep<SuccessStepParameter, SupremeJob> { }
 
     sealed class SupremeSuccessStep : BaseStep<SuccessStepParameter>, ISupremeSuccessStep {        
-        private readonly ILogger<SupremeSuccessStep> logger;
+        private readonly ILogger logger;
         
         public SupremeSuccessStep(
             IServiceProvider provider,

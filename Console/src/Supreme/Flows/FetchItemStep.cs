@@ -15,7 +15,7 @@ namespace AlphaKop.Supreme.Flows {
     sealed class FetchItemStep : BaseStep<Unit>, IFetchItemStep {
         private readonly ISupremeRepository supremeRepository;
         private readonly ITextMatching textMatching;
-        private readonly ILogger<FetchItemStep> logger;
+        private readonly ILogger logger;
 
         public FetchItemStep(
             ISupremeRepository supremeRepository,
@@ -103,7 +103,7 @@ namespace AlphaKop.Supreme.Flows {
             }
 
             var categoryName = job.CategoryName.ToLower();
-            Item? item = items.First(item => item.CategoryName?.ToLower() == categoryName);
+            Item? item = items.FirstOrDefault(item => item.CategoryName?.ToLower() == categoryName);
 
             if (item == null) {
                 throw new ItemNotFoundException(null, keywords: job.Keywords);
@@ -118,7 +118,7 @@ namespace AlphaKop.Supreme.Flows {
         ) {
             return results
                 .Select(result => allItems
-                    .First(item => item.Name == result.Value)
+                    .FirstOrDefault(item => item.Name == result.Value)
                 );
         }
     }

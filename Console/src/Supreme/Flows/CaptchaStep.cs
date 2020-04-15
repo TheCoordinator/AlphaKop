@@ -13,7 +13,7 @@ namespace AlphaKop.Supreme.Flows {
     sealed class CaptchaStep : BaseStep<CaptchaStepParameter>, ICaptchaStep {
         private readonly SupremeConfig config;
         private readonly ICaptchaRepository captchaRepository;
-        private readonly ILogger<CaptchaStep> logger;
+        private readonly ILogger logger;
 
         public CaptchaStep(
             IOptions<SupremeConfig> config,

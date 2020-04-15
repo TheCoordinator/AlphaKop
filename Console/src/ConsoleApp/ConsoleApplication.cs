@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace AlphaKop.ConsoleApp {
     public sealed class ConsoleApplication {
         private readonly IServiceProvider provider;
-        private readonly ILogger<ConsoleApplication> logger;
+        private readonly ILogger logger;
         public string CsvTaskPath { get; set; } = string.Empty;
 
         public ConsoleApplication(

@@ -11,7 +11,7 @@ namespace AlphaKop.Supreme.Flows {
     sealed class FetchPookyTicketStep : BaseStep<PookyTicketStepParameter>, IFetchPookyTicketStep {
         private const int maxRetries = 10;
         private readonly IPookyRepository pookyRepository;
-        private readonly ILogger<FetchPookyTicketStep> logger;
+        private readonly ILogger logger;
 
         public FetchPookyTicketStep(
             IPookyRepository pookyRepository,

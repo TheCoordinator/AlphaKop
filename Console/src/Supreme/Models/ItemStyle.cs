@@ -47,14 +47,5 @@ namespace AlphaKop.Supreme.Models {
         public override int GetHashCode() {
             return Id.GetHashCode();
         }
-
-        public override string ToString() {
-            var sizes = string.Join("\n\n", Sizes.Select(s => s.ToString()));
-
-            return
-                $"Id: {Id}\n" +
-                $"Name: {Name}\n" +
-                $"Sizes: \n{sizes}";
-        }
     }
 }

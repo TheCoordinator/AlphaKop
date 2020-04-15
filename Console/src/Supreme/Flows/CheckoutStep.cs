@@ -12,7 +12,7 @@ namespace AlphaKop.Supreme.Flows {
     sealed class CheckoutStep : BaseStep<CheckoutStepParameter>, ICheckoutStep {
         private const int maxRetries = 5;
         private readonly ISupremeRepository supremeRepository;
-        private readonly ILogger<CheckoutStep> logger;
+        private readonly ILogger logger;
 
         public CheckoutStep(
             ISupremeRepository supremeRepository,

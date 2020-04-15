@@ -30,13 +30,5 @@ namespace AlphaKop.Supreme.Models {
         public override int GetHashCode() {
             return Id.GetHashCode();
         }
-
-        public override string ToString() {
-            return
-                $"Id: {Id}\n" +
-                $"Name: {Name}\n" +
-                $"StockLevel: {StockLevel}\n" +
-                $"isStockAvailable: {isStockAvailable}";
-        }
     }
 }

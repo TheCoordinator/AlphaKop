@@ -11,7 +11,7 @@ namespace AlphaKop.Supreme.Flows {
     sealed class FetchPookyStep : BaseStep<SelectedItemParameter>, IFetchPookyStep {
         private const int maxRetries = 10;
         private readonly IPookyRepository pookyRepository;
-        private readonly ILogger<FetchPookyStep> logger;
+        private readonly ILogger logger;
 
         public FetchPookyStep(
             IPookyRepository pookyRepository,

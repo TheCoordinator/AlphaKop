@@ -11,7 +11,7 @@ namespace AlphaKop.Supreme.Flows {
 
     sealed class CheckoutQueueStep : BaseStep<CheckoutQueueStepParameter>, ICheckoutQueueStep {
         private readonly ISupremeRepository supremeRepository;
-        private readonly ILogger<CheckoutQueueStep> logger;
+        private readonly ILogger logger;
 
         public CheckoutQueueStep(
             ISupremeRepository supremeRepository,
