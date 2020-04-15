@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AlphaKop.Core.Flows;
 using AlphaKop.Core.Services.TextMatching;
+using AlphaKop.Core.System.Extensions;
 using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.Logging;
@@ -99,11 +100,17 @@ namespace AlphaKop.Supreme.Flows {
             IEnumerable<ExtractedResult<string>> results
         ) {
             if (job.CategoryName == null) {
-                return items.FirstOrDefault();
+                var firstItem = items.FirstOrNull();
+
+                if (firstItem == null) {
+                    throw new ItemNotFoundException(null, keywords: job.Keywords);
+                }
+
+                return firstItem.Value;
             }
 
             var categoryName = job.CategoryName.ToLower();
-            Item? item = items.FirstOrDefault(item => item.CategoryName?.ToLower() == categoryName);
+            Item? item = items.FirstOrNull(item => item.CategoryName?.ToLower() == categoryName);
 
             if (item == null) {
                 throw new ItemNotFoundException(null, keywords: job.Keywords);

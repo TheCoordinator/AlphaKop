@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AlphaKop.Core.Flows;
 using AlphaKop.Core.Services.TextMatching;
+using AlphaKop.Core.System.Extensions;
 using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.Logging;
@@ -41,11 +42,11 @@ namespace AlphaKop.Supreme.Flows {
 
                 await PerformPostItemDetails(input: input, style: style, size: size);
             } catch (StyleNotFoundException ex) {
-                logger.LogInformation(input.Job.ToEventId(), $"--FetchItemDetailsStep Style Not Found. Item [{ex.ItemId} Style [{ex.StyleName}]]");
+                logger.LogInformation(input.Job.ToEventId(), $"--FetchItemDetailsStep Style Not Found. Item [{ex.ItemId}] Style [{ex.StyleName}]");
 
                 await RetryStep(input);
             } catch (SizeNotFoundException ex) {
-                logger.LogInformation(input.Job.ToEventId(), $"--FetchItemDetailsStep Size Not Found. Item [{ex.ItemId} Size [{ex.SizeName}]]");
+                logger.LogInformation(input.Job.ToEventId(), $"--FetchItemDetailsStep Size Not Found. Item [{ex.ItemId}] Size [{ex.SizeName}]");
 
                 await RetryStep(input);
             } catch (Exception ex) {
@@ -70,7 +71,7 @@ namespace AlphaKop.Supreme.Flows {
 
             logger.LogInformation(
                 job.ToEventId(),
-                "--FetchItemDetailsStep Style and Size Fetched " +
+                "--FetchItemDetailsStep Style and Size Fetched. " +
                 $"Stock [{stockAvailable}] " +
                 $"Item [{item.Id}, {item.Name}] " +
                 $"Style [{style.Id}, {style.Name}] " +
@@ -122,11 +123,11 @@ namespace AlphaKop.Supreme.Flows {
 
         private ItemStyle? FindAvailableStyle(IEnumerable<ItemStyle> styles) {
             if (styles.Count() == 1) {
-                return styles.FirstOrDefault();
+                return styles.FirstOrNull();
             }
 
             return styles
-                .FirstOrDefault(style => {
+                .FirstOrNull(style => {
                     return style.Sizes
                         .Any(size => size.isStockAvailable == true);
                 });
@@ -142,7 +143,7 @@ namespace AlphaKop.Supreme.Flows {
                 return null;
             }
 
-            return styles.FirstOrDefault(style => style.Name == result.Value.Value);
+            return styles.FirstOrNull(style => style.Name == result.Value.Value);
         }
 
         #endregion
@@ -157,7 +158,7 @@ namespace AlphaKop.Supreme.Flows {
             }
 
             if (sizes.Count() == 1) {
-                return sizes.FirstOrDefault();
+                return sizes.First();
             }
 
             ItemSize? result;
@@ -177,11 +178,11 @@ namespace AlphaKop.Supreme.Flows {
 
         private ItemSize? FindAvailableSize(Item item, IEnumerable<ItemSize> sizes) {
             if (sizes.Count() == 1) {
-                return sizes.FirstOrDefault();
+                return sizes.FirstOrNull();
             }
 
             return sizes
-                .FirstOrDefault(size => size.isStockAvailable == true);
+                .FirstOrNull(size => size.isStockAvailable == true);
         }
 
         private ItemSize? FindMatchingSize(Item item, IEnumerable<ItemSize> sizes, string sizeName) {
@@ -206,7 +207,7 @@ namespace AlphaKop.Supreme.Flows {
             if (sizeName.Length == 1) {
                 // For some reason textMathing can't detect number characters
                 return sizes
-                    .FirstOrDefault(size => size.Name.ToLower().Contains(sizeName.ToLower()));
+                    .FirstOrNull(size => size.Name.ToLower().Contains(sizeName.ToLower()));
             }
 
             return FindSizeByText(sizes: sizes, sizeName: sizeName);
@@ -219,7 +220,7 @@ namespace AlphaKop.Supreme.Flows {
             }
 
             return sizes
-                .FirstOrDefault(size => ItemStyleSizeTypeUtil.From(size.Name) == clothingSize);
+                .FirstOrNull(size => ItemStyleSizeTypeUtil.From(size.Name) == clothingSize);
         }
 
         private ItemSize? FindSizeByText(IEnumerable<ItemSize> sizes, string sizeName) {
@@ -228,7 +229,7 @@ namespace AlphaKop.Supreme.Flows {
 
             var result = textMatching.ExtractOne(sizeName, choices: sizeNames);
 
-            return sizes.FirstOrDefault(size => size.Name == result?.Value);
+            return sizes.FirstOrNull(size => size.Name == result?.Value);
         }
 
         #endregion
