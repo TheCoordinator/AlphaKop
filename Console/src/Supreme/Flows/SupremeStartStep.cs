@@ -5,21 +5,25 @@ using AlphaKop.Core.Flows;
 using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {
-    public interface ISupremeStartStep : ITaskStep<SupremeJob, SupremeJob> { }
+    public interface ISupremeStartStep : ITaskStep<SupremeJob> { }
 
-    sealed class SupremeStartStep : BaseStep<SupremeJob>, ISupremeStartStep {        
+    sealed class SupremeStartStep : ISupremeStartStep {
+        public int Retries { get; set; }
+
+        private readonly IServiceProvider provider;
         private readonly ILogger logger;
-        
+
         public SupremeStartStep(
             IServiceProvider provider,
             ILogger<SupremeStartStep> logger
-        ) : base(provider) {
+        ) {
+            this.provider = provider;
             this.logger = logger;
         }
 
-        protected override async Task Execute(SupremeJob parameter, SupremeJob job) {
-            await provider.CreateFetchItemStep(job)
-                .Execute(Unit.Empty);
+        public async Task Execute(SupremeJob input) {
+            await provider.CreateStep<SupremeJob, IFetchItemStep>()
+                .Execute(input);
         }
     }
 }

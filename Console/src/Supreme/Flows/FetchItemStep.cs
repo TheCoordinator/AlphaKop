@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AlphaKop.Core;
 using AlphaKop.Core.Flows;
 using AlphaKop.Core.Services.TextMatching;
 using AlphaKop.Supreme.Models;
@@ -10,67 +9,73 @@ using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {
-    public interface IFetchItemStep : ITaskStep<Unit, SupremeJob> { }
+    public interface IFetchItemStep : ITaskStep<SupremeJob> { }
 
-    sealed class FetchItemStep : BaseStep<Unit>, IFetchItemStep {
+    public sealed class FetchItemStep : IFetchItemStep {
         private readonly ISupremeRepository supremeRepository;
         private readonly ITextMatching textMatching;
+        private readonly IServiceProvider provider;
         private readonly ILogger logger;
+
+        public int Retries { get; set; }
 
         public FetchItemStep(
             ISupremeRepository supremeRepository,
             ITextMatching textMatching,
             IServiceProvider provider,
             ILogger<FetchItemStep> logger
-        ) : base(provider) {
+        ) {
             this.supremeRepository = supremeRepository;
             this.textMatching = textMatching;
+            this.provider = provider;
             this.logger = logger;
         }
 
-        protected override async Task Execute(Unit parameter, SupremeJob job) {
+        public async Task Execute(SupremeJob input) {
             try {
+                await Task.Delay(input.StartDelay);
+
                 var stock = await supremeRepository.FetchStock();
-                var item = FindItem(stock: stock, job: job);
+                var item = FindItem(stock: stock, input: input);
 
-                logger.LogInformation(JobEventId, $"--FetchItemStep Item Fetched. [{item.Id}, {item.Name}] Keywords [{job.Keywords}]");
+                logger.LogInformation(input.ToEventId(), $"--FetchItemStep Item Fetched. [{item.Id}, {item.Name}] Keywords [{input.Keywords}]");
 
-                await PerformItemDetailsStep(item, job);
+                await PerformItemDetailsStep(item, input);
             } catch (ItemNotFoundException ex) {
-                logger.LogInformation(JobEventId, $"--FetchItemStep Item Not Found. Keywords [{ex.Keywords}]");
+                logger.LogInformation(input.ToEventId(), $"--FetchItemStep Item Not Found. Keywords [{ex.Keywords}]");
 
-                await RetryStep(parameter, job);
+                await RetryStep(input);
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "--FetchItemStep Unhandled Exception");
+                logger.LogError(input.ToEventId(), ex, "--FetchItemStep Unhandled Exception");
 
-                await RetryStep(parameter, job);
+                await RetryStep(input);
             }
         }
 
-        private async Task PerformItemDetailsStep(Item item, SupremeJob job) {
-            await provider.CreateFetchItemDetailsStep(job, 0)
+        private async Task PerformItemDetailsStep(Item item, SupremeJob input) {
+            await provider.CreateFetchItemDetailsStep(input)
                 .Execute(item);
         }
 
-        private async Task RetryStep(Unit parameter, SupremeJob job) {
-            await provider.CreateFetchItemStep(job, Retries + 1)
-                .Execute(parameter);
+        private async Task RetryStep(SupremeJob input) {
+            await provider.CreateStep<SupremeJob, IFetchItemStep>(Retries + 1)
+                .Execute(input);
         }
 
-        private Item FindItem(Stock stock, SupremeJob job) {
+        private Item FindItem(Stock stock, SupremeJob input) {
             var items = GetAllItems(stock: stock);
             var names = items.Select(item => item.Name);
 
-            var results = textMatching.ExtractAll(query: job.Keywords, choices: names);
+            var results = textMatching.ExtractAll(query: input.Keywords, choices: names);
 
             if (results.Count() == 0) {
-                throw new ItemNotFoundException(null, keywords: job.Keywords);
+                throw new ItemNotFoundException(null, keywords: input.Keywords);
             }
 
             var foundItems = ConvertResults(allItems: items, results: results);
 
             return SelectItem(
-                job: job,
+                input: input,
                 items: foundItems,
                 results: results
             );
@@ -84,19 +89,19 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         private Item SelectItem(
-            SupremeJob job,
+            SupremeJob input,
             IEnumerable<Item> items,
             IEnumerable<ExtractedResult<string>> results
         ) {
-            if (job.CategoryName == null) {
+            if (input.CategoryName == null) {
                 return items.FirstOrDefault();
             }
 
-            var categoryName = job.CategoryName.ToLower();
+            var categoryName = input.CategoryName.ToLower();
             Item? item = items.FirstOrDefault(item => item.CategoryName?.ToLower() == categoryName);
 
             if (item == null) {
-                throw new ItemNotFoundException(null, keywords: job.Keywords);
+                throw new ItemNotFoundException(null, keywords: input.Keywords);
             }
 
             return item.Value;

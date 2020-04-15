@@ -1,15 +1,12 @@
 using System;
+using AlphaKop.Core.Flows;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AlphaKop.Supreme.Flows {
     static class IServiceProviderExtensions {
-        public static IFetchItemStep CreateFetchItemStep(
-            this IServiceProvider provider,
-            SupremeJob job,
-            int retries = 0
-        ) {
-            var step = provider.GetRequiredService<IFetchItemStep>();
-            step.Job = job;
+        public static TTaskStep CreateStep<TTaskInput, TTaskStep>(this IServiceProvider provider, int retries = 0) 
+            where TTaskStep: ITaskStep<TTaskInput> {
+            var step = provider.GetRequiredService<TTaskStep>();
             step.Retries = retries;
             return step;
         }
