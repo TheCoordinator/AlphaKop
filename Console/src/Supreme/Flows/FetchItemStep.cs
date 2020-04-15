@@ -35,21 +35,26 @@ namespace AlphaKop.Supreme.Flows {
 
                 logger.LogInformation(JobEventId, $"--FetchItemStep Item Fetched. [{item.Id}, {item.Name}] Keywords [{job.Keywords}]");
 
-                await provider.CreateFetchItemDetailsStep(job)
-                    .Execute(item);
-
+                await PerformItemDetailsStep(item, job);
             } catch (ItemNotFoundException ex) {
                 logger.LogInformation(JobEventId, $"--FetchItemStep Item Not Found. Keywords [{ex.Keywords}]");
 
-                await provider.CreateFetchItemStep(job, retries: Retries + 1)
-                    .Execute(parameter);
-
+                await RetryStep(parameter, job);
             } catch (Exception ex) {
                 logger.LogError(JobEventId, ex, "--FetchItemStep Unhandled Exception");
 
-                await provider.CreateFetchItemStep(job, retries: Retries + 1)
-                    .Execute(parameter);
+                await RetryStep(parameter, job);
             }
+        }
+
+        private async Task PerformItemDetailsStep(Item item, SupremeJob job) {
+            await provider.CreateFetchItemDetailsStep(job, 0)
+                .Execute(item);
+        }
+
+        private async Task RetryStep(Unit parameter, SupremeJob job) {
+            await provider.CreateFetchItemStep(job, Retries + 1)
+                .Execute(parameter);
         }
 
         private Item FindItem(Stock stock, SupremeJob job) {
@@ -76,7 +81,6 @@ namespace AlphaKop.Supreme.Flows {
                 .SelectMany(pair => pair.Value
                             .Select(item => item))
                 .Distinct();
-
         }
 
         private Item SelectItem(
