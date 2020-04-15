@@ -125,7 +125,7 @@ namespace AlphaKop.Supreme.Flows {
         ) {
             return results
                 .Select(result => allItems
-                    .FirstOrDefault(item => item.Name == result.Value)
+                    .First(item => item.Name == result.Value)
                 );
         }
     }

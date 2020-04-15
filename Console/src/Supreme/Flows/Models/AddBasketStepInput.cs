@@ -1,16 +1,19 @@
 using AlphaKop.Supreme.Models;
 
 namespace AlphaKop.Supreme.Flows {
-    public struct AddBasketStepParameter {
+    public struct AddBasketStepInput : IStepInput {
         public SelectedItem SelectedItem { get; }
         public Pooky Pooky { get; }
+        public SupremeJob Job { get; }
 
-        public AddBasketStepParameter(
+        public AddBasketStepInput(
             SelectedItem selectedItem,
-            Pooky pooky
+            Pooky pooky,
+            SupremeJob job
         ) {
             SelectedItem = selectedItem;
             Pooky = pooky;
+            Job = job;
         }
     }
 }

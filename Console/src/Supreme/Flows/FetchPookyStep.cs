@@ -10,6 +10,8 @@ namespace AlphaKop.Supreme.Flows {
 
     sealed class FetchPookyStep : IFetchPookyStep {
         private const int maxRetries = 10;
+        private const int delayInMilliSeconds = 200;
+
         private readonly IPookyRepository pookyRepository;
         private readonly IServiceProvider provider;
         private readonly ILogger logger;
@@ -33,7 +35,7 @@ namespace AlphaKop.Supreme.Flows {
             }
 
             try {
-                await Task.Delay(input.Job.StartDelay);
+                await Task.Delay(delayInMilliSeconds);
 
                 var pookyRegion = PookyRegionUtil.From(input.Job.Region);
                 var pooky = await pookyRepository.FetchPooky(pookyRegion);
@@ -52,13 +54,14 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         private async Task PerformAddBasketStep(PookyStepInput input, Pooky pooky) {
-            var addBasketParam = new AddBasketStepParameter(
+            var addBasketInput = new AddBasketStepInput(
                 selectedItem: input.SelectedItem,
-                pooky: pooky
+                pooky: pooky,
+                job: input.Job
             );
 
-            await provider.CreateAddBasketStep(input.Job)
-                .Execute(addBasketParam);
+            await provider.CreateStep<AddBasketStepInput, IAddBasketStep>()
+                .Execute(addBasketInput);
         }
 
         private async Task RevertToItemDetailsStep(PookyStepInput input) {
