@@ -33,13 +33,19 @@ namespace AlphaKop.Supreme.Flows {
                 var stock = await supremeRepository.FetchStock();
                 var item = FindItem(stock: stock, job: job);
 
-                logger.LogInformation(JobEventId, $"Fetched Item {item.Id}");
+                logger.LogInformation(JobEventId, $"--FetchItemStep Item Fetched. [{item.Id}, {item.Name}] Keywords [{job.Keywords}]");
 
                 await provider.CreateFetchItemDetailsStep(job)
                     .Execute(item);
 
+            } catch (ItemNotFoundException ex) {
+                logger.LogInformation(JobEventId, $"--FetchItemStep Item Not Found. Keywords [{ex.Keywords}]");
+
+                await provider.CreateFetchItemStep(job, retries: Retries + 1)
+                    .Execute(parameter);
+
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "Failed to retrieve Item");
+                logger.LogError(JobEventId, ex, "--FetchItemStep Unhandled Exception");
 
                 await provider.CreateFetchItemStep(job, retries: Retries + 1)
                     .Execute(parameter);
@@ -50,39 +56,19 @@ namespace AlphaKop.Supreme.Flows {
             var items = GetAllItems(stock: stock);
             var names = items.Select(item => item.Name);
 
-            var results = textMatching.ExtractAll(
-                query: job.Keywords,
-                choices: names
-            );
+            var results = textMatching.ExtractAll(query: job.Keywords, choices: names);
 
             if (results.Count() == 0) {
                 throw new ItemNotFoundException(null, keywords: job.Keywords);
             }
 
-            logger.LogDebug(
-                JobEventId,
-                $"Extracted {results.Count()} Items for keywords {job.Keywords}\n" +
-                string.Join("\n", results.Select(i => i.ToString()))
-            );
+            var foundItems = ConvertResults(allItems: items, results: results);
 
-            var foundItems = ConvertResults(
-                allItems: items,
-                results: results
-            );
-
-            logger.LogDebug(
-                JobEventId,
-                $"Extracted {foundItems.Count()} Items for keywords {job.Keywords}\n" +
-                string.Join("\n\n", foundItems.Select(i => i.ToString()))
-            );
-
-            var item = SelectItem(
+            return SelectItem(
                 job: job,
                 items: foundItems,
                 results: results
             );
-
-            return item;
         }
 
         private IEnumerable<Item> GetAllItems(Stock stock) {
