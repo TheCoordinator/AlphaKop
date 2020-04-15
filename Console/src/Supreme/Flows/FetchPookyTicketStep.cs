@@ -24,9 +24,7 @@ namespace AlphaKop.Supreme.Flows {
 
         protected override async Task Execute(PookyTicketStepParameter parameter, SupremeJob job) {
             if (Retries >= maxRetries) {
-                await provider.CreateFetchItemDetailsStep(job)
-                    .Execute(parameter.SelectedItem.Item);
-
+                await RevertToItemDetailsStep(parameter.SelectedItem, job);
                 return;
             }
 
@@ -55,6 +53,16 @@ namespace AlphaKop.Supreme.Flows {
                 await provider.CreateFetchPookyTicketStep(job, Retries + 1)
                     .Execute(parameter);
             }
+        }
+
+        private async Task RevertToItemDetailsStep(SelectedItemParameter itemParameter, SupremeJob job) {
+            var itemDetailsInput = new ItemDetailsStepInput(
+                item: itemParameter.Item,
+                job: job
+            );
+
+            await provider.CreateStep<ItemDetailsStepInput, IFetchItemDetailsStep>()
+                .Execute(itemDetailsInput);
         }
 
         private void LogResponse(PookyTicket response, PookyTicketStepParameter parameter) {

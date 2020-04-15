@@ -26,9 +26,7 @@ namespace AlphaKop.Supreme.Flows {
         protected override async Task Execute(CheckoutStepParameter parameter, SupremeJob job) {
             try {
                 if (Retries >= maxRetries) {
-                    await provider.CreateFetchItemDetailsStep(job)
-                        .Execute(parameter.SelectedItem.Item);
-
+                    await RevertToItemDetailsStep(parameter.SelectedItem, job);
                     return;
                 }
 
@@ -84,7 +82,7 @@ namespace AlphaKop.Supreme.Flows {
                 await PerformPostCheckoutFailed(response, parameter, job);
             } else {
                 // Not Sure What happened here. Could be outOfStock or an unknwon state. Check the logs
-                await RevertToItemDetails(parameter.SelectedItem, job);
+                await RevertToItemDetailsStep(parameter.SelectedItem, job);
             }
         }
 
@@ -118,7 +116,7 @@ namespace AlphaKop.Supreme.Flows {
             var purchaseAttempt = response.Status.PurchaseAttempt;
 
             if (purchaseAttempt == null || purchaseAttempt.Value.SoldOut == true) {
-                await RevertToItemDetails(parameter.SelectedItem, job);
+                await RevertToItemDetailsStep(parameter.SelectedItem, job);
                 return;
             }
 
@@ -132,11 +130,14 @@ namespace AlphaKop.Supreme.Flows {
                 .Execute(selectedItem);
         }
 
-        private async Task RevertToItemDetails(SelectedItemParameter itemParameter, SupremeJob job) {
-            var item = itemParameter.Item;
+        private async Task RevertToItemDetailsStep(SelectedItemParameter itemParameter, SupremeJob job) {
+            var itemDetailsInput = new ItemDetailsStepInput(
+                item: itemParameter.Item,
+                job: job
+            );
 
-            await provider.CreateFetchItemDetailsStep(job)
-                .Execute(item);
+            await provider.CreateStep<ItemDetailsStepInput, IFetchItemDetailsStep>()
+                .Execute(itemDetailsInput);
         }
 
         private void LogResponse(CheckoutResponse response, CheckoutStepParameter parameter) {

@@ -9,75 +9,91 @@ using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {
-    public interface IFetchItemDetailsStep : ITaskStep<Item, SupremeJob> { }
+    public interface IFetchItemDetailsStep : ITaskStep<ItemDetailsStepInput> { }
 
-    sealed class FetchItemDetailsStep : BaseStep<Item>, IFetchItemDetailsStep {
+    public sealed class FetchItemDetailsStep : IFetchItemDetailsStep {
         private readonly ISupremeRepository supremeRepository;
         private readonly ITextMatching textMatching;
+        private readonly IServiceProvider provider;
         private readonly ILogger logger;
+
+        public int Retries { get; set; }
 
         public FetchItemDetailsStep(
             ISupremeRepository supremeRepository,
             ITextMatching textMatching,
             IServiceProvider provider,
             ILogger<FetchItemDetailsStep> logger
-        ) : base(provider) {
+        ) {
             this.supremeRepository = supremeRepository;
             this.textMatching = textMatching;
+            this.provider = provider;
             this.logger = logger;
         }
 
-        protected override async Task Execute(Item parameter, SupremeJob job) {
+        public async Task Execute(ItemDetailsStepInput input) {
             try {
-                var details = await supremeRepository.FetchItemDetails(item: parameter);
+                await Task.Delay(input.Job.StartDelay);
 
-                logger.LogInformation(
-                    JobEventId,
-                    $"Fetched Details Item {parameter.Id}\n" +
-                    details.ToString()
-                );
+                var details = await supremeRepository.FetchItemDetails(item: input.Item);
+                var style = FindStyle(details: details, job: input.Job);
+                var size = FindSize(item: input.Item, style: style, job: input.Job);
 
-                var style = FindStyle(details: details, job: job);
+                await PerformPostItemDetails(input: input, style: style, size: size);
+            } catch (StyleNotFoundException ex) {
+                logger.LogInformation(input.Job.ToEventId(), $"--FetchItemDetailsStep Style Not Found. Item [{ex.ItemId} Style [{ex.StyleName}]]");
 
-                logger.LogInformation(
-                    JobEventId,
-                    $"Fetched Style Item {parameter.Id}\n" +
-                    style.ToString()
-                );
+                await RetryStep(input);
+            } catch (SizeNotFoundException ex) {
+                logger.LogInformation(input.Job.ToEventId(), $"--FetchItemDetailsStep Size Not Found. Item [{ex.ItemId} Size [{ex.SizeName}]]");
 
-                var size = FindSize(item: parameter, style: style, job: job);
-
-                logger.LogInformation(
-                    JobEventId,
-                    $"Fetched Size Item {parameter.Id}\n" +
-                    size.ToString()
-                );
-
-                if (size.isStockAvailable == true) {
-                    var pookyParam = new SelectedItemParameter(
-                        item: parameter,
-                        style: style,
-                        size: size
-                    );
-
-                    await provider.CreateFetchPookyStep(job)
-                        .Execute(pookyParam);
-                } else {
-                    logger.LogInformation(
-                        JobEventId,
-                        $"Stock Unavailable {parameter.Id} Retrying...\n" +
-                        size.ToString()
-                    );
-
-                    await provider.CreateFetchItemDetailsStep(job, Retries + 1)
-                        .Execute(parameter);
-                }
+                await RetryStep(input);
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "Failed to retrieve ItemDetails");
+                logger.LogError(input.Job.ToEventId(), ex, "--FetchItemDetailsStep Unhandled Exception");
 
-                await provider.CreateFetchItemDetailsStep(job, Retries + 1)
-                    .Execute(parameter);
+                await RetryStep(input);
             }
+        }
+
+        private async Task PerformPostItemDetails(ItemDetailsStepInput input, ItemStyle style, ItemSize size) {
+            LogItemDetails(item: input.Item, style: style, size: size, job: input.Job);
+
+            if (size.isStockAvailable == true) {
+                await PerformPookyStep(input: input, style: style, size: size);
+            } else {
+                await RetryStep(input);
+            }
+        }
+
+        private void LogItemDetails(Item item, ItemStyle style, ItemSize size, SupremeJob job) {
+            var stockAvailable = size.isStockAvailable ? "Available" : "Unavailable";
+
+            logger.LogInformation(
+                job.ToEventId(),
+                "--FetchItemDetailsStep Style and Size Fetched " +
+                $"Stock [{stockAvailable}] " +
+                $"Item [{item.Id}, {item.Name}] " +
+                $"Style [{style.Id}, {style.Name}] " +
+                $"Size [{size.Id}, {size.Name}] " +
+                $"Job Style [{job.Style}] " +
+                $"Job Size [{job.Size}]"
+            );
+        }
+
+        private async Task PerformPookyStep(ItemDetailsStepInput input, ItemStyle style, ItemSize size) {
+            var pookyParam = new SelectedItemParameter(
+                item: input.Item,
+                style: style,
+                size: size
+            );
+
+            await provider.CreateFetchPookyStep(input.Job)
+                .Execute(pookyParam);
+        }
+
+        private async Task RetryStep(ItemDetailsStepInput input) {
+            await provider.CreateStep<ItemDetailsStepInput, IFetchItemDetailsStep>(Retries + 1)
+                .Execute(input);
         }
 
         #region Style

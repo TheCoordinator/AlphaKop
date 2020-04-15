@@ -53,8 +53,13 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         private async Task PerformItemDetailsStep(Item item, InitialStepInput input) {
-            await provider.CreateFetchItemDetailsStep(input.Job)
-                .Execute(item);
+            var itemDetailsInput = new ItemDetailsStepInput(
+                item: item,
+                job: input.Job
+            );
+
+            await provider.CreateStep<ItemDetailsStepInput, IFetchItemDetailsStep>()
+                .Execute(itemDetailsInput);
         }
 
         private async Task RetryStep(InitialStepInput input) {
