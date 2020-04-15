@@ -11,17 +11,6 @@ namespace AlphaKop.Supreme.Flows {
             step.Retries = retries;
             return step;
         }
-        
-        public static IFetchPookyStep CreateFetchPookyStep(
-            this IServiceProvider provider,
-            SupremeJob job,
-            int retries = 0
-        ) {
-            var step = provider.GetRequiredService<IFetchPookyStep>();
-            step.Job = job;
-            step.Retries = retries;
-            return step;
-        }
 
         public static IAddBasketStep CreateAddBasketStep(
             this IServiceProvider provider,

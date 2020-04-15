@@ -82,14 +82,19 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         private async Task PerformPookyStep(ItemDetailsStepInput input, ItemStyle style, ItemSize size) {
-            var pookyParam = new SelectedItemParameter(
+            var selectedItem = new SelectedItem(
                 item: input.Item,
                 style: style,
                 size: size
             );
 
-            await provider.CreateFetchPookyStep(input.Job)
-                .Execute(pookyParam);
+            var pookyInput = new PookyStepInput(
+                selectedItem: selectedItem,
+                job: input.Job
+            );
+
+            await provider.CreateStep<PookyStepInput, IFetchPookyStep>()
+                .Execute(pookyInput);
         }
 
         private async Task RetryStep(ItemDetailsStepInput input) {

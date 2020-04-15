@@ -6,64 +6,80 @@ using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {
-    public interface IFetchPookyStep : ITaskStep<SelectedItemParameter, SupremeJob> { }
+    public interface IFetchPookyStep : ITaskStep<PookyStepInput> { }
 
-    sealed class FetchPookyStep : BaseStep<SelectedItemParameter>, IFetchPookyStep {
+    sealed class FetchPookyStep : IFetchPookyStep {
         private const int maxRetries = 10;
         private readonly IPookyRepository pookyRepository;
+        private readonly IServiceProvider provider;
         private readonly ILogger logger;
+
+        public int Retries { get; set; }
 
         public FetchPookyStep(
             IPookyRepository pookyRepository,
             IServiceProvider provider,
             ILogger<FetchPookyStep> logger
-        ) : base(provider) {
+        ) {
             this.pookyRepository = pookyRepository;
+            this.provider = provider;
             this.logger = logger;
         }
 
-        protected override async Task Execute(SelectedItemParameter parameter, SupremeJob job) {
+        public async Task Execute(PookyStepInput input) {
             if (Retries >= maxRetries) {
-                await RevertToItemDetailsStep(parameter, job);
+                await RevertToItemDetailsStep(input);
                 return;
             }
 
             try {
-                var pookyRegion = PookyRegionUtil.From(job.Region);
+                await Task.Delay(input.Job.StartDelay);
+
+                var pookyRegion = PookyRegionUtil.From(input.Job.Region);
                 var pooky = await pookyRepository.FetchPooky(pookyRegion);
 
-                LogResponse(pooky, parameter);
-
-                var addBasketParam = new AddBasketStepParameter(
-                    selectedItem: parameter,
-                    pooky: pooky
-                );
-
-                await provider.CreateAddBasketStep(job)
-                    .Execute(addBasketParam);
-
+                await PerformPostPooky(input, pooky);
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "--[FetchPooky] Error");
+                logger.LogError(input.Job.ToEventId(), ex, "--[FetchPookyStep] Unhandled Exception");
 
-                await provider.CreateFetchPookyStep(job, Retries + 1)
-                    .Execute(parameter);
+                await RetryStep(input);
             }
         }
 
-        private async Task RevertToItemDetailsStep(SelectedItemParameter itemParameter, SupremeJob job) {
+        private async Task PerformPostPooky(PookyStepInput input, Pooky pooky) {
+            LogPooky(input, pooky);
+            await PerformAddBasketStep(input, pooky);
+        }
+
+        private async Task PerformAddBasketStep(PookyStepInput input, Pooky pooky) {
+            var addBasketParam = new AddBasketStepParameter(
+                selectedItem: input.SelectedItem,
+                pooky: pooky
+            );
+
+            await provider.CreateAddBasketStep(input.Job)
+                .Execute(addBasketParam);
+        }
+
+        private async Task RevertToItemDetailsStep(PookyStepInput input) {
             var itemDetailsInput = new ItemDetailsStepInput(
-                item: itemParameter.Item,
-                job: job
+                item: input.SelectedItem.Item,
+                job: input.Job
             );
 
             await provider.CreateStep<ItemDetailsStepInput, IFetchItemDetailsStep>()
                 .Execute(itemDetailsInput);
         }
 
-        private void LogResponse(Pooky response, SelectedItemParameter parameter) {
+        private async Task RetryStep(PookyStepInput input) {
+            await provider.CreateStep<PookyStepInput, IFetchPookyStep>(Retries + 1)
+                .Execute(input);
+        }
+
+        private void LogPooky(PookyStepInput input, Pooky pooky) {
             logger.LogInformation(
-                JobEventId,
-                $@"--[FetchPooky] Status [Fetched] {parameter.ToString()}"
+                input.Job.ToEventId(),
+                $@"--[FetchPookyStep] Status [Fetched] {input.SelectedItem.ToString()}"
             );
         }
     }

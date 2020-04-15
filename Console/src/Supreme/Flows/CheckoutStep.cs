@@ -120,17 +120,20 @@ namespace AlphaKop.Supreme.Flows {
                 return;
             }
 
-            await RevertToFetchPooky(parameter, job);
+            await RevertToFetchPookyStep(parameter, job);
         }
 
-        private async Task RevertToFetchPooky(CheckoutStepParameter parameter, SupremeJob job) {
-            var selectedItem = parameter.SelectedItem;
+        private async Task RevertToFetchPookyStep(CheckoutStepParameter parameter, SupremeJob job) {
+            var pookyInput = new PookyStepInput(
+                selectedItem: parameter.SelectedItem,
+                job: job
+            );
 
-            await provider.CreateFetchPookyStep(job)
-                .Execute(selectedItem);
+            await provider.CreateStep<PookyStepInput, IFetchPookyStep>()
+                .Execute(pookyInput);
         }
 
-        private async Task RevertToItemDetailsStep(SelectedItemParameter itemParameter, SupremeJob job) {
+        private async Task RevertToItemDetailsStep(SelectedItem itemParameter, SupremeJob job) {
             var itemDetailsInput = new ItemDetailsStepInput(
                 item: itemParameter.Item,
                 job: job

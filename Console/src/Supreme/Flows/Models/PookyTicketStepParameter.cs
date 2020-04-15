@@ -3,13 +3,13 @@ using AlphaKop.Supreme.Network;
 
 namespace AlphaKop.Supreme.Flows {
     public struct PookyTicketStepParameter {
-        public SelectedItemParameter SelectedItem { get; }
+        public SelectedItem SelectedItem { get; }
         public AddBasketResponse BasketResponse { get; }
         public string BasketTicket { get; }
         public Pooky Pooky { get; }
 
         public PookyTicketStepParameter(
-            SelectedItemParameter selectedItem,
+            SelectedItem selectedItem,
             AddBasketResponse basketResponse,
             string basketTicket,
             Pooky pooky

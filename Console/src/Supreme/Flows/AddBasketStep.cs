@@ -64,7 +64,7 @@ namespace AlphaKop.Supreme.Flows {
             }
         }
 
-        private async Task RevertToItemDetailsStep(SelectedItemParameter itemParameter, SupremeJob job) {
+        private async Task RevertToItemDetailsStep(SelectedItem itemParameter, SupremeJob job) {
             var itemDetailsInput = new ItemDetailsStepInput(
                 item: itemParameter.Item,
                 job: job

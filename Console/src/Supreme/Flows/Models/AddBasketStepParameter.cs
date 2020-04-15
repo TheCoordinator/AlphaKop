@@ -2,11 +2,11 @@ using AlphaKop.Supreme.Models;
 
 namespace AlphaKop.Supreme.Flows {
     public struct AddBasketStepParameter {
-        public SelectedItemParameter SelectedItem { get; }
+        public SelectedItem SelectedItem { get; }
         public Pooky Pooky { get; }
 
         public AddBasketStepParameter(
-            SelectedItemParameter selectedItem,
+            SelectedItem selectedItem,
             Pooky pooky
         ) {
             SelectedItem = selectedItem;

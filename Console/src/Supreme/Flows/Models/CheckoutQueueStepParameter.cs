@@ -4,12 +4,12 @@ using AlphaKop.Supreme.Network;
 
 namespace AlphaKop.Supreme.Flows {
     public struct CheckoutQueueStepParameter {
-        public SelectedItemParameter SelectedItem { get; }
+        public SelectedItem SelectedItem { get; }
         public ICheckoutRequest CheckoutRequest { get; }
         public CheckoutResponse CheckoutResponse { get; }
 
         public CheckoutQueueStepParameter(
-            SelectedItemParameter selectedItem,
+            SelectedItem selectedItem,
             ICheckoutRequest checkoutRequest,
             CheckoutResponse checkoutResponse
         ) {
