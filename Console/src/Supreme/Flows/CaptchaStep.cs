@@ -73,15 +73,16 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         private async Task PerformCheckoutStep(CaptchaStepInput input, Captcha captcha) {
-            var checkoutStepInput = new CheckoutStepParameter(
+            var checkoutStepInput = new CheckoutStepInput(
                 selectedItem: input.SelectedItem,
                 basketResponse: input.BasketResponse,
                 pooky: input.Pooky,
                 pookyTicket: input.PookyTicket,
-                captcha: captcha
+                captcha: captcha,
+                job: input.Job
             );
 
-            await provider.CreateCheckoutStep(input.Job)
+            await provider.CreateStep<CheckoutStepInput, ICheckoutStep>()
                 .Execute(checkoutStepInput);
         }
 
