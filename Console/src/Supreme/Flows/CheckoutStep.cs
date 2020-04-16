@@ -36,7 +36,7 @@ namespace AlphaKop.Supreme.Flows {
                 }
 
                 await Task.Delay(input.Job.StartDelay);
-                
+
                 var request = CreateCheckoutRequest(input);
                 var response = await supremeRepository.Checkout(request);
 
@@ -88,12 +88,13 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         private async Task PerformSuccessStep(CheckoutStepInput input, CheckoutResponse response) {
-            var successInput = new SuccessStepParameter(
+            var successInput = new SuccessStepInput(
                 selectedItem: input.SelectedItem,
-                checkoutResponse: response
+                checkoutResponse: response,
+                job: input.Job
             );
 
-            await provider.CreateSuccessStep(input.Job)
+            await provider.CreateStep<SuccessStepInput, ISupremeSuccessStep>()
                 .Execute(successInput);
         }
 

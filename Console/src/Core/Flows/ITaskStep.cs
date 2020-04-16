@@ -5,10 +5,4 @@ namespace AlphaKop.Core.Flows {
         int Retries { get; set; }
         Task Execute(TInput input);
     }
-
-    public interface ITaskStep<TParameter, TJob> where TJob : struct, IJob {
-        TJob? Job { get; set; }
-        int Retries { get; set; }
-        Task Execute(TParameter parameter);
-    }
 }

@@ -28,7 +28,7 @@ namespace AlphaKop.Supreme.Flows {
         public async Task Execute(CheckoutQueueStepInput input) {
             try {
                 await Task.Delay(input.Job.StartDelay);
-                
+
                 var request = CreateRequest(input);
                 var response = await supremeRepository.CheckoutQueue(request);
 
@@ -72,7 +72,7 @@ namespace AlphaKop.Supreme.Flows {
             var status = response.Status.Status;
 
             if (status == "paid") {
-                await PerformPostCheckoutPaid(input, response);
+                await PerformSuccessStep(input, response);
             } else if (status == "queued") {
                 var newInput = CreateInput(input, response);
                 await RetryStep(newInput);
@@ -84,14 +84,15 @@ namespace AlphaKop.Supreme.Flows {
             }
         }
 
-        private async Task PerformPostCheckoutPaid(CheckoutQueueStepInput input, CheckoutResponse response) {
-            var successParam = new SuccessStepParameter(
+        private async Task PerformSuccessStep(CheckoutQueueStepInput input, CheckoutResponse response) {
+            var successInput = new SuccessStepInput(
                 selectedItem: input.SelectedItem,
-                checkoutResponse: response
+                checkoutResponse: response,
+                job: input.Job
             );
 
-            await provider.CreateSuccessStep(input.Job)
-                .Execute(successParam);
+            await provider.CreateStep<SuccessStepInput, ISupremeSuccessStep>()
+                .Execute(successInput);
         }
 
         private async Task RetryStep(CheckoutQueueStepInput input) {

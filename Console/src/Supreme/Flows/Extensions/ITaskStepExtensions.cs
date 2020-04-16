@@ -11,14 +11,5 @@ namespace AlphaKop.Supreme.Flows {
             step.Retries = retries;
             return step;
         }
-
-        public static ISupremeSuccessStep CreateSuccessStep(
-            this IServiceProvider provider,
-            SupremeJob job
-        ) {
-            var step = provider.GetRequiredService<ISupremeSuccessStep>();
-            step.Job = job;
-            return step;
-        }
     }
 }
