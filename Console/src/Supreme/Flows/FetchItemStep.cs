@@ -109,14 +109,29 @@ namespace AlphaKop.Supreme.Flows {
                 return firstItem.Value;
             }
 
-            var categoryName = job.CategoryName.ToLower();
-            Item? item = items.FirstOrNull(item => item.CategoryName?.ToLower() == categoryName);
+            var categoryName = CleanupCategoryName(job.CategoryName);
+
+            Item? item = items.FirstOrNull(item => CleanupCategoryName(item.CategoryName) == categoryName);
 
             if (item == null) {
                 throw new ItemNotFoundException(null, keywords: job.Keywords);
             }
 
             return item.Value;
+        }
+
+        private string CleanupCategoryName(string? categoryName) {
+            if (categoryName == null) {
+                return "";
+            }
+
+            return categoryName
+                .Trim()
+                .ToLower()
+                .Replace("/", "_")
+                .Replace("-", "_")
+                .Replace(" ", "_")
+                .ToLower();
         }
 
         private IEnumerable<Item> ConvertResults(
