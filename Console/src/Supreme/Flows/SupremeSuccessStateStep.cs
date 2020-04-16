@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace AlphaKop.Supreme.Flows {
     public interface ISupremeSuccessStep : ITaskStep<SuccessStepParameter, SupremeJob> { }
 
-    sealed class SupremeSuccessStep : BaseStep<SuccessStepParameter>, ISupremeSuccessStep {        
+    public sealed class SupremeSuccessStep : BaseStep<SuccessStepParameter>, ISupremeSuccessStep {        
         private readonly ILogger logger;
         
         public SupremeSuccessStep(

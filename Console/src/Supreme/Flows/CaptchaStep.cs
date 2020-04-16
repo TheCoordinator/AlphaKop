@@ -14,7 +14,7 @@ using Microsoft.Extensions.Options;
 namespace AlphaKop.Supreme.Flows {
     public interface ICaptchaStep : ITaskStep<CaptchaStepInput> { }
 
-    sealed class CaptchaStep : ICaptchaStep {
+    public sealed class CaptchaStep : ICaptchaStep {
         private const int delayInMilliSeconds = 200;
 
         private readonly SupremeConfig config;

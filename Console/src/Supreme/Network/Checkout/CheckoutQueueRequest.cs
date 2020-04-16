@@ -8,6 +8,7 @@ namespace AlphaKop.Supreme.Network {
         public string SizeId { get; }
         public string StyleId { get; }
         public int Quantity { get; }
+        public string Slug { get; }
         public AddBasketResponse BasketResponse { get; }
         public CheckoutResponse CheckoutResponse { get; }
         public Pooky Pooky { get; }
@@ -20,6 +21,7 @@ namespace AlphaKop.Supreme.Network {
             string sizeId,
             string styleId,
             int quantity,
+            string slug,
             AddBasketResponse basketResponse,
             CheckoutResponse checkoutResponse,
             Pooky pooky,
@@ -31,6 +33,7 @@ namespace AlphaKop.Supreme.Network {
             SizeId = sizeId;
             StyleId = styleId;
             Quantity = quantity;
+            Slug = slug;
             BasketResponse = basketResponse;
             CheckoutResponse = checkoutResponse;
             Pooky = pooky;

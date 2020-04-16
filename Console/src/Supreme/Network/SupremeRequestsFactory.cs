@@ -72,7 +72,7 @@ namespace AlphaKop.Supreme.Network {
 
         public HttpRequestMessage CheckoutQueue(CheckoutQueueRequest request) {
             return CreateCheckoutRequestMessage(
-                path: $"/checkout/{request.CheckoutResponse.Status.Slug}/status.json",
+                path: $"/checkout/{request.Slug}/status.json",
                 request: request,
                 responseCookies: request.CheckoutResponse.ResponseCookies
             );

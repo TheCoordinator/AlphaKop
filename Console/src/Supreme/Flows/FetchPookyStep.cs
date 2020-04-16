@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace AlphaKop.Supreme.Flows {
     public interface IFetchPookyStep : ITaskStep<PookyStepInput> { }
 
-    sealed class FetchPookyStep : IFetchPookyStep {
+    public sealed class FetchPookyStep : IFetchPookyStep {
         private const int maxRetries = 10;
         private const int delayInMilliSeconds = 200;
 

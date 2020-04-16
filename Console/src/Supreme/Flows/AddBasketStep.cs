@@ -9,8 +9,8 @@ using Microsoft.Extensions.Logging;
 namespace AlphaKop.Supreme.Flows {
     public interface IAddBasketStep : ITaskStep<AddBasketStepInput> { }
 
-    sealed class AddBasketStep : IAddBasketStep {
-        private const int maxRetries = 20;
+    public sealed class AddBasketStep : IAddBasketStep {
+        private const int maxRetries = 30;
         private const int delayInMilliSeconds = 200;
 
         private readonly ISupremeRepository supremeRepository;

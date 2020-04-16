@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using AlphaKop.Core.Flows;
 using AlphaKop.Supreme.Repositories;
@@ -7,101 +6,114 @@ using AlphaKop.Supreme.Network;
 using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {
-    public interface ICheckoutQueueStep : ITaskStep<CheckoutQueueStepParameter, SupremeJob> { }
+    public interface ICheckoutQueueStep : ITaskStep<CheckoutQueueStepInput> { }
 
-    sealed class CheckoutQueueStep : BaseStep<CheckoutQueueStepParameter>, ICheckoutQueueStep {
+    public sealed class CheckoutQueueStep : ICheckoutQueueStep {
         private readonly ISupremeRepository supremeRepository;
+        private readonly IServiceProvider provider;
         private readonly ILogger logger;
+
+        public int Retries { get; set; }
 
         public CheckoutQueueStep(
             ISupremeRepository supremeRepository,
             IServiceProvider provider,
             ILogger<CheckoutQueueStep> logger
-        ) : base(provider) {
+        ) {
             this.supremeRepository = supremeRepository;
+            this.provider = provider;
             this.logger = logger;
         }
 
-        protected override async Task Execute(CheckoutQueueStepParameter parameter, SupremeJob job) {
+        public async Task Execute(CheckoutQueueStepInput input) {
             try {
-                var request = CreateRequest(parameter, job);
-                var response = await PerformCheckoutQueue(request);
+                await Task.Delay(input.Job.StartDelay);
+                
+                var request = CreateRequest(input);
+                var response = await supremeRepository.CheckoutQueue(request);
 
-                await PerformPostCheckoutResponse(request, response, parameter, job);
+                await PerformPostCheckoutResponse(input, request, response);
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "[CheckoutQueue]");
+                logger.LogError(input.Job.ToEventId(), ex, "[CheckoutQueueStep] Unhandled Exception");
 
-                await provider.CreateCheckoutQueueStep(job, Retries + 1)
-                    .Execute(parameter);
+                await RetryStep(input);
             }
         }
 
-        private CheckoutQueueRequest CreateRequest(CheckoutQueueStepParameter parameter, SupremeJob job) {
+        private CheckoutQueueRequest CreateRequest(CheckoutQueueStepInput input) {
             return new CheckoutQueueRequest(
-                itemId: parameter.SelectedItem.Item.Id,
-                sizeId: parameter.SelectedItem.Size.Id,
-                styleId: parameter.SelectedItem.Style.Id,
-                quantity: job.Quantity,
-                basketResponse: parameter.CheckoutRequest.BasketResponse,
-                checkoutResponse: parameter.CheckoutResponse,
-                pooky: parameter.CheckoutRequest.Pooky,
-                pookyTicket: parameter.CheckoutRequest.PookyTicket,
-                captcha: parameter.CheckoutRequest.Captcha,
-                profile: parameter.CheckoutRequest.Profile
+                itemId: input.SelectedItem.Item.Id,
+                sizeId: input.SelectedItem.Size.Id,
+                styleId: input.SelectedItem.Style.Id,
+                quantity: Math.Max(input.Job.Quantity, 1),
+                slug: input.Slug,
+                basketResponse: input.CheckoutRequest.BasketResponse,
+                checkoutResponse: input.CheckoutResponse,
+                pooky: input.CheckoutRequest.Pooky,
+                pookyTicket: input.CheckoutRequest.PookyTicket,
+                captcha: input.CheckoutRequest.Captcha,
+                profile: input.CheckoutRequest.Profile
             );
         }
 
-        private async Task<CheckoutResponse> PerformCheckoutQueue(CheckoutQueueRequest request) {
-            return await supremeRepository.CheckoutQueue(request);
+        private CheckoutQueueStepInput CreateInput(CheckoutQueueStepInput input, CheckoutResponse response) {
+            return new CheckoutQueueStepInput(
+                selectedItem: input.SelectedItem,
+                checkoutRequest: input.CheckoutRequest,
+                checkoutResponse: input.CheckoutResponse,
+                slug: response.Status.Slug ?? input.Slug,
+                job: input.Job
+            );
         }
 
-        private async Task PerformPostCheckoutResponse(CheckoutQueueRequest request, CheckoutResponse response, CheckoutQueueStepParameter parameter, SupremeJob job) {
-            LogResponse(response, parameter);
+        private async Task PerformPostCheckoutResponse(CheckoutQueueStepInput input, CheckoutQueueRequest request, CheckoutResponse response) {
+            LogResponse(input, response);
 
             var status = response.Status.Status;
 
             if (status == "paid") {
-                await PerformPostCheckoutPaid(response, parameter, job);
+                await PerformPostCheckoutPaid(input, response);
             } else if (status == "queued") {
-                await RetryStep(parameter, job);
+                var newInput = CreateInput(input, response);
+                await RetryStep(newInput);
             } else if (status == "failed") {
-                await PerformPostCheckoutFailed(response, parameter, job);
+                await PerformPostCheckoutFailed(input, response);
             } else {
                 // Not Sure What happened here. Could be outOfStock or an unknwon state. Check the logs
-                await RevertToItemDetailsStep(parameter.SelectedItem, job);
+                await RevertToItemDetailsStep(input);
             }
         }
 
-        private async Task PerformPostCheckoutPaid(CheckoutResponse response, CheckoutQueueStepParameter parameter, SupremeJob job) {
+        private async Task PerformPostCheckoutPaid(CheckoutQueueStepInput input, CheckoutResponse response) {
             var successParam = new SuccessStepParameter(
-                selectedItem: parameter.SelectedItem,
+                selectedItem: input.SelectedItem,
                 checkoutResponse: response
             );
 
-            await provider.CreateSuccessStep(job)
+            await provider.CreateSuccessStep(input.Job)
                 .Execute(successParam);
         }
 
-        private async Task RetryStep(CheckoutQueueStepParameter parameter, SupremeJob job) {
-            await provider.CreateCheckoutQueueStep(job, retries: Retries + 1)
-                .Execute(parameter);
+        private async Task RetryStep(CheckoutQueueStepInput input) {
+            await provider.CreateStep<CheckoutQueueStepInput, ICheckoutQueueStep>(Retries + 1)
+                .Execute(input);
         }
 
-        private async Task PerformPostCheckoutFailed(CheckoutResponse response, CheckoutQueueStepParameter parameter, SupremeJob job) {
+        private async Task PerformPostCheckoutFailed(CheckoutQueueStepInput input, CheckoutResponse response) {
             var purchaseAttempt = response.Status.PurchaseAttempt;
 
             if (purchaseAttempt == null || purchaseAttempt.Value.SoldOut == true) {
-                await RevertToItemDetailsStep(parameter.SelectedItem, job);
+                await RevertToItemDetailsStep(input);
                 return;
             }
 
-            await RevertToFetchPookyStep(parameter, job);
+            await RevertToFetchPookyStep(input);
         }
 
-        private async Task RevertToFetchPookyStep(CheckoutQueueStepParameter parameter, SupremeJob job) {
+        private async Task RevertToFetchPookyStep(CheckoutQueueStepInput input) {
             var pookyInput = new PookyStepInput(
-                selectedItem: parameter.SelectedItem,
-                job: job
+                selectedItem: input.SelectedItem,
+                job: input.Job
             );
 
             await provider.CreateStep<PookyStepInput, IFetchPookyStep>()
@@ -109,21 +121,20 @@ namespace AlphaKop.Supreme.Flows {
 
         }
 
-        private async Task RevertToItemDetailsStep(SelectedItem itemParameter, SupremeJob job) {
+        private async Task RevertToItemDetailsStep(CheckoutQueueStepInput input) {
             var itemDetailsInput = new ItemDetailsStepInput(
-                item: itemParameter.Item,
-                job: job
+                item: input.SelectedItem.Item,
+                job: input.Job
             );
 
             await provider.CreateStep<ItemDetailsStepInput, IFetchItemDetailsStep>()
                 .Execute(itemDetailsInput);
         }
 
-        private void LogResponse(CheckoutResponse response, CheckoutQueueStepParameter parameter) {
-            var selectedItem = parameter.SelectedItem;
+        private void LogResponse(CheckoutQueueStepInput input, CheckoutResponse response) {
             logger.LogInformation(
-                JobEventId,
-                $@"--[CheckoutQueue] Status [{response.Status.Status}] {parameter.SelectedItem.ToString()}"
+                input.Job.ToEventId(),
+                $@"--[CheckoutQueue] Status [{response.Status.Status}] {input.SelectedItem.ToString()}"
             );
         }
     }

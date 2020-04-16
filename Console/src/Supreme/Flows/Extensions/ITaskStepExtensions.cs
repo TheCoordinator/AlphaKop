@@ -4,24 +4,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AlphaKop.Supreme.Flows {
     static class IServiceProviderExtensions {
-        public static TTaskStep CreateStep<TTaskInput, TTaskStep>(this IServiceProvider provider, int retries = 0) 
-            where TTaskInput: IStepInput 
-            where TTaskStep: ITaskStep<TTaskInput> {
+        public static TTaskStep CreateStep<TTaskInput, TTaskStep>(this IServiceProvider provider, int retries = 0)
+            where TTaskInput : IStepInput
+            where TTaskStep : ITaskStep<TTaskInput> {
             var step = provider.GetRequiredService<TTaskStep>();
             step.Retries = retries;
             return step;
         }
-
-        public static ICheckoutQueueStep CreateCheckoutQueueStep(
-            this IServiceProvider provider,
-            SupremeJob job,
-            int retries = 0
-        ) {
-            var step = provider.GetRequiredService<ICheckoutQueueStep>();
-            step.Job = job;
-            step.Retries = retries;
-            return step;
-        }        
 
         public static ISupremeSuccessStep CreateSuccessStep(
             this IServiceProvider provider,

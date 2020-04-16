@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace AlphaKop.Supreme.Flows {
     public interface ISupremeStartStep : ITaskStep<InitialStepInput> { }
 
-    sealed class SupremeStartStep : ISupremeStartStep {
+    public sealed class SupremeStartStep : ISupremeStartStep {
         public int Retries { get; set; }
 
         private readonly IServiceProvider provider;
