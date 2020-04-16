@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using AlphaKop.Core.System.Extensions;
 using Newtonsoft.Json;
 
 namespace AlphaKop.Supreme.Network {
@@ -24,7 +24,7 @@ namespace AlphaKop.Supreme.Network {
 
         public CheckoutResponsePurchaseAttempt? PurchaseAttempt {
             get {
-                return PurchaseAttempts?.FirstOrDefault();
+                return PurchaseAttempts?.FirstOrNull();
             }
         }
 

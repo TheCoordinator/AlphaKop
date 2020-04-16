@@ -13,11 +13,5 @@ namespace AlphaKop.Supreme.Network {
             SizeId = sizeId;
             InStock = inStock;
         }
-
-        public override string ToString() {
-            return
-                $"SizeId: {SizeId}\n" +
-                $"InStock: {InStock}";
-        }        
     }
 }

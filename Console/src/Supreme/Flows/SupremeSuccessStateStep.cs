@@ -5,27 +5,31 @@ using AlphaKop.Core.Flows;
 using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {
-    public interface ISupremeSuccessStep : ITaskStep<SuccessStepParameter, SupremeJob> { }
+    public interface ISupremeSuccessStep : ITaskStep<SuccessStepInput> { }
 
-    sealed class SupremeSuccessStep : BaseStep<SuccessStepParameter>, ISupremeSuccessStep {        
-        private readonly ILogger<SupremeSuccessStep> logger;
+    public sealed class SupremeSuccessStep : ISupremeSuccessStep {
+        private readonly IServiceProvider provider;
+        private readonly ILogger logger;
         
+        public int Retries { get; set; }
+
         public SupremeSuccessStep(
             IServiceProvider provider,
             ILogger<SupremeSuccessStep> logger
-        ) : base(provider) {
+        ) {
+            this.provider = provider;
             this.logger = logger;
         }
 
-        protected override async Task Execute(SuccessStepParameter parameter, SupremeJob job) {
-            var sale = parameter.CheckoutResponse.Status.PurchaseSale;
+        public async Task Execute(SuccessStepInput input) {
+            var sale = input.CheckoutResponse.Status.PurchaseSale;
 
             logger.LogInformation(
-                JobEventId,
-                $@"--Success {parameter.SelectedItem.ToString()} Total Cost [{sale?.Currency} {sale?.TotalCartCost}]"
+                input.Job.ToEventId(),
+                $@"--Success 🎉🚀🔥 {input.SelectedItem.ToString()} Total Cost [{sale?.Currency} {sale?.TotalCartCost}]"
             );
 
-            await Task.Delay(1);
+            await Task.Delay(100);
         }
     }
 }

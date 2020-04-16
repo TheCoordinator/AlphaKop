@@ -33,7 +33,8 @@ namespace AlphaKop.Core.Network.Http {
                 //swallow the exception, we are about to throw a better exception anyway
             }
 
-            throw new HttpRequestException(msg);
+            var innerException = new HttpResponseException(msg, response);
+            throw new HttpRequestException(msg, inner: innerException);
         }
 
         public static IEnumerable<Cookie> GetCookies(this HttpResponseMessage response) {

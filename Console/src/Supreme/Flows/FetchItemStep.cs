@@ -2,87 +2,89 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AlphaKop.Core;
 using AlphaKop.Core.Flows;
 using AlphaKop.Core.Services.TextMatching;
+using AlphaKop.Core.System.Extensions;
 using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {
-    public interface IFetchItemStep : ITaskStep<Unit, SupremeJob> { }
+    public interface IFetchItemStep : ITaskStep<InitialStepInput> { }
 
-    sealed class FetchItemStep : BaseStep<Unit>, IFetchItemStep {
+    public sealed class FetchItemStep : IFetchItemStep {
         private readonly ISupremeRepository supremeRepository;
         private readonly ITextMatching textMatching;
-        private readonly ILogger<FetchItemStep> logger;
+        private readonly IServiceProvider provider;
+        private readonly ILogger logger;
+
+        public int Retries { get; set; }
 
         public FetchItemStep(
             ISupremeRepository supremeRepository,
             ITextMatching textMatching,
             IServiceProvider provider,
             ILogger<FetchItemStep> logger
-        ) : base(provider) {
+        ) {
             this.supremeRepository = supremeRepository;
             this.textMatching = textMatching;
+            this.provider = provider;
             this.logger = logger;
         }
 
-        protected override async Task Execute(Unit parameter, SupremeJob job) {
+        public async Task Execute(InitialStepInput input) {
             try {
+                await Task.Delay(input.Job.StartDelay);
+
                 var stock = await supremeRepository.FetchStock();
-                var item = FindItem(stock: stock, job: job);
+                var item = FindItem(stock: stock, job: input.Job);
 
-                logger.LogInformation(JobEventId, $"Fetched Item {item.Id}");
+                logger.LogInformation(input.Job.ToEventId(), $"--FetchItemStep Item Fetched. [{item.Id}, {item.Name}] Keywords [{input.Job.Keywords}]");
 
-                await provider.CreateFetchItemDetailsStep(job)
-                    .Execute(item);
+                await PerformItemDetailsStep(item, input);
+            } catch (ItemNotFoundException ex) {
+                logger.LogError(input.Job.ToEventId(), $"--FetchItemStep Item Not Found. Keywords [{ex.Keywords}]");
 
+                await RetryStep(input);
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "Failed to retrieve Item");
+                logger.LogError(input.Job.ToEventId(), ex, "--FetchItemStep Unhandled Exception");
 
-                await provider.CreateFetchItemStep(job, retries: Retries + 1)
-                    .Execute(parameter);
+                await RetryStep(input);
             }
+        }
+
+        private async Task PerformItemDetailsStep(Item item, InitialStepInput input) {
+            var itemDetailsInput = new ItemDetailsStepInput(
+                item: item,
+                job: input.Job
+            );
+
+            await provider.CreateStep<ItemDetailsStepInput, IFetchItemDetailsStep>()
+                .Execute(itemDetailsInput);
+        }
+
+        private async Task RetryStep(InitialStepInput input) {
+            await provider.CreateStep<InitialStepInput, IFetchItemStep>(Retries + 1)
+                .Execute(input);
         }
 
         private Item FindItem(Stock stock, SupremeJob job) {
             var items = GetAllItems(stock: stock);
             var names = items.Select(item => item.Name);
 
-            var results = textMatching.ExtractAll(
-                query: job.Keywords,
-                choices: names
-            );
+            var results = textMatching.ExtractAll(query: job.Keywords, choices: names);
 
             if (results.Count() == 0) {
                 throw new ItemNotFoundException(null, keywords: job.Keywords);
             }
 
-            logger.LogDebug(
-                JobEventId,
-                $"Extracted {results.Count()} Items for keywords {job.Keywords}\n" +
-                string.Join("\n", results.Select(i => i.ToString()))
-            );
+            var foundItems = ConvertResults(allItems: items, results: results);
 
-            var foundItems = ConvertResults(
-                allItems: items,
-                results: results
-            );
-
-            logger.LogDebug(
-                JobEventId,
-                $"Extracted {foundItems.Count()} Items for keywords {job.Keywords}\n" +
-                string.Join("\n\n", foundItems.Select(i => i.ToString()))
-            );
-
-            var item = SelectItem(
+            return SelectItem(
                 job: job,
                 items: foundItems,
                 results: results
             );
-
-            return item;
         }
 
         private IEnumerable<Item> GetAllItems(Stock stock) {
@@ -90,7 +92,6 @@ namespace AlphaKop.Supreme.Flows {
                 .SelectMany(pair => pair.Value
                             .Select(item => item))
                 .Distinct();
-
         }
 
         private Item SelectItem(
@@ -99,17 +100,38 @@ namespace AlphaKop.Supreme.Flows {
             IEnumerable<ExtractedResult<string>> results
         ) {
             if (job.CategoryName == null) {
-                return items.FirstOrDefault();
+                var firstItem = items.FirstOrNull();
+
+                if (firstItem == null) {
+                    throw new ItemNotFoundException(null, keywords: job.Keywords);
+                }
+
+                return firstItem.Value;
             }
 
-            var categoryName = job.CategoryName.ToLower();
-            Item? item = items.First(item => item.CategoryName?.ToLower() == categoryName);
+            var categoryName = CleanupCategoryName(job.CategoryName);
+
+            Item? item = items.FirstOrNull(item => CleanupCategoryName(item.CategoryName) == categoryName);
 
             if (item == null) {
                 throw new ItemNotFoundException(null, keywords: job.Keywords);
             }
 
             return item.Value;
+        }
+
+        private string CleanupCategoryName(string? categoryName) {
+            if (categoryName == null) {
+                return "";
+            }
+
+            return categoryName
+                .Trim()
+                .ToLower()
+                .Replace("/", "_")
+                .Replace("-", "_")
+                .Replace(" ", "_")
+                .ToLower();
         }
 
         private IEnumerable<Item> ConvertResults(

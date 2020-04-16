@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace AlphaKop.ConsoleApp {
     public sealed class ConsoleApplication {
         private readonly IServiceProvider provider;
-        private readonly ILogger<ConsoleApplication> logger;
+        private readonly ILogger logger;
         public string CsvTaskPath { get; set; } = string.Empty;
 
         public ConsoleApplication(
@@ -39,10 +39,8 @@ namespace AlphaKop.ConsoleApp {
             var tasks = parsedTasks
                 .Select(job => {
                     var task = provider.GetRequiredService<ISupremeStartStep>();
-                    task.Job = job;
-                    return task;
-                })
-                .Select(task => task.Execute(task.Job.GetValueOrDefault()));
+                    return task.Execute(input: new InitialStepInput(job));
+                });
 
             await Task.WhenAll(tasks);
         }

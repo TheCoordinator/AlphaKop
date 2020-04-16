@@ -3,7 +3,7 @@ import { CaptchaService } from '../captcha/CaptchaService'
 import { CaptchaScreen } from '../electron/captcha/CaptchaScreen'
 
 let captchaScreen: CaptchaScreen
-let captchaService = new CaptchaService('8080')
+let captchaService = new CaptchaService('3100')
 
 app.on('ready', () => {
     const mainWindow = new BrowserWindow({

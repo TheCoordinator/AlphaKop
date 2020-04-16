@@ -38,7 +38,7 @@ namespace AlphaKop {
         private void ConfigureCaptcha() {
             services.AddHttpClient("captcha", (provider, client) => {
                 var config = provider.GetRequiredService<IOptions<CaptchaConfig>>().Value;
-                client.BaseAddress = new Uri(config.baseUrl);
+                client.BaseAddress = new Uri(config.BaseUrl);
             });
             
             services.AddTransient<ICaptchaRequestsFactory, CaptchaRequestsFactory>();

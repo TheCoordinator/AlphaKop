@@ -4,80 +4,102 @@ using System.Linq;
 using System.Threading.Tasks;
 using AlphaKop.Core.Flows;
 using AlphaKop.Core.Services.TextMatching;
+using AlphaKop.Core.System.Extensions;
 using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {
-    public interface IFetchItemDetailsStep : ITaskStep<Item, SupremeJob> { }
+    public interface IFetchItemDetailsStep : ITaskStep<ItemDetailsStepInput> { }
 
-    sealed class FetchItemDetailsStep : BaseStep<Item>, IFetchItemDetailsStep {
+    public sealed class FetchItemDetailsStep : IFetchItemDetailsStep {
         private readonly ISupremeRepository supremeRepository;
         private readonly ITextMatching textMatching;
-        private readonly ILogger<FetchItemDetailsStep> logger;
+        private readonly IServiceProvider provider;
+        private readonly ILogger logger;
+
+        public int Retries { get; set; }
 
         public FetchItemDetailsStep(
             ISupremeRepository supremeRepository,
             ITextMatching textMatching,
             IServiceProvider provider,
             ILogger<FetchItemDetailsStep> logger
-        ) : base(provider) {
+        ) {
             this.supremeRepository = supremeRepository;
             this.textMatching = textMatching;
+            this.provider = provider;
             this.logger = logger;
         }
 
-        protected override async Task Execute(Item parameter, SupremeJob job) {
+        public async Task Execute(ItemDetailsStepInput input) {
             try {
-                var details = await supremeRepository.FetchItemDetails(item: parameter);
+                await Task.Delay(input.Job.StartDelay);
 
-                logger.LogInformation(
-                    JobEventId,
-                    $"Fetched Details Item {parameter.Id}\n" +
-                    details.ToString()
-                );
+                var details = await supremeRepository.FetchItemDetails(item: input.Item);
+                var style = FindStyle(details: details, job: input.Job);
+                var size = FindSize(item: input.Item, style: style, job: input.Job);
 
-                var style = FindStyle(details: details, job: job);
+                await PerformPostItemDetails(input: input, style: style, size: size);
+            } catch (StyleNotFoundException ex) {
+                logger.LogError(input.Job.ToEventId(), $"--FetchItemDetailsStep Style Not Found. Item [{ex.ItemId}] Style [{ex.StyleName}]");
 
-                logger.LogInformation(
-                    JobEventId,
-                    $"Fetched Style Item {parameter.Id}\n" +
-                    style.ToString()
-                );
+                await RetryStep(input);
+            } catch (SizeNotFoundException ex) {
+                logger.LogError(input.Job.ToEventId(), $"--FetchItemDetailsStep Size Not Found. Item [{ex.ItemId}] Size [{ex.SizeName}]");
 
-                var size = FindSize(item: parameter, style: style, job: job);
-
-                logger.LogInformation(
-                    JobEventId,
-                    $"Fetched Size Item {parameter.Id}\n" +
-                    size.ToString()
-                );
-
-                if (size.isStockAvailable == true) {
-                    var pookyParam = new SelectedItemParameter(
-                        item: parameter,
-                        style: style,
-                        size: size
-                    );
-
-                    await provider.CreateFetchPookyStep(job)
-                        .Execute(pookyParam);
-                } else {
-                    logger.LogInformation(
-                        JobEventId,
-                        $"Stock Unavailable {parameter.Id} Retrying...\n" +
-                        size.ToString()
-                    );
-
-                    await provider.CreateFetchItemDetailsStep(job, Retries + 1)
-                        .Execute(parameter);
-                }
+                await RetryStep(input);
             } catch (Exception ex) {
-                logger.LogError(JobEventId, ex, "Failed to retrieve ItemDetails");
+                logger.LogError(input.Job.ToEventId(), ex, "--FetchItemDetailsStep Unhandled Exception");
 
-                await provider.CreateFetchItemDetailsStep(job, Retries + 1)
-                    .Execute(parameter);
+                await RetryStep(input);
             }
+        }
+
+        private async Task PerformPostItemDetails(ItemDetailsStepInput input, ItemStyle style, ItemSize size) {
+            LogItemDetails(item: input.Item, style: style, size: size, job: input.Job);
+
+            if (size.isStockAvailable == true) {
+                await PerformPookyStep(input: input, style: style, size: size);
+            } else {
+                await RetryStep(input);
+            }
+        }
+
+        private void LogItemDetails(Item item, ItemStyle style, ItemSize size, SupremeJob job) {
+            var stockAvailable = size.isStockAvailable ? "Available" : "Unavailable";
+
+            logger.LogInformation(
+                job.ToEventId(),
+                "--FetchItemDetailsStep Style and Size Fetched. " +
+                $"Stock [{stockAvailable}] " +
+                $"Item [{item.Id}, {item.Name}] " +
+                $"Style [{style.Id}, {style.Name}] " +
+                $"Size [{size.Id}, {size.Name}] " +
+                $"Job Style [{job.Style}] " +
+                $"Job Size [{job.Size}]"
+            );
+        }
+
+        private async Task PerformPookyStep(ItemDetailsStepInput input, ItemStyle style, ItemSize size) {
+            var selectedItem = new SelectedItem(
+                item: input.Item,
+                style: style,
+                size: size
+            );
+
+            var pookyInput = new PookyStepInput(
+                selectedItem: selectedItem,
+                job: input.Job
+            );
+
+            await provider.CreateStep<PookyStepInput, IFetchPookyStep>()
+                .Execute(pookyInput);
+        }
+
+        private async Task RetryStep(ItemDetailsStepInput input) {
+            await provider.CreateStep<ItemDetailsStepInput, IFetchItemDetailsStep>(Retries + 1)
+                .Execute(input);
         }
 
         #region Style
@@ -106,11 +128,11 @@ namespace AlphaKop.Supreme.Flows {
 
         private ItemStyle? FindAvailableStyle(IEnumerable<ItemStyle> styles) {
             if (styles.Count() == 1) {
-                return styles.FirstOrDefault();
+                return styles.FirstOrNull();
             }
 
             return styles
-                .First(style => {
+                .FirstOrNull(style => {
                     return style.Sizes
                         .Any(size => size.isStockAvailable == true);
                 });
@@ -126,7 +148,7 @@ namespace AlphaKop.Supreme.Flows {
                 return null;
             }
 
-            return styles.First(style => style.Name == result.Value.Value);
+            return styles.FirstOrNull(style => style.Name == result.Value.Value);
         }
 
         #endregion
@@ -141,7 +163,7 @@ namespace AlphaKop.Supreme.Flows {
             }
 
             if (sizes.Count() == 1) {
-                return sizes.FirstOrDefault();
+                return sizes.First();
             }
 
             ItemSize? result;
@@ -161,11 +183,11 @@ namespace AlphaKop.Supreme.Flows {
 
         private ItemSize? FindAvailableSize(Item item, IEnumerable<ItemSize> sizes) {
             if (sizes.Count() == 1) {
-                return sizes.FirstOrDefault();
+                return sizes.FirstOrNull();
             }
 
             return sizes
-                .First(size => size.isStockAvailable == true);
+                .FirstOrNull(size => size.isStockAvailable == true);
         }
 
         private ItemSize? FindMatchingSize(Item item, IEnumerable<ItemSize> sizes, string sizeName) {
@@ -190,7 +212,7 @@ namespace AlphaKop.Supreme.Flows {
             if (sizeName.Length == 1) {
                 // For some reason textMathing can't detect number characters
                 return sizes
-                    .First(size => size.Name.ToLower().Contains(sizeName.ToLower()));
+                    .FirstOrNull(size => size.Name.ToLower().Contains(sizeName.ToLower()));
             }
 
             return FindSizeByText(sizes: sizes, sizeName: sizeName);
@@ -203,7 +225,7 @@ namespace AlphaKop.Supreme.Flows {
             }
 
             return sizes
-                .First(size => ItemStyleSizeTypeUtil.From(size.Name) == clothingSize);
+                .FirstOrNull(size => ItemStyleSizeTypeUtil.From(size.Name) == clothingSize);
         }
 
         private ItemSize? FindSizeByText(IEnumerable<ItemSize> sizes, string sizeName) {
@@ -212,7 +234,7 @@ namespace AlphaKop.Supreme.Flows {
 
             var result = textMatching.ExtractOne(sizeName, choices: sizeNames);
 
-            return sizes.First(size => size.Name == result?.Value);
+            return sizes.FirstOrNull(size => size.Name == result?.Value);
         }
 
         #endregion
