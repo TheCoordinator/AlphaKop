@@ -23,6 +23,12 @@ namespace AlphaKop.Supreme.Repositories {
             );
         }
 
+        public async Task<Pooky> FetchPooky(PookyItemRequest request) {
+            return await client.ReadJsonAsync<Pooky>(
+                request: requestsFactory.PookyItem(request: request)
+            );
+        }
+
         public async Task<PookyTicket> FetchPookyTicket(PookyRegion region, string ticket) {
             return await client.ReadJsonAsync<PookyTicket>(
                 request: requestsFactory.PookyTicket(region: region, ticket: ticket)

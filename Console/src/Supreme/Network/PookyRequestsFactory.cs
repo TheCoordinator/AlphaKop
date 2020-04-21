@@ -6,6 +6,7 @@ using AlphaKop.Supreme.Models;
 namespace AlphaKop.Supreme.Network {
     public interface IPookyRequestsFactory {
         HttpRequestMessage Pooky(PookyRegion region);
+        HttpRequestMessage PookyItem(PookyItemRequest request);
         HttpRequestMessage PookyTicket(PookyRegion region, string ticket);
     }
 
@@ -14,6 +15,14 @@ namespace AlphaKop.Supreme.Network {
             string regionName = RegionName(region: region);
             return new HttpRequestMessage {
                 RequestUri = new Uri($"/{regionName}/all", UriKind.Relative),
+                Method = HttpMethod.Get,
+            };
+        }
+
+        public HttpRequestMessage PookyItem(PookyItemRequest request) {
+            string regionName = RegionName(region: request.Region);
+            return new HttpRequestMessage {
+                RequestUri = new Uri($"/{regionName}/all/{request.StyleId}/{request.SizeId}", UriKind.Relative),
                 Method = HttpMethod.Get,
             };
         }
