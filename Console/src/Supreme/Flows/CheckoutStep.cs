@@ -58,9 +58,8 @@ namespace AlphaKop.Supreme.Flows {
                 sizeId: input.SelectedItem.Size.Id,
                 styleId: input.SelectedItem.Style.Id,
                 quantity: Math.Max(input.Job.Quantity, 1),
-                basketResponse: input.BasketResponse,
+                cookies: input.Cookies.CookiesList,
                 pooky: input.Pooky,
-                pookyTicket: input.PookyTicket,
                 captcha: input.Captcha,
                 profile: input.Job.Profile
             );

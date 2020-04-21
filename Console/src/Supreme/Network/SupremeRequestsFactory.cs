@@ -60,7 +60,7 @@ namespace AlphaKop.Supreme.Network {
 
         public HttpRequestMessage Checkout(CheckoutRequest request) {
             var uri = new Uri("/checkout.json", UriKind.Relative);
-            var cookies = GetCheckoutCookies(request, Array.Empty<Cookie>());
+            var cookies = request.Cookies.ToCookiesString();
 
             var message = new HttpRequestMessage() {
                 RequestUri = uri,
@@ -79,7 +79,7 @@ namespace AlphaKop.Supreme.Network {
 
         public HttpRequestMessage CheckoutQueue(CheckoutQueueRequest request) {
             var uri = new Uri($"/checkout/{request.Slug}/status.json", UriKind.Relative);
-            var cookies = GetCheckoutCookies(request, request.CheckoutResponse.ResponseCookies);
+            var cookies = request.Cookies.ToCookiesString();
 
             var message = new HttpRequestMessage() {
                 RequestUri = uri,
@@ -92,16 +92,6 @@ namespace AlphaKop.Supreme.Network {
             );
 
             return message;
-        }
-
-        private string GetCheckoutCookies(ICheckoutRequest request, IEnumerable<Cookie> responseCookies) {
-            return new List<IEnumerable<Cookie>>() {                
-                request.Pooky.Cookies.StaticCookies,
-                request.Pooky.Cookies.CheckoutCookies,
-                responseCookies,
-                request.BasketResponse.ResponseCookies,
-                new Cookie[] { new Cookie(name: "_ticket", value: request.PookyTicket.Ticket) }
-            }.ToCookiesString();
         }
     }
 }
