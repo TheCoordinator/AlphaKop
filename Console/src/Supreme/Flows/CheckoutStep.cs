@@ -118,7 +118,7 @@ namespace AlphaKop.Supreme.Flows {
         private async Task PerformPostCheckoutFailed(CheckoutStepInput input, CheckoutResponse response) {
             var purchaseAttempt = response.Status.PurchaseAttempt;
 
-            if (purchaseAttempt == null || purchaseAttempt.Value.SoldOut == true) {
+            if (purchaseAttempt == null || purchaseAttempt.Value.SoldOut == true || input.Job.FastMode == true) {
                 await RevertToItemDetailsStep(input);
                 return;
             }

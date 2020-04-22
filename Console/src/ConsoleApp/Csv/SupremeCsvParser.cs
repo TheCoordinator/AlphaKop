@@ -57,6 +57,7 @@ namespace AlphaKop.ConsoleApp.Csv {
                 style: csv.JobStyle?.NullIfEmptyTrimmed(),
                 size: csv.JobSize?.NullIfEmptyTrimmed(),
                 quantity: csv.JobQuantity,
+                fastMode: csv.FastMode,
                 startDelay: csv.JobStartDelay
             );
         }

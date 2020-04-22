@@ -52,9 +52,11 @@ namespace AlphaKop.Supreme.Flows {
         private async Task<Pooky> PerformFetchPooky(PookyStepInput input) {
             var region = PookyRegionUtil.From(input.Job.Region);
 
-            // TODO: decided based on job
-            return await PerformFetchPooky(input, region);
-            // return await PerformFetchPooky(region);
+            if (input.Job.FastMode == true) {
+                return await PerformFetchPooky(input, region);
+            } else {
+                return await PerformFetchPooky(region);
+            }
         }
 
         private async Task<Pooky> PerformFetchPooky(PookyRegion region) {
@@ -74,9 +76,11 @@ namespace AlphaKop.Supreme.Flows {
         private async Task PerformPostPooky(PookyStepInput input, Pooky pooky) {
             LogPooky(input, pooky);
 
-            // TODO: Decide based on Job
-            await PerformCaptchaStep(input, pooky);
-            // await PerformAddBasketStep(input, pooky);
+            if (input.Job.FastMode == true) {
+                await PerformCaptchaStep(input, pooky);
+            } else {
+                await PerformAddBasketStep(input, pooky);
+            }
         }
 
         private async Task PerformAddBasketStep(PookyStepInput input, Pooky pooky) {
