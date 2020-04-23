@@ -68,6 +68,9 @@ namespace AlphaKop.ConsoleApp.Csv {
         [Name("job.quantity")]
         public int JobQuantity { get; set; } = 1;
 
+        [Name("job.fast_mode")]
+        public bool FastMode { get; set; } = false;
+
         [Name("job.start_delay")]
         public int JobStartDelay { get; set; } = 1000;
     }

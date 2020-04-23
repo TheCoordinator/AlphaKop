@@ -58,9 +58,8 @@ namespace AlphaKop.Supreme.Flows {
                 sizeId: input.SelectedItem.Size.Id,
                 styleId: input.SelectedItem.Style.Id,
                 quantity: Math.Max(input.Job.Quantity, 1),
-                basketResponse: input.BasketResponse,
+                cookies: input.Cookies.CookiesList,
                 pooky: input.Pooky,
-                pookyTicket: input.PookyTicket,
                 captcha: input.Captcha,
                 profile: input.Job.Profile
             );
@@ -119,7 +118,7 @@ namespace AlphaKop.Supreme.Flows {
         private async Task PerformPostCheckoutFailed(CheckoutStepInput input, CheckoutResponse response) {
             var purchaseAttempt = response.Status.PurchaseAttempt;
 
-            if (purchaseAttempt == null || purchaseAttempt.Value.SoldOut == true) {
+            if (purchaseAttempt == null || purchaseAttempt.Value.SoldOut == true || input.Job.FastMode == true) {
                 await RevertToItemDetailsStep(input);
                 return;
             }

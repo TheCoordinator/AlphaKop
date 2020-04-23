@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Net;
 using AlphaKop.Core.Captcha.Network;
 using AlphaKop.Core.Models.User;
 using AlphaKop.Supreme.Models;
@@ -9,10 +11,8 @@ namespace AlphaKop.Supreme.Network {
         public string StyleId { get; }
         public int Quantity { get; }
         public string Slug { get; }
-        public AddBasketResponse BasketResponse { get; }
-        public CheckoutResponse CheckoutResponse { get; }
+        public IEnumerable<Cookie> Cookies { get; }
         public Pooky Pooky { get; }
-        public PookyTicket PookyTicket { get; }
         public Captcha Captcha { get; }
         public UserProfile Profile { get; }
 
@@ -22,10 +22,8 @@ namespace AlphaKop.Supreme.Network {
             string styleId,
             int quantity,
             string slug,
-            AddBasketResponse basketResponse,
-            CheckoutResponse checkoutResponse,
+            IEnumerable<Cookie> cookies,
             Pooky pooky,
-            PookyTicket pookyTicket,
             Captcha captcha,
             UserProfile profile
         ) {
@@ -34,10 +32,8 @@ namespace AlphaKop.Supreme.Network {
             StyleId = styleId;
             Quantity = quantity;
             Slug = slug;
-            BasketResponse = basketResponse;
-            CheckoutResponse = checkoutResponse;
+            Cookies = cookies;
             Pooky = pooky;
-            PookyTicket = pookyTicket;
             Captcha = captcha;
             Profile = profile;
         }

@@ -14,6 +14,7 @@ namespace AlphaKop.Supreme.Flows {
         public string? Style { get; }
         public string? Size { get; }
         public int Quantity { get; }
+        public bool FastMode { get; }
         public int StartDelay { get; }
 
         public SupremeJob(
@@ -26,6 +27,7 @@ namespace AlphaKop.Supreme.Flows {
             string? style,
             string? size,
             int quantity,
+            bool fastMode,
             int startDelay = 1000
         ) {
             JobId = jobId;
@@ -37,6 +39,7 @@ namespace AlphaKop.Supreme.Flows {
             Style = style;
             Size = size;
             Quantity = quantity;
+            FastMode = fastMode;
             StartDelay = startDelay;
         }
     }

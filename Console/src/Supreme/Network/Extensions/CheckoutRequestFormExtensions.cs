@@ -27,7 +27,7 @@ namespace AlphaKop.Supreme.Network.Extensions {
 
         private static IEnumerable<FormValue> GetDefaultPageDataValues(ICheckoutRequest request) {
             var result = (from mapping in request.Pooky.PageData.Mappings
-                          where mapping.Mapping == null && mapping.Value != null
+                          where mapping.Mapping == null
                           select new FormValue(mapping.Name, mapping.Value ?? "")).ToList();
 
             result.RemoveAll(value => value.Key == "order[terms]");
@@ -39,7 +39,7 @@ namespace AlphaKop.Supreme.Network.Extensions {
         private static IEnumerable<FormValue> GetCookieSubValues(ICheckoutRequest request) {
             var jsonContent = $@"""{request.SizeId}"":{request.Quantity}";
 
-            var json = "{ " + jsonContent + " }";
+            var json = "{" + jsonContent + "}";
 
             return new FormValue[] {
                 new FormValue("cookie-sub", json)

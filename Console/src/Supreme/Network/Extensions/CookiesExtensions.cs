@@ -2,19 +2,23 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
-using AlphaKop.Supreme.Models;
 
 namespace AlphaKop.Supreme.Network.Extensions {
     static class CookiesExtensions {
-        public static string ToCookiesString(this IEnumerable<IEnumerable<Cookie>> cookies) {
+        public static string ToCookiesString(this IEnumerable<Cookie> cookies) {
             var cookiesStringArray = cookies
-                .SelectMany(cookie => cookie)
-                .ToHashSet(new CookieNameComparer())
+                .Distinct(new CookieNameComparer())
                 .ToList()
                 .OrderBy(cookie => cookie.Name)
                 .Select(cookie => cookie.ToString());
 
             return string.Join("; ", cookiesStringArray);
+        }
+
+        public static string ToCookiesString(this IEnumerable<IEnumerable<Cookie>> cookies) {
+            return cookies
+                .SelectMany(cookie => cookie)
+                .ToCookiesString();
         }
 
         private sealed class CookieNameComparer : IEqualityComparer<Cookie> {

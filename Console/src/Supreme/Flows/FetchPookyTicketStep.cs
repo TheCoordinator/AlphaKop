@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using AlphaKop.Core.Flows;
 using AlphaKop.Supreme.Models;
@@ -58,11 +60,19 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         private async Task PerformCaptchaStep(PookyTicketStepInput input, PookyTicket pookyTicket) {
+            var checkoutCookies = new CheckoutCookies(
+                new List<IEnumerable<Cookie>>() {
+                    input.Pooky.Cookies.StaticCookies,
+                    input.Pooky.Cookies.CheckoutCookies,
+                    input.BasketResponse.ResponseCookies,
+                    new Cookie[] { new Cookie(name: "_ticket", value: pookyTicket.Ticket) }
+                }
+            );
+
             var captchaStepInput = new CaptchaStepInput(
                 selectedItem: input.SelectedItem,
-                basketResponse: input.BasketResponse,
                 pooky: input.Pooky,
-                pookyTicket: pookyTicket,
+                checkoutCookies: checkoutCookies,
                 job: input.Job
             );
 

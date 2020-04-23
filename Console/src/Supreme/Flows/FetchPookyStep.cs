@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using AlphaKop.Core.Flows;
 using AlphaKop.Supreme.Models;
+using AlphaKop.Supreme.Network;
 using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -37,9 +40,7 @@ namespace AlphaKop.Supreme.Flows {
             try {
                 await Task.Delay(delayInMilliSeconds);
 
-                var pookyRegion = PookyRegionUtil.From(input.Job.Region);
-                var pooky = await pookyRepository.FetchPooky(pookyRegion);
-
+                var pooky = await PerformFetchPooky(input);
                 await PerformPostPooky(input, pooky);
             } catch (Exception ex) {
                 logger.LogError(input.Job.ToEventId(), ex, "--[FetchPookyStep] Unhandled Exception");
@@ -48,9 +49,38 @@ namespace AlphaKop.Supreme.Flows {
             }
         }
 
+        private async Task<Pooky> PerformFetchPooky(PookyStepInput input) {
+            var region = PookyRegionUtil.From(input.Job.Region);
+
+            if (input.Job.FastMode == true) {
+                return await PerformFetchPooky(input, region);
+            } else {
+                return await PerformFetchPooky(region);
+            }
+        }
+
+        private async Task<Pooky> PerformFetchPooky(PookyRegion region) {
+            return await pookyRepository.FetchPooky(region);
+        }
+
+        private async Task<Pooky> PerformFetchPooky(PookyStepInput input, PookyRegion region) {
+            var request = new PookyItemRequest(
+                region: region,
+                styleId: input.SelectedItem.Style.Id,
+                sizeId: input.SelectedItem.Size.Id
+            );
+
+            return await pookyRepository.FetchPooky(request);
+        }
+
         private async Task PerformPostPooky(PookyStepInput input, Pooky pooky) {
             LogPooky(input, pooky);
-            await PerformAddBasketStep(input, pooky);
+
+            if (input.Job.FastMode == true) {
+                await PerformCaptchaStep(input, pooky);
+            } else {
+                await PerformAddBasketStep(input, pooky);
+            }
         }
 
         private async Task PerformAddBasketStep(PookyStepInput input, Pooky pooky) {
@@ -62,6 +92,25 @@ namespace AlphaKop.Supreme.Flows {
 
             await provider.CreateStep<AddBasketStepInput, IAddBasketStep>()
                 .Execute(addBasketInput);
+        }
+
+        private async Task PerformCaptchaStep(PookyStepInput input, Pooky pooky) {
+            var checkoutCookies = new CheckoutCookies(
+                new List<IEnumerable<Cookie>>() {
+                    pooky.Cookies.StaticCookies,
+                    pooky.Cookies.CheckoutCookies
+                }
+            );
+
+            var captchaInput = new CaptchaStepInput(
+                selectedItem: input.SelectedItem,
+                pooky: pooky,
+                checkoutCookies: checkoutCookies,
+                job: input.Job
+            );
+
+            await provider.CreateStep<CaptchaStepInput, ICaptchaStep>()
+                .Execute(captchaInput);
         }
 
         private async Task RevertToItemDetailsStep(PookyStepInput input) {
