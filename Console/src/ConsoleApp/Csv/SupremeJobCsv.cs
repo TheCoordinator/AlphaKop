@@ -71,6 +71,9 @@ namespace AlphaKop.ConsoleApp.Csv {
         [Name("job.fast_mode")]
         public bool FastMode { get; set; } = false;
 
+        [Name("job.card_3d_secure")]
+        public bool IsCard3DSecureEnabled { get; set; } = false;
+
         [Name("job.start_delay")]
         public int JobStartDelay { get; set; } = 1000;
     }
