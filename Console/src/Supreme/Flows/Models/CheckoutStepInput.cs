@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-using System.Net;
 using AlphaKop.Core.Captcha.Network;
 using AlphaKop.Supreme.Models;
-using AlphaKop.Supreme.Network;
 
 namespace AlphaKop.Supreme.Flows {
     public struct CheckoutStepInput : IStepInput {

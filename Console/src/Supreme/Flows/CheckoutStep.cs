@@ -72,12 +72,12 @@ namespace AlphaKop.Supreme.Flows {
         ) {
             LogResponse(input, response);
 
-            var status = response.Status.Status;
+            var status = response.Status;
 
             if (status == "paid") {
                 await PerformSuccessStep(input, response);
-            } else if (status == "queued" && response.Status.Slug != null) {
-                await PerformCheckoutQueuedStep(input, request, response, response.Status.Slug);
+            } else if (status == "queued" && response.Slug != null) {
+                await PerformCheckoutQueuedStep(input, request, response, response.Slug);
             } else if (status == "failed") {
                 await PerformPostCheckoutFailed(input, response);
             } else {
@@ -116,7 +116,7 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         private async Task PerformPostCheckoutFailed(CheckoutStepInput input, CheckoutResponse response) {
-            var purchaseAttempt = response.Status.PurchaseAttempt;
+            var purchaseAttempt = response.PurchaseAttempt;
 
             if (purchaseAttempt == null || purchaseAttempt.Value.SoldOut == true || input.Job.FastMode == true) {
                 await RevertToItemDetailsStep(input);
@@ -154,7 +154,7 @@ namespace AlphaKop.Supreme.Flows {
         private void LogResponse(CheckoutStepInput input, CheckoutResponse response) {
             logger.LogInformation(
                 input.Job.ToEventId(),
-                $@"--[CheckoutStep] Status [{response.Status.Status}] {input.SelectedItem.ToString()}"
+                $@"--[CheckoutStep] Status [{response.Status}] {input.SelectedItem.ToString()}"
             );
         }
     }

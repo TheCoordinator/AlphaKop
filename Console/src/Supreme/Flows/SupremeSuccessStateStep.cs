@@ -22,7 +22,7 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         public async Task Execute(SuccessStepInput input) {
-            var sale = input.CheckoutResponse.Status.PurchaseSale;
+            var sale = input.CheckoutResponse.PurchaseSale;
 
             logger.LogInformation(
                 input.Job.ToEventId(),

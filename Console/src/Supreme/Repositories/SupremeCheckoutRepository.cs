@@ -29,7 +29,7 @@ namespace AlphaKop.Supreme.Repositories {
             var ticket = response.GetCookies()
                 .FirstOrDefault(cookie => cookie.Name == "ticket")?
                 .Value;
-                
+
             return new AddBasketResponse(
                 itemSizesStock: itemSizesStock,
                 ticket: ticket
@@ -49,34 +49,14 @@ namespace AlphaKop.Supreme.Repositories {
         }
 
         public async Task<CheckoutResponse> Checkout(CheckoutRequest request) {
-            var response = await client.SendAsync(
+            return await client.ReadJsonAsync<CheckoutResponse>(
                 request: requestsFactory.Checkout(request: request)
-            );
-
-            await response.EnsureSuccess();
-
-            var status = await response.Content.ReadJsonAsync<CheckoutResponseStatus>();
-            var cookies = response.GetCookies();
-
-            return new CheckoutResponse(
-                status: status,
-                responseCookies: cookies
             );
         }
 
         public async Task<CheckoutResponse> CheckoutQueue(CheckoutQueueRequest request) {
-            var response = await client.SendAsync(
+            return await client.ReadJsonAsync<CheckoutResponse>(
                 request: requestsFactory.CheckoutQueue(request: request)
-            );
-
-            await response.EnsureSuccess();
-
-            var status = await response.Content.ReadJsonAsync<CheckoutResponseStatus>();
-            var cookies = response.GetCookies();
-
-            return new CheckoutResponse(
-                status: status,
-                responseCookies: cookies
             );
         }
     }
