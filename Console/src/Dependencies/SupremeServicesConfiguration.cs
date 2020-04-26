@@ -81,7 +81,7 @@ namespace AlphaKop {
         private HttpMessageHandler ConfigurePrimaryHttpHandler(IServiceProvider provider, bool useCookies) {
             return new LoggingHandler(
                 innerHandler: new HttpClientHandler() {
-                   UseCookies = useCookies
+                    UseCookies = useCookies
                 },
                 logger: provider.GetService<ILogger<LoggingHandler>>()
             );
@@ -104,6 +104,7 @@ namespace AlphaKop {
             services.AddTransient<IAddBasketStep, AddBasketStep>();
             services.AddTransient<IFetchPookyTicketStep, FetchPookyTicketStep>();
             services.AddTransient<ICaptchaStep, CaptchaStep>();
+            services.AddTransient<IFetchCard3DSecureStep, FetchCard3DSecureStep>();
             services.AddTransient<ICheckoutStep, CheckoutStep>();
             services.AddTransient<ICheckoutQueueStep, CheckoutQueueStep>();
             services.AddTransient<ISupremeSuccessStep, SupremeSuccessStep>();

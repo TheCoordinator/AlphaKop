@@ -26,7 +26,7 @@ namespace AlphaKop.Supreme.Network.Extensions {
             return new FormUrlEncodedContent(values);
         }
 
-        public static string GetTotalsMobileJSQueryString(this Card3DSecureRequest request) {
+        public static string GetTotalsMobileJSQueryString(this CheckoutTotalsMobileRequest request) {
             var query = HttpUtility.ParseQueryString(string.Empty);
 
             query["cookie-sub"] = GetCookieSubJsonString(sizeId: request.SizeId, quantity: request.Quantity);

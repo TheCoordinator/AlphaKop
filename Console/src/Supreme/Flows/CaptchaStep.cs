@@ -62,7 +62,11 @@ namespace AlphaKop.Supreme.Flows {
 
             if (response.Captcha.Host == config.SupremeCaptchaHost) {
                 await CancelCaptchaTrigger(request);
-                await PerformCheckoutStep(input, response.Captcha);
+                if (input.Job.IsCard3DSecureEnabled == true) {
+                    await PerformFetchCard3DSecureStep(input, response.Captcha);
+                } else {
+                    await PerformCheckoutStep(input, response.Captcha);
+                }
             } else {
                 await RetryStep(input);
             }
@@ -70,6 +74,19 @@ namespace AlphaKop.Supreme.Flows {
 
         private async Task CancelCaptchaTrigger(CaptchaRequest request) {
             await captchaRepository.CancelTriggerCaptcha(request: request);
+        }
+
+        private async Task PerformFetchCard3DSecureStep(CaptchaStepInput input, Captcha captcha) {
+            var cardSecureInput = new Card3DSecureStepInput(
+                selectedItem: input.SelectedItem,
+                pooky: input.Pooky,
+                captcha: captcha,
+                cookies: input.CheckoutCookies,
+                job: input.Job
+            );
+
+            await provider.CreateStep<Card3DSecureStepInput, IFetchCard3DSecureStep>()
+                .Execute(cardSecureInput);
         }
 
         private async Task PerformCheckoutStep(CaptchaStepInput input, Captcha captcha) {
