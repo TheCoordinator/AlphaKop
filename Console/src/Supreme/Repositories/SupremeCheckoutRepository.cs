@@ -36,6 +36,18 @@ namespace AlphaKop.Supreme.Repositories {
             );
         }
 
+        public async Task<Card3DSecureResponse> FetchCard3DSecure(Card3DSecureRequest request) {
+            var response = await client.SendAsync(
+                request: requestsFactory.Fetch3DSecure(request: request)
+            );
+
+            await response.EnsureSuccess();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            return new Card3DSecureResponse();
+        }
+
         public async Task<CheckoutResponse> Checkout(CheckoutRequest request) {
             var response = await client.SendAsync(
                 request: requestsFactory.Checkout(request: request)

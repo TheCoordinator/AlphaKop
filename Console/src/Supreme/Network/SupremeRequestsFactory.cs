@@ -10,6 +10,7 @@ namespace AlphaKop.Supreme.Network {
         HttpRequestMessage GetMobileStock();
         HttpRequestMessage GetItemDetails(string itemId);
         HttpRequestMessage AddBasket(AddBasketRequest basketRequest);
+        HttpRequestMessage Fetch3DSecure(Card3DSecureRequest request);
         HttpRequestMessage Checkout(CheckoutRequest request);
         HttpRequestMessage CheckoutQueue(CheckoutQueueRequest request);
     }
@@ -56,6 +57,17 @@ namespace AlphaKop.Supreme.Network {
             );
 
             return message;
+        }
+
+        public HttpRequestMessage Fetch3DSecure(Card3DSecureRequest request) {
+            var uri = new Uri($"/checkout/totals_mobile.js", UriKind.Relative);
+            var uriBuilder = new UriBuilder(uri: uri);
+            uriBuilder.Query = request.GetTotalsMobileJSQueryString();
+
+            return new HttpRequestMessage() {
+                RequestUri = uriBuilder.Uri,
+                Method = HttpMethod.Get
+            };
         }
 
         public HttpRequestMessage Checkout(CheckoutRequest request) {

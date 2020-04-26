@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
+using System.Web;
 using AlphaKop.Core.CreditCard;
 
 using FormValue = System.Collections.Generic.KeyValuePair<string, string>;
@@ -25,6 +26,16 @@ namespace AlphaKop.Supreme.Network.Extensions {
             return new FormUrlEncodedContent(values);
         }
 
+        public static string GetTotalsMobileJSQueryString(this Card3DSecureRequest request) {
+            var query = HttpUtility.ParseQueryString(string.Empty);
+
+            query["cookie-sub"] = GetCookieSubJsonString(sizeId: request.SizeId, quantity: request.Quantity);
+            query["mobile"] = "true";
+            query["order[billing_country]"] = request.Profile.Address.CountryCode;
+
+            return query?.ToString() ?? "";
+        }
+
         private static IEnumerable<FormValue> GetDefaultPageDataValues(ICheckoutRequest request) {
             var result = (from mapping in request.Pooky.PageData.Mappings
                           where mapping.Mapping == null
@@ -36,13 +47,17 @@ namespace AlphaKop.Supreme.Network.Extensions {
             return result;
         }
 
-        private static IEnumerable<FormValue> GetCookieSubValues(ICheckoutRequest request) {
-            var jsonContent = $@"""{request.SizeId}"":{request.Quantity}";
+        private static string GetCookieSubJsonString(string sizeId, int quantity) {
+            var jsonContent = $@"""{sizeId}"":{quantity}";
 
-            var json = "{" + jsonContent + "}";
+            return "{" + jsonContent + "}";
+        }
+
+        private static IEnumerable<FormValue> GetCookieSubValues(ICheckoutRequest request) {
+            var jsonString = GetCookieSubJsonString(sizeId: request.SizeId, quantity: request.Quantity);
 
             return new FormValue[] {
-                new FormValue("cookie-sub", json)
+                new FormValue("cookie-sub", jsonString)
             };
         }
 
