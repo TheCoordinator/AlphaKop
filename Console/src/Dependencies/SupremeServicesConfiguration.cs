@@ -37,12 +37,19 @@ namespace AlphaKop {
         }
 
         private void ConfigureHttpClients() {
-            services.AddHttpClient("supreme", (provider, client) => {
+            services.AddHttpClient("supreme_stock", (provider, client) => {
                 var config = provider.GetRequiredService<IOptions<SupremeConfig>>().Value;
                 client.BaseAddress = new Uri(config.SupremeBaseUrl);
                 ConfigureDefaultHttpClient(client, config);
             })
-            .ConfigurePrimaryHttpMessageHandler(ConfigurePrimaryHttpHandler);
+            .ConfigurePrimaryHttpMessageHandler(provider => ConfigurePrimaryHttpHandler(provider: provider, useCookies: false));
+
+            services.AddHttpClient("supreme_checkout", (provider, client) => {
+                var config = provider.GetRequiredService<IOptions<SupremeConfig>>().Value;
+                client.BaseAddress = new Uri(config.SupremeBaseUrl);
+                ConfigureDefaultHttpClient(client, config);
+            })
+            .ConfigurePrimaryHttpMessageHandler(provider => ConfigurePrimaryHttpHandler(provider: provider, useCookies: true));
 
             services.AddHttpClient("pooky", (provider, client) => {
                 var config = provider.GetRequiredService<IOptions<SupremeConfig>>().Value;
@@ -54,7 +61,7 @@ namespace AlphaKop {
                     value: config.PookyAuthentication
                 );
             })
-            .ConfigurePrimaryHttpMessageHandler(ConfigurePrimaryHttpHandler);
+            .ConfigurePrimaryHttpMessageHandler(provider => ConfigurePrimaryHttpHandler(provider: provider, useCookies: false));
         }
 
         private void ConfigureDefaultHttpClient(HttpClient client, SupremeConfig config) {
@@ -71,10 +78,10 @@ namespace AlphaKop {
             );
         }
 
-        private HttpMessageHandler ConfigurePrimaryHttpHandler(IServiceProvider provider) {
+        private HttpMessageHandler ConfigurePrimaryHttpHandler(IServiceProvider provider, bool useCookies) {
             return new LoggingHandler(
                 innerHandler: new HttpClientHandler() {
-                   UseCookies = false
+                   UseCookies = useCookies
                 },
                 logger: provider.GetService<ILogger<LoggingHandler>>()
             );
@@ -84,7 +91,8 @@ namespace AlphaKop {
             services.AddTransient<ISupremeRequestsFactory, SupremeRequestsFactory>();
             services.AddTransient<IPookyRequestsFactory, PookyRequestsFactory>();
 
-            services.AddSingleton<ISupremeRepository, SupremeRepository>();
+            services.AddSingleton<ISupremeStockRepository, SupremeStockRepository>();
+            services.AddScoped<ISupremeCheckoutRepository, SupremeCheckoutRepository>();
             services.AddSingleton<IPookyRepository, PookyRepository>();
         }
 

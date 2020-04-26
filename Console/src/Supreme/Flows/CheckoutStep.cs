@@ -12,14 +12,14 @@ namespace AlphaKop.Supreme.Flows {
     public sealed class CheckoutStep : ICheckoutStep {
         private const int maxRetries = 5;
 
-        private readonly ISupremeRepository supremeRepository;
+        private readonly ISupremeCheckoutRepository supremeRepository;
         private readonly IServiceProvider provider;
         private readonly ILogger logger;
 
         public int Retries { get; set; }
 
         public CheckoutStep(
-            ISupremeRepository supremeRepository,
+            ISupremeCheckoutRepository supremeRepository,
             IServiceProvider provider,
             ILogger<CheckoutStep> logger
         ) {

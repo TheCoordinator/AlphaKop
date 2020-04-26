@@ -9,14 +9,14 @@ namespace AlphaKop.Supreme.Flows {
     public interface ICheckoutQueueStep : ITaskStep<CheckoutQueueStepInput> { }
 
     public sealed class CheckoutQueueStep : ICheckoutQueueStep {
-        private readonly ISupremeRepository supremeRepository;
+        private readonly ISupremeCheckoutRepository supremeRepository;
         private readonly IServiceProvider provider;
         private readonly ILogger logger;
 
         public int Retries { get; set; }
 
         public CheckoutQueueStep(
-            ISupremeRepository supremeRepository,
+            ISupremeCheckoutRepository supremeRepository,
             IServiceProvider provider,
             ILogger<CheckoutQueueStep> logger
         ) {
