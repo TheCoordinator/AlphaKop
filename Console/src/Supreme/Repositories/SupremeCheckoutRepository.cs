@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AlphaKop.Core.Network.Http;
@@ -25,11 +26,13 @@ namespace AlphaKop.Supreme.Repositories {
             await response.EnsureSuccess();
 
             var itemSizesStock = await response.Content.ReadJsonAsync<IEnumerable<ItemAddBasketSizeStock>>();
-            var cookies = response.GetCookies();
-
+            var ticket = response.GetCookies()
+                .FirstOrDefault(cookie => cookie.Name == "ticket")?
+                .Value;
+                
             return new AddBasketResponse(
                 itemSizesStock: itemSizesStock,
-                responseCookies: cookies
+                ticket: ticket
             );
         }
 

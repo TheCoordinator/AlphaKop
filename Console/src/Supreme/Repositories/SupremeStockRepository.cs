@@ -41,53 +41,5 @@ namespace AlphaKop.Supreme.Repositories {
 
             return new ItemDetails(item: item, styles: styles);
         }
-
-        public async Task<AddBasketResponse> AddBasket(AddBasketRequest basketRequest) {
-            var response = await client.SendAsync(
-                request: requestsFactory.AddBasket(basketRequest: basketRequest)
-            );
-
-            await response.EnsureSuccess();
-
-            var itemSizesStock = await response.Content.ReadJsonAsync<IEnumerable<ItemAddBasketSizeStock>>();
-            var cookies = response.GetCookies();
-
-            return new AddBasketResponse(
-                itemSizesStock: itemSizesStock,
-                responseCookies: cookies
-            );
-        }
-
-        public async Task<CheckoutResponse> Checkout(CheckoutRequest request) {
-            var response = await client.SendAsync(
-                request: requestsFactory.Checkout(request: request)
-            );
-
-            await response.EnsureSuccess();
-
-            var status = await response.Content.ReadJsonAsync<CheckoutResponseStatus>();
-            var cookies = response.GetCookies();
-
-            return new CheckoutResponse(
-                status: status,
-                responseCookies: cookies
-            );
-        }
-
-        public async Task<CheckoutResponse> CheckoutQueue(CheckoutQueueRequest request) {
-            var response = await client.SendAsync(
-                request: requestsFactory.CheckoutQueue(request: request)
-            );
-
-            await response.EnsureSuccess();
-
-            var status = await response.Content.ReadJsonAsync<CheckoutResponseStatus>();
-            var cookies = response.GetCookies();
-
-            return new CheckoutResponse(
-                status: status,
-                responseCookies: cookies
-            );
-        }
     }
 }
