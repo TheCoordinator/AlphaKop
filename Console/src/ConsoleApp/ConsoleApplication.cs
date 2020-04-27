@@ -5,6 +5,7 @@ using AlphaKop.ConsoleApp.Csv;
 using AlphaKop.Core.CreditCard;
 using AlphaKop.Core.Models.User;
 using AlphaKop.Supreme.Flows;
+using AlphaKop.Supreme.Songbird;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -23,6 +24,10 @@ namespace AlphaKop.ConsoleApp {
         }
 
         public async void Run() {
+            var service = new SongbirdService();
+            await service.start();
+            
+            return;
             logger.LogDebug("Starting Application");
 
             if (CsvTaskPath.Length == 0) {
