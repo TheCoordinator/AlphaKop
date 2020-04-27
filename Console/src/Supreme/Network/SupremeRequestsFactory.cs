@@ -62,11 +62,19 @@ namespace AlphaKop.Supreme.Network {
         public HttpRequestMessage CheckoutTotalsMobile(CheckoutTotalsMobileRequest request) {
             var queryString = request.GetTotalsMobileJSQueryString();
             var uri = new Uri($"/checkout/totals_mobile.js?{queryString}", UriKind.Relative);
+            var cookies = request.Cookies.ToCookiesString();
 
-            return new HttpRequestMessage() {
+            var message = new HttpRequestMessage() {
                 RequestUri = uri,
-                Method = HttpMethod.Get
+                Method = HttpMethod.Get,
             };
+
+            message.Headers.Add(
+                name: HttpRequestHeader.Cookie.ToString(),
+                value: cookies
+            );
+
+            return message;
         }
 
         public HttpRequestMessage Checkout(CheckoutRequest request) {

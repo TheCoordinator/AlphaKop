@@ -44,7 +44,7 @@ namespace AlphaKop.Supreme.Repositories {
             await response.EnsureSuccess();
 
             var content = await response.Content.ReadAsStringAsync();
-            return CheckoutTotalsMobileResponse.FromHtmlContent(content);
+            return new CheckoutTotalsMobileResponse(htmlContent: content);
         }
 
         public async Task<CheckoutResponse> Checkout(CheckoutRequest request) {

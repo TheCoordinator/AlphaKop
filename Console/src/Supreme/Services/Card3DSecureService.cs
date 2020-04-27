@@ -4,15 +4,15 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlphaKop.Supreme.Songbird {
-    public sealed class SongbirdService {
-        public async Task start() {
-            var htmlContent = await GetHtmlFile();
-            Console.WriteLine(htmlContent);
+namespace AlphaKop.Supreme.Services {
+    public sealed class Card3DSecureService: ICard3DSecureService {
+        public async Task<string> FetchCardinalId(string htmlContent) {
+            var fileContent = await GetHtmlFile();
+            throw new NotImplementedException();
         }
 
         private async Task<string> GetHtmlFile() {
-            var assembly = typeof(SongbirdService).GetTypeInfo().Assembly;
+            var assembly = typeof(Card3DSecureService).GetTypeInfo().Assembly;
             // TODO: Move to Supreme assembly.
             var resourceStream = assembly.GetManifestResourceStream("Console.Supreme.Resources.Songbird.html");
 

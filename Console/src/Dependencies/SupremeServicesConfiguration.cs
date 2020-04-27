@@ -6,6 +6,7 @@ using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Flows;
 using AlphaKop.Supreme.Network;
 using AlphaKop.Supreme.Repositories;
+using AlphaKop.Supreme.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -28,6 +29,7 @@ namespace AlphaKop {
             ConfigureConfigurations();
             ConfigureHttpClients();
             ConfigureRepositories();
+            ConfigureSupremeServices();
             ConfigureFlows();
         }
 
@@ -94,6 +96,10 @@ namespace AlphaKop {
             services.AddSingleton<ISupremeStockRepository, SupremeStockRepository>();
             services.AddScoped<ISupremeCheckoutRepository, SupremeCheckoutRepository>();
             services.AddSingleton<IPookyRepository, PookyRepository>();
+        }
+
+        private void ConfigureSupremeServices() {
+            services.AddSingleton<ICard3DSecureService, Card3DSecureService>();
         }
 
         private void ConfigureFlows() {

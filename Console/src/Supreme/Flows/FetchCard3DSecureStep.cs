@@ -4,6 +4,7 @@ using AlphaKop.Core.Flows;
 using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Network;
 using AlphaKop.Supreme.Repositories;
+using AlphaKop.Supreme.Services;
 using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {
@@ -13,6 +14,7 @@ namespace AlphaKop.Supreme.Flows {
         private const int maxRetries = 5;
 
         private readonly ISupremeCheckoutRepository supremeRepository;
+        private readonly ICard3DSecureService cardService;
         private readonly IServiceProvider provider;
         private readonly ILogger logger;
 
@@ -20,10 +22,12 @@ namespace AlphaKop.Supreme.Flows {
 
         public FetchCard3DSecureStep(
             ISupremeCheckoutRepository supremeRepository,
+            ICard3DSecureService cardService,
             IServiceProvider provider,
             ILogger<FetchCard3DSecureStep> logger
         ) {
             this.supremeRepository = supremeRepository;
+            this.cardService = cardService;
             this.provider = provider;
             this.logger = logger;
         }
@@ -38,11 +42,13 @@ namespace AlphaKop.Supreme.Flows {
                 var request = new CheckoutTotalsMobileRequest(
                     sizeId: input.SelectedItem.Size.Id,
                     quantity: input.Job.Quantity,
+                    cookies: input.Cookies.CookiesList,
                     profile: input.Job.Profile
                 );
 
                 var response = await supremeRepository.FetchCheckoutTotalsMobile(request);
-                logger.LogDebug(input.Job.ToEventId(),"--[FetchCard3DSecureStep] response");
+                var cardContent = await cardService.FetchCardinalId(response.HtmlContent);
+                logger.LogDebug(input.Job.ToEventId(), "--[FetchCard3DSecureStep] response");
             } catch (Exception ex) {
                 logger.LogError(input.Job.ToEventId(), ex, "--[FetchCard3DSecureStep] Unhandled Exception");
 
