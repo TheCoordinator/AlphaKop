@@ -11,8 +11,6 @@ namespace AlphaKop.Supreme.Flows {
     public interface IFetchCard3DSecureStep : ITaskStep<Card3DSecureStepInput> { }
 
     public sealed class FetchCard3DSecureStep : IFetchCard3DSecureStep {
-        private const int maxRetries = 5;
-
         private readonly ISupremeCheckoutRepository supremeRepository;
         private readonly ICard3DSecureService cardService;
         private readonly IServiceProvider provider;
@@ -33,44 +31,61 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         public async Task Execute(Card3DSecureStepInput input) {
-            if (Retries >= maxRetries) {
-                // TODO: PerformCheckout
-                return;
-            }
-
             try {
-                var request = new CheckoutTotalsMobileRequest(
-                    sizeId: input.SelectedItem.Size.Id,
-                    quantity: input.Job.Quantity,
-                    cookies: input.Cookies.CookiesList,
-                    profile: input.Job.Profile
-                );
+                var totalsMobileResponse = await PerformCheckoutTotalsMobile(input);
+                LogTotalsMobileResponse(input, totalsMobileResponse);
 
-                var response = await supremeRepository.FetchCheckoutTotalsMobile(request);
-                var cardContent = await cardService.FetchCardinalId(response.HtmlContent);
-                logger.LogDebug(input.Job.ToEventId(), "--[FetchCard3DSecureStep] response");
+                var card3DSecureResponse = await PerformFetchCard3DSecureResponse(totalsMobileResponse);
+                LogCard3DSecureResponse(input, card3DSecureResponse);
+
+                await PerformCheckoutStep(input, card3DSecureResponse);
             } catch (Exception ex) {
                 logger.LogError(input.Job.ToEventId(), ex, "--[FetchCard3DSecureStep] Unhandled Exception");
 
-                await RetryStep(input);
+                await PerformCheckoutStep(input, null);
             }
         }
 
-        private async Task PerformCheckoutStep(Card3DSecureStepInput input, Pooky pooky) {
-            // var checkout
-            // await provider.CreateStep<CaptchaStepInput, ICaptchaStep>()
-            //     .Execute(captchaInput);
+        private async Task<CheckoutTotalsMobileResponse> PerformCheckoutTotalsMobile(Card3DSecureStepInput input) {
+            var request = new CheckoutTotalsMobileRequest(
+                sizeId: input.SelectedItem.Size.Id,
+                quantity: input.Job.Quantity,
+                cookies: input.Cookies.CookiesList,
+                profile: input.Job.Profile
+            );
+
+            return await supremeRepository.FetchCheckoutTotalsMobile(request);
         }
 
-        private async Task RetryStep(Card3DSecureStepInput input) {
-            await provider.CreateStep<Card3DSecureStepInput, IFetchCard3DSecureStep>(Retries + 1)
-                .Execute(input);
+        private async Task<Card3DSecureResponse> PerformFetchCard3DSecureResponse(CheckoutTotalsMobileResponse totalsMobileResponse) {
+            return await cardService.FetchCard3DSecure(totalsMobileResponse.HtmlContent);
         }
 
-        private void LogResponse(PookyStepInput input, Pooky pooky) {
+        private async Task PerformCheckoutStep(Card3DSecureStepInput input, Card3DSecureResponse? response) {
+            var checkoutInput = new CheckoutStepInput(
+                selectedItem: input.SelectedItem,
+                pooky: input.Pooky,
+                captcha: input.Captcha,
+                card3DSecureResponse: response,
+                cookies: input.Cookies,
+                job: input.Job
+            );
+
+            await provider.CreateStep<CheckoutStepInput, ICheckoutStep>()
+                .Execute(checkoutInput);
+        }
+
+        private void LogTotalsMobileResponse(Card3DSecureStepInput input, CheckoutTotalsMobileResponse response) {
             logger.LogInformation(
                 input.Job.ToEventId(),
-                $@"--[FetchPookyStep] Status [Fetched] {input.SelectedItem.ToString()}"
+                $@"--[FetchCard3DSecureStep] Received Totals Mobile Response {input.SelectedItem.ToString()}"
+            );
+        }
+
+        private void LogCard3DSecureResponse(Card3DSecureStepInput input, Card3DSecureResponse response) {
+            logger.LogInformation(
+                input.Job.ToEventId(),
+                $@"--[FetchCard3DSecureStep] Received Totals Mobile Response [{response.CardinalId}] {input.SelectedItem.ToString()}"
             );
         }
     }

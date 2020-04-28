@@ -94,6 +94,7 @@ namespace AlphaKop.Supreme.Flows {
                 selectedItem: input.SelectedItem,
                 pooky: input.Pooky,
                 captcha: captcha,
+                card3DSecureResponse: null,
                 cookies: input.CheckoutCookies,
                 job: input.Job
             );

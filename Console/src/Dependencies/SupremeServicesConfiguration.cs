@@ -67,6 +67,8 @@ namespace AlphaKop {
         }
 
         private void ConfigureDefaultHttpClient(HttpClient client, SupremeConfig config) {
+            client.Timeout = TimeSpan.FromSeconds(10);
+            
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.DefaultRequestHeaders.Add(

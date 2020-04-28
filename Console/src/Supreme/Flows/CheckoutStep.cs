@@ -61,6 +61,7 @@ namespace AlphaKop.Supreme.Flows {
                 cookies: input.Cookies.CookiesList,
                 pooky: input.Pooky,
                 captcha: input.Captcha,
+                cardinalId: input.Card3DSecureResponse?.CardinalId,
                 profile: input.Job.Profile
             );
         }

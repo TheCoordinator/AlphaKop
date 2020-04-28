@@ -13,6 +13,7 @@ namespace AlphaKop.Supreme.Network {
         public IEnumerable<Cookie> Cookies { get; }
         public Pooky Pooky { get; }
         public Captcha Captcha { get; }
+        public string? CardinalId { get; }
         public UserProfile Profile { get; }
 
         public CheckoutRequest(
@@ -23,6 +24,7 @@ namespace AlphaKop.Supreme.Network {
             IEnumerable<Cookie> cookies,
             Pooky pooky,
             Captcha captcha,
+            string? cardinalId,
             UserProfile profile
         ) {
             ItemId = itemId;
@@ -32,6 +34,7 @@ namespace AlphaKop.Supreme.Network {
             Cookies = cookies;
             Pooky = pooky;
             Captcha = captcha;
+            CardinalId = cardinalId;
             Profile = profile;
         }
     }
