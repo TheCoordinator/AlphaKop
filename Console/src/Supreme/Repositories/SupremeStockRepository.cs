@@ -7,7 +7,7 @@ using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Network;
 
 namespace AlphaKop.Supreme.Repositories {
-    sealed class SupremeStockRepository : ISupremeStockRepository {
+    public sealed class SupremeStockRepository : ISupremeStockRepository {
         private readonly HttpClient client;
         private readonly ISupremeRequestsFactory requestsFactory;
 
