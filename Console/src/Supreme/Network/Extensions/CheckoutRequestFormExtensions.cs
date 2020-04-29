@@ -5,12 +5,12 @@ using System.Linq;
 using System.Net.Http;
 using System.Web;
 using AlphaKop.Core.CreditCard;
-
+using AlphaKop.Core.System.Extensions;
 using FormValue = System.Collections.Generic.KeyValuePair<string, string>;
 
 namespace AlphaKop.Supreme.Network.Extensions {
     static class CheckoutRequestFormExtensions {
-        public static FormUrlEncodedContent ToFormUrlEncodedContent(this CheckoutRequest request, ICreditCardFormatter creditCardFormatter) {
+        public static StringContent ToFormUrlEncodedContent(this CheckoutRequest request, ICreditCardFormatter creditCardFormatter) {
             var allValues = new IEnumerable<FormValue>[] {
                 GetDefaultPageDataValues(request),
                 GetCookieSubValues(request),
@@ -23,9 +23,17 @@ namespace AlphaKop.Supreme.Network.Extensions {
 
             var values = allValues
                     .SelectMany(value => value)
-                    .OrderBy(value => value.Key);
+                    .Select(value => {
+                        return new FormValue(
+                            key: Uri.EscapeDataString(value.Key),
+                            value: Uri.EscapeDataString(value.Value)
+                        );
+                    })
+                    .OrderBy(value => value.Key)
+                    .Select(value => $"{value.Key}={value.Value}")
+                    .JoinStrings('&');
 
-            return new FormUrlEncodedContent(values);
+            return new StringContent(values);
         }
 
         public static string GetTotalsMobileJSQueryString(this CheckoutTotalsMobileRequest request) {

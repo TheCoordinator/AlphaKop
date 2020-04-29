@@ -104,8 +104,8 @@ namespace AlphaKop.Supreme.Services {
                     "--enable-native-gpu-memory-buffers",
                     "--ignore-gpu-blacklist"
                 },
-                Headless = false, // TODO: set to true
-                Devtools = true,
+                Headless = config.HeadlessBrowser,
+                Devtools = false,
                 IgnoreHTTPSErrors = true
             });
 

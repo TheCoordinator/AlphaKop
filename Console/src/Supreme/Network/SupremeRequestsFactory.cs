@@ -88,6 +88,12 @@ namespace AlphaKop.Supreme.Network {
 
             message.Content = request.ToFormUrlEncodedContent(creditCardFormatter: creditCardFormatter);
 
+            message.Content.Headers.Remove(name: "Content-Type");
+            message.Content.Headers.Add(
+                name: "Content-Type",
+                value: "application/x-www-form-urlencoded"
+            );
+
             message.Headers.Add(
                 name: HttpRequestHeader.Cookie.ToString(),
                 value: cookies
