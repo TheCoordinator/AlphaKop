@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        [HTML_CONTENT]
+    </body>
+    
+    <script src="https://songbird.cardinalcommerce.com/edge/v1/songbird.js"></script>
+    <script>
+        Cardinal.setup('init', {
+            jwt: document.getElementById('jwt_cardinal').value,
+        })
+
+        Cardinal.start('CCA', {})
+    </script>
+</html>

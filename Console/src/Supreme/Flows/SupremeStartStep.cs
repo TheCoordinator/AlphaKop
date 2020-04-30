@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using AlphaKop.Core;
 using AlphaKop.Core.Flows;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {
@@ -22,8 +22,12 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         public async Task Execute(InitialStepInput input) {
-            await provider.CreateStep<InitialStepInput, IFetchItemStep>()
+            using var scope = provider.CreateScope();
+
+            await scope.ServiceProvider.CreateStep<InitialStepInput, IFetchItemStep>()
                 .Execute(input);
+
+            logger.LogDebug(input.Job.ToEventId(), "Task scope disposed");
         }
     }
 }

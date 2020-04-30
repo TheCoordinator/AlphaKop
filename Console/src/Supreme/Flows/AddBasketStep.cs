@@ -13,14 +13,14 @@ namespace AlphaKop.Supreme.Flows {
         private const int maxRetries = 30;
         private const int delayInMilliSeconds = 200;
 
-        private readonly ISupremeRepository supremeRepository;
+        private readonly ISupremeCheckoutRepository supremeRepository;
         private readonly IServiceProvider provider;
         private readonly ILogger logger;
 
         public int Retries { get; set; }
 
         public AddBasketStep(
-            ISupremeRepository supremeRepository,
+            ISupremeCheckoutRepository supremeRepository,
             IServiceProvider provider,
             ILogger<AddBasketStep> logger
         ) {

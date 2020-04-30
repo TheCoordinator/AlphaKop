@@ -1,3 +1,4 @@
+using System;
 using AlphaKop.Core.Flows;
 using AlphaKop.Core.Models.User;
 
@@ -15,6 +16,7 @@ namespace AlphaKop.Supreme.Flows {
         public string? Size { get; }
         public int Quantity { get; }
         public bool FastMode { get; }
+        public bool IsCard3DSecureEnabled { get; }
         public int StartDelay { get; }
 
         public SupremeJob(
@@ -27,7 +29,8 @@ namespace AlphaKop.Supreme.Flows {
             string? style,
             string? size,
             int quantity,
-            bool fastMode,
+            bool fastMode = false,
+            bool isCard3DSecureEnabled = false,
             int startDelay = 1000
         ) {
             JobId = jobId;
@@ -38,8 +41,9 @@ namespace AlphaKop.Supreme.Flows {
             Keywords = keywords;
             Style = style;
             Size = size;
-            Quantity = quantity;
+            Quantity = Math.Max(1, quantity);
             FastMode = fastMode;
+            IsCard3DSecureEnabled = isCard3DSecureEnabled;
             StartDelay = startDelay;
         }
     }

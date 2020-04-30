@@ -13,7 +13,7 @@ namespace AlphaKop.Supreme.Flows {
     public interface IFetchItemDetailsStep : ITaskStep<ItemDetailsStepInput> { }
 
     public sealed class FetchItemDetailsStep : IFetchItemDetailsStep {
-        private readonly ISupremeRepository supremeRepository;
+        private readonly ISupremeStockRepository supremeRepository;
         private readonly ITextMatching textMatching;
         private readonly IServiceProvider provider;
         private readonly ILogger logger;
@@ -21,7 +21,7 @@ namespace AlphaKop.Supreme.Flows {
         public int Retries { get; set; }
 
         public FetchItemDetailsStep(
-            ISupremeRepository supremeRepository,
+            ISupremeStockRepository supremeRepository,
             ITextMatching textMatching,
             IServiceProvider provider,
             ILogger<FetchItemDetailsStep> logger

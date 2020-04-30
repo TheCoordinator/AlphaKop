@@ -64,7 +64,6 @@ namespace AlphaKop.Supreme.Flows {
                 new List<IEnumerable<Cookie>>() {
                     input.Pooky.Cookies.StaticCookies,
                     input.Pooky.Cookies.CheckoutCookies,
-                    input.BasketResponse.ResponseCookies,
                     new Cookie[] { new Cookie(name: "_ticket", value: pookyTicket.Ticket) }
                 }
             );

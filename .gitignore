@@ -351,3 +351,5 @@ MigrationBackup/
 
 
 **/supreme**.csv
+
+.local-chromium/

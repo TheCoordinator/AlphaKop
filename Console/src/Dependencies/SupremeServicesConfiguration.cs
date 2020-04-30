@@ -6,6 +6,7 @@ using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Flows;
 using AlphaKop.Supreme.Network;
 using AlphaKop.Supreme.Repositories;
+using AlphaKop.Supreme.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -28,6 +29,7 @@ namespace AlphaKop {
             ConfigureConfigurations();
             ConfigureHttpClients();
             ConfigureRepositories();
+            ConfigureSupremeServices();
             ConfigureFlows();
         }
 
@@ -37,12 +39,19 @@ namespace AlphaKop {
         }
 
         private void ConfigureHttpClients() {
-            services.AddHttpClient("supreme", (provider, client) => {
+            services.AddHttpClient("supreme_stock", (provider, client) => {
                 var config = provider.GetRequiredService<IOptions<SupremeConfig>>().Value;
                 client.BaseAddress = new Uri(config.SupremeBaseUrl);
                 ConfigureDefaultHttpClient(client, config);
             })
-            .ConfigurePrimaryHttpMessageHandler(ConfigurePrimaryHttpHandler);
+            .ConfigurePrimaryHttpMessageHandler(provider => ConfigurePrimaryHttpHandler(provider: provider, useCookies: false));
+
+            services.AddHttpClient("supreme_checkout", (provider, client) => {
+                var config = provider.GetRequiredService<IOptions<SupremeConfig>>().Value;
+                client.BaseAddress = new Uri(config.SupremeBaseUrl);
+                ConfigureDefaultHttpClient(client, config);
+            })
+            .ConfigurePrimaryHttpMessageHandler(provider => ConfigurePrimaryHttpHandler(provider: provider, useCookies: true));
 
             services.AddHttpClient("pooky", (provider, client) => {
                 var config = provider.GetRequiredService<IOptions<SupremeConfig>>().Value;
@@ -54,10 +63,12 @@ namespace AlphaKop {
                     value: config.PookyAuthentication
                 );
             })
-            .ConfigurePrimaryHttpMessageHandler(ConfigurePrimaryHttpHandler);
+            .ConfigurePrimaryHttpMessageHandler(provider => ConfigurePrimaryHttpHandler(provider: provider, useCookies: false));
         }
 
         private void ConfigureDefaultHttpClient(HttpClient client, SupremeConfig config) {
+            client.Timeout = TimeSpan.FromSeconds(10);
+            
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.DefaultRequestHeaders.Add(
@@ -71,10 +82,10 @@ namespace AlphaKop {
             );
         }
 
-        private HttpMessageHandler ConfigurePrimaryHttpHandler(IServiceProvider provider) {
+        private HttpMessageHandler ConfigurePrimaryHttpHandler(IServiceProvider provider, bool useCookies) {
             return new LoggingHandler(
                 innerHandler: new HttpClientHandler() {
-                   UseCookies = false
+                    UseCookies = useCookies
                 },
                 logger: provider.GetService<ILogger<LoggingHandler>>()
             );
@@ -84,8 +95,13 @@ namespace AlphaKop {
             services.AddTransient<ISupremeRequestsFactory, SupremeRequestsFactory>();
             services.AddTransient<IPookyRequestsFactory, PookyRequestsFactory>();
 
-            services.AddSingleton<ISupremeRepository, SupremeRepository>();
+            services.AddSingleton<ISupremeStockRepository, SupremeStockRepository>();
+            services.AddScoped<ISupremeCheckoutRepository, SupremeCheckoutRepository>();
             services.AddSingleton<IPookyRepository, PookyRepository>();
+        }
+
+        private void ConfigureSupremeServices() {
+            services.AddSingleton<ICard3DSecureService, Card3DSecureService>();
         }
 
         private void ConfigureFlows() {
@@ -96,6 +112,7 @@ namespace AlphaKop {
             services.AddTransient<IAddBasketStep, AddBasketStep>();
             services.AddTransient<IFetchPookyTicketStep, FetchPookyTicketStep>();
             services.AddTransient<ICaptchaStep, CaptchaStep>();
+            services.AddTransient<IFetchCard3DSecureStep, FetchCard3DSecureStep>();
             services.AddTransient<ICheckoutStep, CheckoutStep>();
             services.AddTransient<ICheckoutQueueStep, CheckoutQueueStep>();
             services.AddTransient<ISupremeSuccessStep, SupremeSuccessStep>();

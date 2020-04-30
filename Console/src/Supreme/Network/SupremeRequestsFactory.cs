@@ -10,6 +10,7 @@ namespace AlphaKop.Supreme.Network {
         HttpRequestMessage GetMobileStock();
         HttpRequestMessage GetItemDetails(string itemId);
         HttpRequestMessage AddBasket(AddBasketRequest basketRequest);
+        HttpRequestMessage CheckoutTotalsMobile(CheckoutTotalsMobileRequest request);
         HttpRequestMessage Checkout(CheckoutRequest request);
         HttpRequestMessage CheckoutQueue(CheckoutQueueRequest request);
     }
@@ -58,6 +59,24 @@ namespace AlphaKop.Supreme.Network {
             return message;
         }
 
+        public HttpRequestMessage CheckoutTotalsMobile(CheckoutTotalsMobileRequest request) {
+            var queryString = request.GetTotalsMobileJSQueryString();
+            var uri = new Uri($"/checkout/totals_mobile.js?{queryString}", UriKind.Relative);
+            var cookies = request.Cookies.ToCookiesString();
+
+            var message = new HttpRequestMessage() {
+                RequestUri = uri,
+                Method = HttpMethod.Get,
+            };
+
+            message.Headers.Add(
+                name: HttpRequestHeader.Cookie.ToString(),
+                value: cookies
+            );
+
+            return message;
+        }
+
         public HttpRequestMessage Checkout(CheckoutRequest request) {
             var uri = new Uri("/checkout.json", UriKind.Relative);
             var cookies = request.Cookies.ToCookiesString();
@@ -68,6 +87,12 @@ namespace AlphaKop.Supreme.Network {
             };
 
             message.Content = request.ToFormUrlEncodedContent(creditCardFormatter: creditCardFormatter);
+
+            message.Content.Headers.Remove(name: "Content-Type");
+            message.Content.Headers.Add(
+                name: "Content-Type",
+                value: "application/x-www-form-urlencoded"
+            );
 
             message.Headers.Add(
                 name: HttpRequestHeader.Cookie.ToString(),

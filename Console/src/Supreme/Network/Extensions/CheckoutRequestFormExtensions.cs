@@ -1,31 +1,52 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
+using System.Web;
 using AlphaKop.Core.CreditCard;
-
+using AlphaKop.Core.System.Extensions;
 using FormValue = System.Collections.Generic.KeyValuePair<string, string>;
 
 namespace AlphaKop.Supreme.Network.Extensions {
     static class CheckoutRequestFormExtensions {
-        public static FormUrlEncodedContent ToFormUrlEncodedContent(this ICheckoutRequest request, ICreditCardFormatter creditCardFormatter) {
+        public static StringContent ToFormUrlEncodedContent(this CheckoutRequest request, ICreditCardFormatter creditCardFormatter) {
             var allValues = new IEnumerable<FormValue>[] {
                 GetDefaultPageDataValues(request),
                 GetCookieSubValues(request),
                 GetCreditCardValues(request, creditCardFormatter: creditCardFormatter),
+                GetCard3DSecureValues(request),
                 GetOrderProfileValues(request),
                 GetOrderAddressValues(request),
-                GetCaptchaValues(request)
+                GetCaptchaValues(request),
             };
 
             var values = allValues
                     .SelectMany(value => value)
-                    .OrderBy(value => value.Key);
+                    .Select(value => {
+                        return new FormValue(
+                            key: Uri.EscapeDataString(value.Key),
+                            value: Uri.EscapeDataString(value.Value)
+                        );
+                    })
+                    .OrderBy(value => value.Key)
+                    .Select(value => $"{value.Key}={value.Value}")
+                    .JoinStrings('&');
 
-            return new FormUrlEncodedContent(values);
+            return new StringContent(values);
         }
 
-        private static IEnumerable<FormValue> GetDefaultPageDataValues(ICheckoutRequest request) {
+        public static string GetTotalsMobileJSQueryString(this CheckoutTotalsMobileRequest request) {
+            var query = HttpUtility.ParseQueryString(string.Empty);
+
+            query["cookie-sub"] = GetCookieSubJsonString(sizeId: request.SizeId, quantity: request.Quantity);
+            query["mobile"] = "true";
+            query["order[billing_country]"] = request.Profile.Address.CountryCode;
+
+            return query?.ToString() ?? "";
+        }
+
+        private static IEnumerable<FormValue> GetDefaultPageDataValues(CheckoutRequest request) {
             var result = (from mapping in request.Pooky.PageData.Mappings
                           where mapping.Mapping == null
                           select new FormValue(mapping.Name, mapping.Value ?? "")).ToList();
@@ -36,24 +57,28 @@ namespace AlphaKop.Supreme.Network.Extensions {
             return result;
         }
 
-        private static IEnumerable<FormValue> GetCookieSubValues(ICheckoutRequest request) {
-            var jsonContent = $@"""{request.SizeId}"":{request.Quantity}";
+        private static string GetCookieSubJsonString(string sizeId, int quantity) {
+            var jsonContent = $@"""{sizeId}"":{quantity}";
 
-            var json = "{" + jsonContent + "}";
+            return "{" + jsonContent + "}";
+        }
+
+        private static IEnumerable<FormValue> GetCookieSubValues(CheckoutRequest request) {
+            var jsonString = GetCookieSubJsonString(sizeId: request.SizeId, quantity: request.Quantity);
 
             return new FormValue[] {
-                new FormValue("cookie-sub", json)
+                new FormValue("cookie-sub", jsonString)
             };
         }
 
-        private static IEnumerable<FormValue> GetCaptchaValues(ICheckoutRequest request) {
+        private static IEnumerable<FormValue> GetCaptchaValues(CheckoutRequest request) {
             var captcha = request.Captcha;
             return new FormValue[] {
                 new FormValue("g-recaptcha-response", captcha.Token)
             };
         }
 
-        private static IEnumerable<FormValue> GetCreditCardValues(ICheckoutRequest request, ICreditCardFormatter creditCardFormatter) {
+        private static IEnumerable<FormValue> GetCreditCardValues(CheckoutRequest request, ICreditCardFormatter creditCardFormatter) {
             var cardDetails = request.Profile.CardDetails;
 
             return new FormValue[] {
@@ -65,7 +90,17 @@ namespace AlphaKop.Supreme.Network.Extensions {
             };
         }
 
-        private static IEnumerable<FormValue> GetOrderProfileValues(ICheckoutRequest request) {
+        private static IEnumerable<FormValue> GetCard3DSecureValues(CheckoutRequest request) {
+            if (request.CardinalId == null) {
+                return Array.Empty<FormValue>();
+            }
+
+            return new FormValue[] {
+                new FormValue("cardinal_id", request.CardinalId)
+            };
+        }
+
+        private static IEnumerable<FormValue> GetOrderProfileValues(CheckoutRequest request) {
             var profile = request.Profile;
 
             return new FormValue[] {
@@ -74,7 +109,7 @@ namespace AlphaKop.Supreme.Network.Extensions {
             };
         }
 
-        private static IEnumerable<FormValue> GetOrderAddressValues(ICheckoutRequest request) {
+        private static IEnumerable<FormValue> GetOrderAddressValues(CheckoutRequest request) {
             var address = request.Profile.Address;
 
             return new FormValue[] {

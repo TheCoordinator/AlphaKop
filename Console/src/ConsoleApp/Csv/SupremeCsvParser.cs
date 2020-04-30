@@ -58,6 +58,7 @@ namespace AlphaKop.ConsoleApp.Csv {
                 size: csv.JobSize?.NullIfEmptyTrimmed(),
                 quantity: csv.JobQuantity,
                 fastMode: csv.FastMode,
+                isCard3DSecureEnabled: csv.IsCard3DSecureEnabled,
                 startDelay: csv.JobStartDelay
             );
         }
