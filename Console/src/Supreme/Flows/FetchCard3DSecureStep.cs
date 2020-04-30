@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using AlphaKop.Core.Flows;
 using AlphaKop.Supreme.Models;
@@ -12,6 +14,7 @@ namespace AlphaKop.Supreme.Flows {
 
     public sealed class FetchCard3DSecureStep : IFetchCard3DSecureStep {
         private readonly ISupremeCheckoutRepository supremeRepository;
+        private readonly IPookyRepository pookyRepository;
         private readonly ICard3DSecureService cardService;
         private readonly IServiceProvider provider;
         private readonly ILogger logger;
@@ -20,11 +23,13 @@ namespace AlphaKop.Supreme.Flows {
 
         public FetchCard3DSecureStep(
             ISupremeCheckoutRepository supremeRepository,
+            IPookyRepository pookyRepository,
             ICard3DSecureService cardService,
             IServiceProvider provider,
             ILogger<FetchCard3DSecureStep> logger
         ) {
             this.supremeRepository = supremeRepository;
+            this.pookyRepository = pookyRepository;
             this.cardService = cardService;
             this.provider = provider;
             this.logger = logger;
@@ -38,11 +43,14 @@ namespace AlphaKop.Supreme.Flows {
                 var card3DSecureResponse = await PerformFetchCard3DSecureResponse(totalsMobileResponse);
                 LogCard3DSecureResponse(input, card3DSecureResponse);
 
-                await PerformCheckoutStep(input, card3DSecureResponse);
+                var pookyTicket = await PerformFetchPookyTicket(input, totalsMobileResponse);
+                LogPookyTicketResponse(input, pookyTicket);
+
+                await PerformCheckoutStep(input, card3DSecureResponse, pookyTicket);
             } catch (Exception ex) {
                 logger.LogError(input.Job.ToEventId(), ex, "--[FetchCard3DSecureStep] Unhandled Exception");
 
-                await PerformCheckoutStep(input, null);
+                await PerformCheckoutStep(input, null, null);
             }
         }
 
@@ -61,13 +69,38 @@ namespace AlphaKop.Supreme.Flows {
             return await cardService.FetchCard3DSecure(totalsMobileResponse.HtmlContent);
         }
 
-        private async Task PerformCheckoutStep(Card3DSecureStepInput input, Card3DSecureResponse? response) {
+        private async Task<PookyTicket?> PerformFetchPookyTicket(Card3DSecureStepInput input, CheckoutTotalsMobileResponse totalsMobileResponse) {
+            if (totalsMobileResponse.Ticket != null) {
+                var pookyRegion = PookyRegionUtil.From(input.Job.Region);
+                return await pookyRepository.FetchPookyTicket(pookyRegion, totalsMobileResponse.Ticket);
+            }
+
+            return null;
+        }
+
+        private async Task PerformCheckoutStep(
+            Card3DSecureStepInput input,
+            Card3DSecureResponse? response,
+            PookyTicket? pookyTicket
+        ) {
+            var checkoutCookies = input.Cookies;
+
+            if (pookyTicket != null) {
+                checkoutCookies = new CheckoutCookies(
+                    new List<IEnumerable<Cookie>>() {
+                        input.Pooky.Cookies.StaticCookies,
+                        input.Pooky.Cookies.CheckoutCookies,
+                        new Cookie[] { new Cookie(name: "_ticket", value: pookyTicket.Value.Ticket) }
+                    }
+                );
+            }
+
             var checkoutInput = new CheckoutStepInput(
                 selectedItem: input.SelectedItem,
                 pooky: input.Pooky,
                 captcha: input.Captcha,
                 card3DSecureResponse: response,
-                cookies: input.Cookies,
+                cookies: checkoutCookies,
                 job: input.Job
             );
 
@@ -87,6 +120,20 @@ namespace AlphaKop.Supreme.Flows {
                 input.Job.ToEventId(),
                 $@"--[FetchCard3DSecureStep] Received Totals Mobile Response [{response.CardinalId}] {input.SelectedItem.ToString()}"
             );
+        }
+
+        private void LogPookyTicketResponse(Card3DSecureStepInput input, PookyTicket? ticket) {
+            if (ticket == null) {
+                logger.LogInformation(
+                    input.Job.ToEventId(),
+                    $@"--[FetchCard3DSecureStep] PookyTicket was not received {input.SelectedItem.ToString()}"
+                );
+            } else {
+                logger.LogInformation(
+                    input.Job.ToEventId(),
+                    $@"--[FetchCard3DSecureStep] Received Pooky Ticket {input.SelectedItem.ToString()}"
+                );
+            }
         }
     }
 }

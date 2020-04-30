@@ -44,7 +44,12 @@ namespace AlphaKop.Supreme.Repositories {
             await response.EnsureSuccess();
 
             var content = await response.Content.ReadAsStringAsync();
-            return new CheckoutTotalsMobileResponse(htmlContent: content);
+
+            var ticket = response.GetCookies()
+                .FirstOrDefault(cookie => cookie.Name == "ticket")?
+                .Value;
+
+            return new CheckoutTotalsMobileResponse(htmlContent: content, ticket: ticket);
         }
 
         public async Task<CheckoutResponse> Checkout(CheckoutRequest request) {
