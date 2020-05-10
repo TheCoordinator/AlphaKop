@@ -60,7 +60,7 @@ namespace AlphaKop.Supreme.Flows {
         private async Task PerformPostCaptcha(CaptchaStepInput input, CaptchaRequest request, CaptchaResponse response) {
             LogResponse(input, response);
 
-            if (response.Captcha.Host == config.SupremeCaptchaHost) {
+            if (new Uri(response.Captcha.Host) == new Uri(config.SupremeCaptchaHost)) {
                 await CancelCaptchaTrigger(request);
                 if (input.Job.IsCard3DSecureEnabled == true) {
                     await PerformFetchCard3DSecureStep(input, response.Captcha);
