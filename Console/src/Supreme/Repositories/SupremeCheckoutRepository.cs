@@ -26,9 +26,7 @@ namespace AlphaKop.Supreme.Repositories {
             await response.EnsureSuccess();
 
             var itemSizesStock = await response.Content.ReadJsonAsync<IEnumerable<ItemAddBasketSizeStock>>();
-            var ticket = response.GetCookies()
-                .FirstOrDefault(cookie => cookie.Name == "ticket")?
-                .Value;
+            var ticket = GetTicket(response);
 
             return new AddBasketResponse(
                 itemSizesStock: itemSizesStock,
@@ -45,23 +43,47 @@ namespace AlphaKop.Supreme.Repositories {
 
             var content = await response.Content.ReadAsStringAsync();
 
-            var ticket = response.GetCookies()
-                .FirstOrDefault(cookie => cookie.Name == "ticket")?
-                .Value;
+            var ticket = GetTicket(response);
 
             return new CheckoutTotalsMobileResponse(htmlContent: content, ticket: ticket);
         }
 
         public async Task<CheckoutResponse> Checkout(CheckoutRequest request) {
-            return await client.ReadJsonAsync<CheckoutResponse>(
+            var response = await client.SendAsync(
                 request: requestsFactory.Checkout(request: request)
+            );
+
+            await response.EnsureSuccess();
+
+            var status = await response.Content.ReadJsonAsync<CheckoutStatusResponse>();
+            var ticket = GetTicket(response);
+
+            return new CheckoutResponse(
+                statusResponse: status,
+                ticket: ticket
             );
         }
 
         public async Task<CheckoutResponse> CheckoutQueue(CheckoutQueueRequest request) {
-            return await client.ReadJsonAsync<CheckoutResponse>(
+            var response = await client.SendAsync(
                 request: requestsFactory.CheckoutQueue(request: request)
             );
+
+            await response.EnsureSuccess();
+
+            var status = await response.Content.ReadJsonAsync<CheckoutStatusResponse>();
+            var ticket = GetTicket(response);
+
+            return new CheckoutResponse(
+                statusResponse: status,
+                ticket: ticket
+            );
+        }
+
+        private string? GetTicket(HttpResponseMessage? response) {
+            return response?.GetCookies()
+                .FirstOrDefault(cookie => cookie.Name == "ticket")?
+                .Value;
         }
     }
 }
