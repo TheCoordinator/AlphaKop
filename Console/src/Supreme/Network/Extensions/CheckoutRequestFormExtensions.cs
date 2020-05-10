@@ -22,8 +22,8 @@ namespace AlphaKop.Supreme.Network.Extensions {
             };
 
             var values = allValues
-                    .SelectMany(value => value)
-                    .OrderBy(value => value.Key);
+                .SelectMany(value => value)
+                .OrderBy(value => value.Key);
 
             return new FormUrlEncodedContent(values);
         }

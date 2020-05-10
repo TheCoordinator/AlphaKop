@@ -42,23 +42,16 @@ namespace AlphaKop.Supreme.Flows {
 
         private CheckoutQueueRequest CreateRequest(CheckoutQueueStepInput input) {
             return new CheckoutQueueRequest(
-                itemId: input.SelectedItem.Item.Id,
-                sizeId: input.SelectedItem.Size.Id,
-                styleId: input.SelectedItem.Style.Id,
-                quantity: Math.Max(input.Job.Quantity, 1),
                 slug: input.Slug,
-                cookies: input.CheckoutRequest.Cookies,
-                pooky: input.CheckoutRequest.Pooky,
-                captcha: input.CheckoutRequest.Captcha,
-                profile: input.CheckoutRequest.Profile
+                cookies: input.CheckoutCookies.CookiesList
             );
         }
 
         private CheckoutQueueStepInput CreateInput(CheckoutQueueStepInput input, CheckoutResponse response) {
+            // TODO: Fix this.
             return new CheckoutQueueStepInput(
                 selectedItem: input.SelectedItem,
-                checkoutRequest: input.CheckoutRequest,
-                checkoutResponse: input.CheckoutResponse,
+                checkoutCookies: input.CheckoutCookies,
                 slug: response.Slug ?? input.Slug,
                 job: input.Job
             );
@@ -69,7 +62,7 @@ namespace AlphaKop.Supreme.Flows {
 
             var status = response.Status;
 
-            if (status == "paid") {
+            if (status == "paid" || status == "dup") {
                 await PerformSuccessStep(input, response);
             } else if (status == "queued") {
                 var newInput = CreateInput(input, response);

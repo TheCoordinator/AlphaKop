@@ -57,7 +57,7 @@ namespace AlphaKop.Supreme.Flows {
                 itemId: input.SelectedItem.Item.Id,
                 sizeId: input.SelectedItem.Size.Id,
                 styleId: input.SelectedItem.Style.Id,
-                quantity: Math.Max(input.Job.Quantity, 1),
+                quantity: input.Job.Quantity,
                 cookies: input.Cookies.CookiesList,
                 pooky: input.Pooky,
                 captcha: input.Captcha,
@@ -75,7 +75,7 @@ namespace AlphaKop.Supreme.Flows {
 
             var status = response.Status;
 
-            if (status == "paid") {
+            if (status == "paid" || status == "dup") {
                 await PerformSuccessStep(input, response);
             } else if (status == "queued" && response.Slug != null) {
                 await PerformCheckoutQueuedStep(input, request, response, response.Slug);
@@ -106,8 +106,7 @@ namespace AlphaKop.Supreme.Flows {
         ) {
             var checkoutQueueInput = new CheckoutQueueStepInput(
                 selectedItem: input.SelectedItem,
-                checkoutRequest: request,
-                checkoutResponse: response,
+                checkoutCookies: input.Cookies,
                 slug: slug,
                 job: input.Job
             );
