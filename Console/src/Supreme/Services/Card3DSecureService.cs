@@ -68,7 +68,6 @@ namespace AlphaKop.Supreme.Services {
 
         private async Task ConfigurePage(Page page) {
             await page.SetUserAgentAsync(config.UserAgent);
-            await page.EmulateAsync(Puppeteer.Devices[DeviceDescriptorName.IPhoneX]);
             await page.SetBypassCSPAsync(true);
         }
 

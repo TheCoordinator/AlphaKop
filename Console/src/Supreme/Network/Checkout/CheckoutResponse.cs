@@ -38,7 +38,7 @@ namespace AlphaKop.Supreme.Network {
             CheckoutResponsePurchaseSale? purchaseSale
         ) {
             Status = status;
-            this.Slug = slug;
+            Slug = slug;
             Id = id;
             Info = info;
             PurchaseAttempts = purchaseAttempts;

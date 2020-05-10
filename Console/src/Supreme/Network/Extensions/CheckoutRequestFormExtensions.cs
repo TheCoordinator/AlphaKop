@@ -51,6 +51,8 @@ namespace AlphaKop.Supreme.Network.Extensions {
                           where mapping.Mapping == null
                           select new FormValue(mapping.Name, mapping.Value ?? "")).ToList();
 
+            result.RemoveAll(value => value.Key == "store_address");
+
             result.RemoveAll(value => value.Key == "order[terms]");
             result.Add(new FormValue("order[terms]", "1"));
 
