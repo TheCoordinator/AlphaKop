@@ -58,7 +58,7 @@ namespace AlphaKop.Supreme.Flows {
                 sizeId: input.SelectedItem.Size.Id,
                 styleId: input.SelectedItem.Style.Id,
                 quantity: input.Job.Quantity,
-                cookies: input.Cookies.CookiesList,
+                cookies: input.Cookies.Cookies,
                 pooky: input.Pooky,
                 captcha: input.Captcha,
                 cardinalId: input.Card3DSecureResponse?.CardinalId,

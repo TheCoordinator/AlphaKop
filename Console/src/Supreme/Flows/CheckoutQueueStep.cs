@@ -4,12 +4,17 @@ using AlphaKop.Core.Flows;
 using AlphaKop.Supreme.Repositories;
 using AlphaKop.Supreme.Network;
 using Microsoft.Extensions.Logging;
+using AlphaKop.Supreme.Models;
+using System.Collections.Generic;
+using System.Net;
+using System.Linq;
 
 namespace AlphaKop.Supreme.Flows {
     public interface ICheckoutQueueStep : ITaskStep<CheckoutQueueStepInput> { }
 
     public sealed class CheckoutQueueStep : ICheckoutQueueStep {
         private readonly ISupremeCheckoutRepository supremeRepository;
+        private readonly IPookyRepository pookyRepository;
         private readonly IServiceProvider provider;
         private readonly ILogger logger;
 
@@ -17,10 +22,12 @@ namespace AlphaKop.Supreme.Flows {
 
         public CheckoutQueueStep(
             ISupremeCheckoutRepository supremeRepository,
+            IPookyRepository pookyRepository,
             IServiceProvider provider,
             ILogger<CheckoutQueueStep> logger
         ) {
             this.supremeRepository = supremeRepository;
+            this.pookyRepository = pookyRepository;
             this.provider = provider;
             this.logger = logger;
         }
@@ -43,17 +50,7 @@ namespace AlphaKop.Supreme.Flows {
         private CheckoutQueueRequest CreateRequest(CheckoutQueueStepInput input) {
             return new CheckoutQueueRequest(
                 slug: input.Slug,
-                cookies: input.CheckoutCookies.CookiesList
-            );
-        }
-
-        private CheckoutQueueStepInput CreateInput(CheckoutQueueStepInput input, CheckoutResponse response) {
-            // TODO: Fix this.
-            return new CheckoutQueueStepInput(
-                selectedItem: input.SelectedItem,
-                checkoutCookies: input.CheckoutCookies,
-                slug: response.StatusResponse.Slug ?? input.Slug,
-                job: input.Job
+                cookies: input.CheckoutCookies.Cookies
             );
         }
 
@@ -65,8 +62,7 @@ namespace AlphaKop.Supreme.Flows {
             if (status == "paid" || status == "dup") {
                 await PerformSuccessStep(input, response);
             } else if (status == "queued") {
-                var newInput = CreateInput(input, response);
-                await RetryStep(newInput);
+                await RetryStep(input, response);
             } else if (status == "failed") {
                 await PerformPostCheckoutFailed(input, response);
             } else {
@@ -84,6 +80,35 @@ namespace AlphaKop.Supreme.Flows {
 
             await provider.CreateStep<SuccessStepInput, ISupremeSuccessStep>()
                 .Execute(successInput);
+        }
+
+        private async Task RetryStep(CheckoutQueueStepInput input, CheckoutResponse response) {
+
+            var checkoutCookies = input.CheckoutCookies;
+            var pookyTicket = await FetchPookyTicket(input, response);
+
+            if (pookyTicket != null) {
+                var cookies = checkoutCookies.Cookies
+                    .Where(cookie => cookie.Name != "_ticket")
+                    .ToList();
+
+                cookies.Add(
+                    new Cookie(name: "_ticket", value: pookyTicket.Value.Ticket)
+                );
+
+                checkoutCookies = new CheckoutCookies(cookies);
+            }
+
+            var slug = response.StatusResponse.Slug ?? input.Slug;
+
+            var newInput = new CheckoutQueueStepInput(
+                selectedItem: input.SelectedItem,
+                checkoutCookies: checkoutCookies,
+                slug: slug,
+                job: input.Job
+            );
+
+            await RetryStep(newInput);
         }
 
         private async Task RetryStep(CheckoutQueueStepInput input) {
@@ -121,6 +146,20 @@ namespace AlphaKop.Supreme.Flows {
 
             await provider.CreateStep<ItemDetailsStepInput, IFetchItemDetailsStep>()
                 .Execute(itemDetailsInput);
+        }
+
+        private async Task<PookyTicket?> FetchPookyTicket(
+            CheckoutQueueStepInput input,
+            CheckoutResponse response
+        ) {
+            if (response.Ticket == null) {
+                return null;
+            }
+
+            return await pookyRepository.FetchPookyTicket(
+                region: PookyRegionUtil.From(input.Job.Region),
+                ticket: response.Ticket
+            );
         }
 
         private void LogResponse(CheckoutQueueStepInput input, CheckoutResponse response) {
