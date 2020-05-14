@@ -4,14 +4,15 @@ using System.Net;
 
 namespace AlphaKop.Supreme.Flows {
     public struct CheckoutCookies {
-        public IEnumerable<IEnumerable<Cookie>> Cookies { get; }
+        public IEnumerable<Cookie> Cookies { get; }
 
-        public IEnumerable<Cookie> CookiesList {
-            get { return Cookies.SelectMany(cookie => cookie); }
+        public CheckoutCookies(IEnumerable<Cookie> cookies) {
+            Cookies = cookies;
         }
 
-        public CheckoutCookies(IEnumerable<IEnumerable<Cookie>> cookies) {
-            Cookies = cookies;
+        public CheckoutCookies(IEnumerable<IEnumerable<Cookie>> cookiesList) {
+            Cookies = cookiesList
+                .SelectMany(cookie => cookie);
         }
     }
 }

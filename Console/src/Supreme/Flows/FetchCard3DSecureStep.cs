@@ -58,7 +58,7 @@ namespace AlphaKop.Supreme.Flows {
             var request = new CheckoutTotalsMobileRequest(
                 sizeId: input.SelectedItem.Size.Id,
                 quantity: input.Job.Quantity,
-                cookies: input.Cookies.CookiesList,
+                cookies: input.Cookies.Cookies,
                 profile: input.Job.Profile
             );
 

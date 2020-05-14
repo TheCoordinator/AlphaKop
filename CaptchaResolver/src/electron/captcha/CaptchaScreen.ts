@@ -101,7 +101,7 @@ export class CaptchaScreen {
         const self = this
 
         protocol.interceptBufferProtocol('http', async (req, callback) => {
-            if (req.url == `${request.host}/`) {
+            if (req.url == `${request.host}`) {
                 const file = await self.getCaptchaHtmlFile(request)
                 callback(Buffer.from(file))
             } else {

@@ -5,7 +5,7 @@ using AlphaKop.Core.Models.User;
 using AlphaKop.Supreme.Models;
 
 namespace AlphaKop.Supreme.Network {
-    public struct CheckoutRequest : ICheckoutRequest {
+    public struct CheckoutRequest {
         public string ItemId { get; }
         public string SizeId { get; }
         public string StyleId { get; }

@@ -10,7 +10,7 @@ namespace AlphaKop.Supreme.Flows {
     public sealed class SupremeSuccessStep : ISupremeSuccessStep {
         private readonly IServiceProvider provider;
         private readonly ILogger logger;
-        
+
         public int Retries { get; set; }
 
         public SupremeSuccessStep(
@@ -22,11 +22,11 @@ namespace AlphaKop.Supreme.Flows {
         }
 
         public async Task Execute(SuccessStepInput input) {
-            var sale = input.CheckoutResponse.PurchaseSale;
+            var sale = input.CheckoutResponse.StatusResponse.PurchaseSale;
 
             logger.LogInformation(
                 input.Job.ToEventId(),
-                $@"--Success 🎉🚀🔥 {input.SelectedItem.ToString()} Total Cost [{sale?.Currency} {sale?.TotalCartCost}]"
+                $@"--Success 🎉🚀🔥 Status [{input.CheckoutResponse.StatusResponse.Status}] {input.SelectedItem.ToString()} Total Cost [{sale?.Currency} {sale?.TotalCartCost}]"
             );
 
             await Task.Delay(100);
