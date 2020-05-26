@@ -1,13 +1,13 @@
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 using AlphaKop.Core.CreditCard;
 using AlphaKop.Core.Models.User;
 using AlphaKop.Core.System.Extensions;
 using AlphaKop.Supreme.Flows;
 using CsvHelper;
 using CsvHelper.Configuration;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 
 namespace AlphaKop.ConsoleApp.Csv {
     sealed class SupremeCsvParser {

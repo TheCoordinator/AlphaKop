@@ -1,11 +1,11 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using AlphaKop.ConsoleApp.Csv;
 using AlphaKop.Core.CreditCard;
 using AlphaKop.Supreme.Flows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AlphaKop.ConsoleApp {
     public sealed class ConsoleApplication {
