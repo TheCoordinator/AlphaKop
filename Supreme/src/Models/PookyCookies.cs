@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-using System.Net;
 using AlphaKop.Supreme.Network.Converters;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Net;
 
 namespace AlphaKop.Supreme.Models {
     public struct PookyCookies {

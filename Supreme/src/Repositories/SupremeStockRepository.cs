@@ -1,10 +1,10 @@
+using AlphaKop.Core.Network.Http;
+using AlphaKop.Supreme.Models;
+using AlphaKop.Supreme.Network;
 using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AlphaKop.Core.Network.Http;
-using AlphaKop.Supreme.Models;
-using AlphaKop.Supreme.Network;
 
 namespace AlphaKop.Supreme.Repositories {
     public sealed class SupremeStockRepository : ISupremeStockRepository {

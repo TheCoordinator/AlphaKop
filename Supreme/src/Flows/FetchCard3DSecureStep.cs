@@ -1,13 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 using AlphaKop.Core.Flows;
 using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Network;
 using AlphaKop.Supreme.Repositories;
 using AlphaKop.Supreme.Services;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace AlphaKop.Supreme.Flows {
     public interface IFetchCard3DSecureStep : ITaskStep<Card3DSecureStepInput> { }

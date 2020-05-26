@@ -1,11 +1,9 @@
+using AlphaKop.Core.CreditCard;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Web;
-using AlphaKop.Core.CreditCard;
-using AlphaKop.Core.System.Extensions;
 using FormValue = System.Collections.Generic.KeyValuePair<string, string>;
 
 namespace AlphaKop.Supreme.Network.Extensions {

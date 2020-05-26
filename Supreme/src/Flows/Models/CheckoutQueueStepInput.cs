@@ -1,5 +1,3 @@
-using AlphaKop.Supreme.Network;
-
 namespace AlphaKop.Supreme.Flows {
     public struct CheckoutQueueStepInput : IStepInput {
         public SelectedItem SelectedItem { get; }

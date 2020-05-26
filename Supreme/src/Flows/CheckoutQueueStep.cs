@@ -1,13 +1,12 @@
-using System;
-using System.Threading.Tasks;
 using AlphaKop.Core.Flows;
-using AlphaKop.Supreme.Repositories;
-using AlphaKop.Supreme.Network;
-using Microsoft.Extensions.Logging;
 using AlphaKop.Supreme.Models;
-using System.Collections.Generic;
-using System.Net;
+using AlphaKop.Supreme.Network;
+using AlphaKop.Supreme.Repositories;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace AlphaKop.Supreme.Flows {
     public interface ICheckoutQueueStep : ITaskStep<CheckoutQueueStepInput> { }

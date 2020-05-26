@@ -1,11 +1,10 @@
 using AlphaKop.Supreme.Models;
-using AlphaKop.Supreme.Network;
 
 namespace AlphaKop.Supreme.Flows {
-    public struct CaptchaStepInput: IStepInput {
+    public struct CaptchaStepInput : IStepInput {
         public SelectedItem SelectedItem { get; }
         public Pooky Pooky { get; }
-        public CheckoutCookies CheckoutCookies { get; }        
+        public CheckoutCookies CheckoutCookies { get; }
         public SupremeJob Job { get; }
 
         public CaptchaStepInput(

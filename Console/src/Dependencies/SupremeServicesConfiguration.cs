@@ -1,6 +1,3 @@
-using System;
-using System.Net;
-using System.Net.Http;
 using AlphaKop.Core.Http;
 using AlphaKop.Supreme.Config;
 using AlphaKop.Supreme.Flows;
@@ -11,6 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Net;
+using System.Net.Http;
 
 namespace AlphaKop {
     public class SupremeServicesConfiguration {

@@ -1,9 +1,9 @@
+using AlphaKop.Core.Network.Http;
+using AlphaKop.Supreme.Network;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AlphaKop.Core.Network.Http;
-using AlphaKop.Supreme.Network;
 
 namespace AlphaKop.Supreme.Repositories {
     public sealed class SupremeCheckoutRepository : ISupremeCheckoutRepository {

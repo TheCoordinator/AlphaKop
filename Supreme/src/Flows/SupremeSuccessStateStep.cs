@@ -1,8 +1,7 @@
-using System;
-using System.Threading.Tasks;
-using AlphaKop.Core;
 using AlphaKop.Core.Flows;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace AlphaKop.Supreme.Flows {
     public interface ISupremeSuccessStep : ITaskStep<SuccessStepInput> { }

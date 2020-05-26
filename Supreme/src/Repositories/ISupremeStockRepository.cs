@@ -1,5 +1,5 @@
-using System.Threading.Tasks;
 using AlphaKop.Supreme.Models;
+using System.Threading.Tasks;
 
 namespace AlphaKop.Supreme.Repositories {
     public interface ISupremeStockRepository {

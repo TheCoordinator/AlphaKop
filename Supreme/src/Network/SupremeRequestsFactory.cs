@@ -1,9 +1,9 @@
+using AlphaKop.Core.CreditCard;
+using AlphaKop.Supreme.Network.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using AlphaKop.Core.CreditCard;
-using AlphaKop.Supreme.Network.Extensions;
 
 namespace AlphaKop.Supreme.Network {
     public interface ISupremeRequestsFactory {

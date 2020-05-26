@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 
 namespace AlphaKop.Core.Network.Http {
     public static class LinkExtensions {

@@ -1,14 +1,13 @@
+using AlphaKop.Core.Retry;
+using AlphaKop.Supreme.Config;
+using Microsoft.Extensions.Options;
+using PuppeteerSharp;
 using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AlphaKop.Core.Retry;
-using AlphaKop.Supreme.Config;
-using Microsoft.Extensions.Options;
-using PuppeteerSharp;
-using PuppeteerSharp.Mobile;
 
 namespace AlphaKop.Supreme.Services {
     public sealed class Card3DSecureService : ICard3DSecureService {

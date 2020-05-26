@@ -1,8 +1,3 @@
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Net.Sockets;
-using System.Threading.Tasks;
 using AlphaKop.Core.Captcha.Network;
 using AlphaKop.Core.Captcha.Repositories;
 using AlphaKop.Core.Flows;
@@ -10,6 +5,11 @@ using AlphaKop.Core.Network.Http;
 using AlphaKop.Supreme.Config;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace AlphaKop.Supreme.Flows {
     public interface ICaptchaStep : ITaskStep<CaptchaStepInput> { }

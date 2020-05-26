@@ -1,7 +1,6 @@
-using System;
-using System.Net;
-using System.Net.Http;
 using AlphaKop.Supreme.Models;
+using System;
+using System.Net.Http;
 
 namespace AlphaKop.Supreme.Network {
     public interface IPookyRequestsFactory {

@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 using AlphaKop.Core.Flows;
 using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace AlphaKop.Supreme.Flows {
     public interface IFetchPookyTicketStep : ITaskStep<PookyTicketStepInput> { }

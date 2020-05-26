@@ -1,7 +1,5 @@
-using AlphaKop.Supreme.Models;
-
 namespace AlphaKop.Supreme.Flows {
-    public struct InitialStepInput: IStepInput {
+    public struct InitialStepInput : IStepInput {
         public SupremeJob Job { get; }
 
         public InitialStepInput(SupremeJob job) {

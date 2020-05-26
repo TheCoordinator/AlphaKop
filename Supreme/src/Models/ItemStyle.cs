@@ -1,6 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace AlphaKop.Supreme.Models {
     public struct ItemStyle {

@@ -39,7 +39,7 @@ namespace AlphaKop.Core.Network.Http {
 
         public static IEnumerable<Cookie> GetCookies(this HttpResponseMessage response) {
             response.Headers.TryGetValues("Set-Cookie", out var setCookie);
-            
+
             if (setCookie == null) {
                 return Array.Empty<Cookie>();
             }

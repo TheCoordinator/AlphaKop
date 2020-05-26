@@ -1,6 +1,6 @@
+using AlphaKop.Core.Models.User;
 using System.Collections.Generic;
 using System.Net;
-using AlphaKop.Core.Models.User;
 
 namespace AlphaKop.Supreme.Network {
     public struct CheckoutTotalsMobileRequest {

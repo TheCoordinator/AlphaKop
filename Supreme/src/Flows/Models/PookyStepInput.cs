@@ -1,7 +1,5 @@
-using AlphaKop.Supreme.Models;
-
 namespace AlphaKop.Supreme.Flows {
-    public struct PookyStepInput: IStepInput {
+    public struct PookyStepInput : IStepInput {
         public SelectedItem SelectedItem { get; }
         public SupremeJob Job { get; }
 

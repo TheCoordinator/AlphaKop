@@ -1,7 +1,7 @@
-using System.Net.Http;
-using System.Threading.Tasks;
 using AlphaKop.Core.Captcha.Network;
 using AlphaKop.Core.Network.Http;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace AlphaKop.Core.Captcha.Repositories {
     public sealed class CaptchaRepository : ICaptchaRepository {

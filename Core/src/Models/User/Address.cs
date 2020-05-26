@@ -1,5 +1,5 @@
-using System.Linq;
 using AlphaKop.Core.System.Extensions;
+using System.Linq;
 
 namespace AlphaKop.Core.Models.User {
     public struct Address {
@@ -15,7 +15,7 @@ namespace AlphaKop.Core.Models.User {
 
         public string FullName {
             get {
-                return new string[]{ FirstName, LastName }
+                return new string[] { FirstName, LastName }
                     .Select(s => s.NullIfEmptyTrimmed())
                     .JoinStrings(' ');
             }

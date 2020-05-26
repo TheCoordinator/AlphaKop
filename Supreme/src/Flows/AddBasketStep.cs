@@ -1,10 +1,10 @@
+using AlphaKop.Core.Flows;
+using AlphaKop.Supreme.Network;
+using AlphaKop.Supreme.Repositories;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using AlphaKop.Core.Flows;
-using AlphaKop.Supreme.Repositories;
-using AlphaKop.Supreme.Network;
-using Microsoft.Extensions.Logging;
 
 namespace AlphaKop.Supreme.Flows {
     public interface IAddBasketStep : ITaskStep<AddBasketStepInput> { }

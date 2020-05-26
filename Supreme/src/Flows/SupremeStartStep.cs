@@ -1,8 +1,8 @@
-using System;
-using System.Threading.Tasks;
 using AlphaKop.Core.Flows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace AlphaKop.Supreme.Flows {
     public interface ISupremeStartStep : ITaskStep<InitialStepInput> { }

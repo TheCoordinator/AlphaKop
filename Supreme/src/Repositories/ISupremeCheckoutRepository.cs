@@ -1,5 +1,5 @@
-using System.Threading.Tasks;
 using AlphaKop.Supreme.Network;
+using System.Threading.Tasks;
 
 namespace AlphaKop.Supreme.Repositories {
     public interface ISupremeCheckoutRepository {

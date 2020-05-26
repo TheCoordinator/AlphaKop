@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using AlphaKop.Core.System.Extensions;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace AlphaKop.Supreme.Network {
     public struct CheckoutStatusResponse {

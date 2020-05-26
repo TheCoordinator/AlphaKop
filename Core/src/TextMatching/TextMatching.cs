@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using FuzzySharp;
 using FuzzySharp.SimilarityRatio;
 using FuzzySharp.SimilarityRatio.Scorer;
 using FuzzySharp.SimilarityRatio.Scorer.Composite;
-using FuzzySharp.SimilarityRatio.Scorer.StrategySensitive;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AlphaKop.Core.Services.TextMatching {
     public sealed class TextMatching : ITextMatching {
@@ -20,7 +18,7 @@ namespace AlphaKop.Core.Services.TextMatching {
                 cutoff: minScore
             );
 
-            if (results == null) { return new ExtractedResult<string>[] {}; }
+            if (results == null) { return new ExtractedResult<string>[] { }; }
 
             return results
                 .Select(Convert);

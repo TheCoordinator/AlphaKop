@@ -1,6 +1,6 @@
-using System;
 using AlphaKop.Core.Flows;
 using AlphaKop.Core.Models.User;
+using System;
 
 namespace AlphaKop.Supreme.Flows {
     public struct SupremeJob : IJob {

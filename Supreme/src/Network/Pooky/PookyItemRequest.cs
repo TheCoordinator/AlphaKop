@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using AlphaKop.Supreme.Models;
-using Newtonsoft.Json;
 
 namespace AlphaKop.Supreme.Network {
     public struct PookyItemRequest {

@@ -30,7 +30,7 @@ namespace AlphaKop.Supreme.Models {
                 return ItemStyleSizeType.XXL;
             }
 
-            return null;           
+            return null;
         }
 
         private static bool IsXXSmall(string size) {
@@ -56,17 +56,17 @@ namespace AlphaKop.Supreme.Models {
         private static bool IsLarge(string size) {
             var sizes = new string[] { "l", "large" };
             return IsSize(sizes, size);
-        }        
+        }
 
         private static bool IsXLarge(string size) {
             var sizes = new string[] { "xl", "xlarge", "extra large" };
             return IsSize(sizes, size);
-        }        
+        }
 
         private static bool IsXXLarge(string size) {
             var sizes = new string[] { "xxl", "xxlarge", "extra extra large" };
             return IsSize(sizes, size);
-        }        
+        }
 
         private static bool IsSize(IEnumerable<string> sizes, string size) {
             return sizes

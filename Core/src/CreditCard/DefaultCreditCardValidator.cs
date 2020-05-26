@@ -1,4 +1,3 @@
-using System;
 using CreditCardValidator;
 
 namespace AlphaKop.Core.CreditCard {

@@ -1,13 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AlphaKop.Core.Flows;
 using AlphaKop.Core.Services.TextMatching;
 using AlphaKop.Core.System.Extensions;
 using AlphaKop.Supreme.Models;
 using AlphaKop.Supreme.Repositories;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AlphaKop.Supreme.Flows {
     public interface IFetchItemDetailsStep : ITaskStep<ItemDetailsStepInput> { }

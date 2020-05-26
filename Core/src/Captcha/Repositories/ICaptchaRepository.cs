@@ -1,5 +1,5 @@
-using System.Threading.Tasks;
 using AlphaKop.Core.Captcha.Network;
+using System.Threading.Tasks;
 
 namespace AlphaKop.Core.Captcha.Repositories {
     public interface ICaptchaRepository {

@@ -1,8 +1,7 @@
 using Newtonsoft.Json;
 
 namespace AlphaKop.Core.Captcha.Network {
-    public struct CaptchaResponse
-    {
+    public struct CaptchaResponse {
         [JsonProperty("captcha")]
         public Captcha Captcha { get; }
 

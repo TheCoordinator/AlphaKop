@@ -1,6 +1,6 @@
-using System;
 using AlphaKop.Core.Flows;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace AlphaKop.Supreme.Flows {
     static class IServiceProviderExtensions {
