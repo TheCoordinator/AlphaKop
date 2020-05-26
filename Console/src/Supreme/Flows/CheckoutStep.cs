@@ -10,7 +10,7 @@ namespace AlphaKop.Supreme.Flows {
     public interface ICheckoutStep : ITaskStep<CheckoutStepInput> { }
 
     public sealed class CheckoutStep : ICheckoutStep {
-        private const int maxRetries = 5;
+        private const int maxRetries = 3;
 
         private readonly ISupremeCheckoutRepository supremeRepository;
         private readonly IServiceProvider provider;
@@ -35,7 +35,7 @@ namespace AlphaKop.Supreme.Flows {
                     return;
                 }
 
-                await Task.Delay(input.Job.StartDelay);
+                await Task.Delay(2500); // TODO: Add this to Job
 
                 var request = CreateCheckoutRequest(input);
                 var response = await supremeRepository.Checkout(request);
