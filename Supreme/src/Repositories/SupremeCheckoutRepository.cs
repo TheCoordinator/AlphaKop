@@ -6,7 +6,7 @@ using AlphaKop.Core.Network.Http;
 using AlphaKop.Supreme.Network;
 
 namespace AlphaKop.Supreme.Repositories {
-    sealed class SupremeCheckoutRepository : ISupremeCheckoutRepository {
+    public sealed class SupremeCheckoutRepository : ISupremeCheckoutRepository {
         private readonly HttpClient client;
         private readonly ISupremeRequestsFactory requestsFactory;
 
