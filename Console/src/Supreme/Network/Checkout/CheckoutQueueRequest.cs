@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 using System.Net;
-using AlphaKop.Core.Captcha.Network;
-using AlphaKop.Core.Models.User;
-using AlphaKop.Supreme.Models;
 
 namespace AlphaKop.Supreme.Network {
     public struct CheckoutQueueRequest {
