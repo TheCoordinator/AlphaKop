@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace CoreService {
+namespace AlphaKop.CoreService {
     public class Program {
         public static void Main(string[] args) {
             CreateHostBuilder(args).Build().Run();

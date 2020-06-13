@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "CoreService";
+option csharp_namespace = "AlphaKop.CoreService";
 
 package greet;
 
