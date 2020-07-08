@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace AlphaKop.CoreService {
     public class Program {
@@ -17,6 +18,11 @@ namespace AlphaKop.CoreService {
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => {
+                    webBuilder.ConfigureKestrel(options => {
+                        // Setup a HTTP/2 endpoint without TLS.
+                        options.ListenLocalhost(5001, o => o.Protocols =
+                            HttpProtocols.Http2);
+                    });
                     webBuilder.UseStartup<Startup>();
                 });
     }

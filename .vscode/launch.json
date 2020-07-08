@@ -32,6 +32,18 @@
             "stopAtEntry": false
         },
         {
+            "name": "CoreService",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "buildCoreService",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "${workspaceFolder}/CoreService/src/bin/Debug/netcoreapp3.1/CoreService.dll",
+            "cwd": "${workspaceFolder}/CoreService/src",
+            // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach",

@@ -52,6 +52,18 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "buildCoreService",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/CoreService/src"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "buildCaptchaResolver",
             "command": "npm",
             "type": "process",
